@@ -13,7 +13,32 @@ bin/
 # OS files
 .DS_Store
 Thumbs.db
+# Gradle caches and build output
+.gradle/
+build/
+out/
 
+# Gradle lock and cache files
+*.lock
+*.log
+
+# Compiled Java files
+*.class
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# IDE folders
+.idea/
+.vscode/
+
+# IntelliJ project files
+*.iml
+
+# Temporary files
+*.tmp
+*.swp
 # IDE folders
 .idea/
 .vscode/
