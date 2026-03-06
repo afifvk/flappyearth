@@ -79,7 +79,7 @@ public class GameScene extends Scene {
         if (smokeEffect != null) {
         smokeEffect.dispose();
         }
-        smokeEffect = new SmokeEffect(1.0f);
+        smokeEffect = new SmokeEffect(0.8f);
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
 
