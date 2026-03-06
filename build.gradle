@@ -1,0 +1,38 @@
+buildscript {
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
+    mavenLocal()
+    google()
+  }
+  dependencies {}
+}
+
+allprojects {
+  apply plugin: 'eclipse'
+  apply plugin: 'idea'
+  idea {
+    module {
+      outputDir = file('build/classes/java/main')
+      testOutputDir = file('build/classes/java/test')
+    }
+  }
+}
+
+configure(subprojects) {
+  apply plugin: 'java-library'
+  java.sourceCompatibility = 8
+  compileJava { options.incremental = true }
+}
+
+subprojects {
+  version = "$projectVersion"
+  ext.appName = 'flappyearth'
+  repositories {
+    mavenCentral()
+    mavenLocal()
+    maven { url = 'https://jitpack.io' }
+  }
+}
+
+eclipse.project.name = 'flappyearth' + '-parent'
