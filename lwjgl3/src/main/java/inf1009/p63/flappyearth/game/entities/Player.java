@@ -1,9 +1,10 @@
 package inf1009.p63.flappyearth.game.entities;
 
+import com.badlogic.gdx.math.Rectangle;
+
 import inf1009.p63.flappyearth.engine.entities.RenderData;
 import inf1009.p63.flappyearth.engine.interfaces.Movable;
 import inf1009.p63.flappyearth.game.config.Tags;
-import com.badlogic.gdx.math.Rectangle;
 
 public class Player extends GameEntity implements Movable {
 

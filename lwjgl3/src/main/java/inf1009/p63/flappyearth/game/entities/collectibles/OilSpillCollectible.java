@@ -4,4 +4,13 @@ public class OilSpillCollectible extends BadCollectible {
     public OilSpillCollectible(float x, float y) {
         super(x, y, 30, 30, "oil_spill", CollectibleType.OIL_SPILL);
     }
+    @Override
+    public void onCollect() {
+        // Specific logic: Subtract health or points
+    }
+
+    @Override
+    public float getSmokeVisibility() {
+        return 0.9f;
+    }
 }

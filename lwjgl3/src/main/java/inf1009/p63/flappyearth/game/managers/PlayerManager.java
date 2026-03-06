@@ -22,6 +22,7 @@ public class PlayerManager {
     }
 
     public void spawnPlayer(float startX, float startY, GameConfig config) {
+        // This calls the original Player constructor with 5 arguments
         player = new Player(startX, startY, config.playerSpeed,
                             config.gravity, config.jumpImpulse);
         entityManager.queueAdd(player);

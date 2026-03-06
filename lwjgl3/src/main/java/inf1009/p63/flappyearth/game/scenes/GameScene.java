@@ -3,12 +3,14 @@ package inf1009.p63.flappyearth.game.scenes;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import inf1009.p63.flappyearth.engine.core.GameContextManager;
 import inf1009.p63.flappyearth.engine.core.Scene;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
 import inf1009.p63.flappyearth.engine.managers.EntityManager;
 import inf1009.p63.flappyearth.engine.managers.RendererManager;
 import inf1009.p63.flappyearth.game.config.GameConfig;
+import inf1009.p63.flappyearth.game.effects.SmokeEffect;
 import inf1009.p63.flappyearth.game.factories.EntityFactory;
 import inf1009.p63.flappyearth.game.loop.CleanupStep;
 import inf1009.p63.flappyearth.game.loop.CollisionStep;
@@ -51,6 +53,8 @@ public class GameScene extends Scene {
 
     private OrthographicCamera worldCamera;
 
+    private SmokeEffect smokeEffect;
+
     public GameScene(SceneManager sceneManager, GameContextManager context) {
         this.sceneManager = sceneManager;
         this.context      = context;
@@ -72,7 +76,10 @@ public class GameScene extends Scene {
         if (entityManager != null) {
             entityManager.clear();
         }
-        
+        if (smokeEffect != null) {
+        smokeEffect.dispose();
+        }
+        smokeEffect = new SmokeEffect(1.0f);
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
 
@@ -142,22 +149,33 @@ public class GameScene extends Scene {
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
 
-        // Update camera dimensions if window was resized
-        if (Math.abs(worldCamera.viewportWidth - screenW) > 0.1f ||
-            Math.abs(worldCamera.viewportHeight - screenH) > 0.1f) {
-            worldCamera.setToOrtho(false, screenW, screenH);
-        }
-
+        // 1. Update Camera Position (Follow the Player)
         if (playerManager.getPlayer() != null) {
-            float playerCx = playerManager.getPlayer().getBounds().x + screenW / 2f;
-            worldCamera.position.set(playerCx, screenH / 2f, 0);
+            float playerX = playerManager.getPlayer().getBounds().x;
+            // This centers the camera on the player
+            worldCamera.position.set(playerX + screenW / 4f, screenH / 2f, 0);
             worldCamera.update();
         }
 
-        rendererManager.getShapeRenderer().setProjectionMatrix(worldCamera.combined);
+        // 2. Prepare the Renderer with the Camera
         rendererManager.getBatch().setProjectionMatrix(worldCamera.combined);
+        rendererManager.getShapeRenderer().setProjectionMatrix(worldCamera.combined);
+
+        // 3. Draw the World (Pipes, Player, Background)
+        // This method handles its own batch.begin/end internally
         rendererManager.render(entityManager.getRenderables());
 
+        // 4. Draw the Smoke OVER the world
+        SpriteBatch gameBatch = rendererManager.getBatch();
+        gameBatch.begin();
+        if (smokeEffect != null && playerManager.getPlayer() != null) {
+            float pX = playerManager.getPlayer().getBounds().x;
+            // Draw the smoke relative to the player's X so it stays on screen
+            smokeEffect.render(gameBatch, pX, screenW, screenH);
+        }
+        gameBatch.end();
+
+        // 5. Draw HUD (Screen Space - Static)
         SpriteBatch hudBatch = rendererManager.getBatch();
         hudBatch.getProjectionMatrix().setToOrtho2D(0, 0, screenW, screenH);
         hudBatch.begin();
@@ -174,6 +192,7 @@ public class GameScene extends Scene {
     @Override
     public void disposeResources() {
         super.disposeResources();
+        if (smokeEffect != null) smokeEffect.dispose();
         if (rendererManager != null) rendererManager.dispose();
         if (entityManager   != null) entityManager.dispose();
         if (hudManager      != null) hudManager.dispose();
