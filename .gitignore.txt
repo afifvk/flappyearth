@@ -1,0 +1,26 @@
+# Gradle build files
+.gradle/
+build/
+out/
+bin/
+
+# Compiled Java files
+*.class
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE folders
+.idea/
+.vscode/
+
+# IntelliJ project files
+*.iml
+
+# Temporary files
+*.tmp
+*.swp
