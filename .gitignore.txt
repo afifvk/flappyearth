@@ -1,49 +1,27 @@
-# Gradle build files
-.gradle/
-build/
-out/
-bin/
-
-# Compiled Java files
-*.class
-
-# Logs
-*.log
-
-# OS files
-.DS_Store
-Thumbs.db
 # Gradle caches and build output
 .gradle/
 build/
+core/build/
+lwjgl3/build/
 out/
+bin/
 
-# Gradle lock and cache files
-*.lock
-*.log
-
-# Compiled Java files
+# Java and packaged artifacts
 *.class
+*.jar
+*.war
+*.ear
+
+# Logs
+*.log
 
 # OS junk
 .DS_Store
 Thumbs.db
 
-# IDE folders
+# IDE folders and metadata
 .idea/
 .vscode/
-
-# IntelliJ project files
-*.iml
-
-# Temporary files
-*.tmp
-*.swp
-# IDE folders
-.idea/
-.vscode/
-
-# IntelliJ project files
 *.iml
 
 # Temporary files
