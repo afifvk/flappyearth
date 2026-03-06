@@ -6,20 +6,21 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 
 public class SmokeEffect {
+    private static final float MIN_ALPHA = 0.1f;
+    // Keep slightly below 1.0 to avoid fully opaque overlay edge-cases.
+    private static final float MAX_ALPHA = 0.98f;
+
     private Texture smokeTexture;
     private float alpha; // Visibility level
 
     public SmokeEffect(float startingAlpha) {
         // Ensure you have a 'smoke.png' in your assets folder!
         this.smokeTexture = new Texture(Gdx.files.internal("assets/smoke.png"));
-        this.alpha = startingAlpha;
+        this.alpha = clampAlpha(startingAlpha);
     }
 
     public void adjustVisibility(float amount) {
-        this.alpha += amount;
-        // Clamp values between 0.1 (clean) and 1.0 (thick smog)
-        if (this.alpha < 0.1f) this.alpha = 0.1f;
-        if (this.alpha > 1.0f) this.alpha = 1.0f;
+        this.alpha = clampAlpha(this.alpha + amount);
     }
 
     public void render(SpriteBatch batch, float playerX, float screenW, float screenH) {
@@ -36,5 +37,11 @@ public class SmokeEffect {
 
     public void dispose() {
         if (smokeTexture != null) smokeTexture.dispose();
+    }
+
+    private float clampAlpha(float value) {
+        if (value < MIN_ALPHA) return MIN_ALPHA;
+        if (value > MAX_ALPHA) return MAX_ALPHA;
+        return value;
     }
 }
