@@ -14,7 +14,7 @@ public class SmokeEffect {
 
     public SmokeEffect(float startingAlpha) {
         // Ensure you have a 'smoke.png' in your assets folder!
-        this.smokeTexture = new Texture(Gdx.files.internal("assets/smoke.png"));
+        this.smokeTexture = new Texture(Gdx.files.internal("smoke.png"));
         this.alpha = clampAlpha(startingAlpha);
     }
 

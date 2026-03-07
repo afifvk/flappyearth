@@ -18,14 +18,14 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getInputOutputManager().registerInputDevice(new KeyboardInputDevice());
         contextManager.getInputOutputManager().registerInputDevice(new TouchInputDevice());
 
-        contextManager.getAssetManager().load("assets/pipe.png", Texture.class);
-        contextManager.getAssetManager().load("assets/background.png", Texture.class);
-        contextManager.getAssetManager().load("assets/flappy00.png", Texture.class);
-        contextManager.getAssetManager().load("assets/flappy01.png", Texture.class);
-        contextManager.getAssetManager().load("assets/flappy02.png", Texture.class);
-        contextManager.getAssetManager().load("assets/flappy03.png", Texture.class);
-        contextManager.getAssetManager().load("assets/flappy04.png", Texture.class);
-        contextManager.getAssetManager().load("assets/flappy05.png", Texture.class);
+        contextManager.getAssetManager().load("pipe.png", Texture.class);
+        contextManager.getAssetManager().load("background.png", Texture.class);
+        contextManager.getAssetManager().load("flappy00.png", Texture.class);
+        contextManager.getAssetManager().load("flappy01.png", Texture.class);
+        contextManager.getAssetManager().load("flappy02.png", Texture.class);
+        contextManager.getAssetManager().load("flappy03.png", Texture.class);
+        contextManager.getAssetManager().load("flappy04.png", Texture.class);
+        contextManager.getAssetManager().load("flappy05.png", Texture.class);
         contextManager.getAssetManager().finishLoading();
 
         sceneManager.registerScene(GameSceneId.MENU.id(), new MenuScene(sceneManager, contextManager));

@@ -18,8 +18,8 @@ public class Player extends GameEntity implements Movable {
 
     // Animation
     private static final String[] BIRD_FRAMES = {
-        "assets/flappy00.png", "assets/flappy01.png", "assets/flappy02.png",
-        "assets/flappy03.png", "assets/flappy04.png", "assets/flappy05.png"
+        "flappy00.png", "flappy01.png", "flappy02.png",
+        "flappy03.png", "flappy04.png", "flappy05.png"
     };
     private static final float FRAME_DURATION = 0.1f;  // 100ms per frame
     private int currentFrame = 0;

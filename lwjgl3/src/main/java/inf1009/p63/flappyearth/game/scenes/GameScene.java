@@ -168,8 +168,8 @@ public class GameScene extends Scene {
 
         // Draw background pinned to the camera viewport so it always fills the screen.
         SpriteBatch gameBatch = rendererManager.getBatch();
-        if (context.getAssetManager().isLoaded("assets/background.png")) {
-            Texture background = context.getAssetManager().getTexture("assets/background.png");
+        if (context.getAssetManager().isLoaded("background.png")) {
+            Texture background = context.getAssetManager().getTexture("background.png");
             float leftX = worldCamera.position.x - (screenW / 2f);
             gameBatch.begin();
             gameBatch.draw(background, leftX, 0f, screenW, screenH);
