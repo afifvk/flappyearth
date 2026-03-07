@@ -7,8 +7,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class SmokeEffect {
     private static final float MIN_ALPHA = 0.1f;
-    // Keep slightly below 1.0 to avoid fully opaque overlay edge-cases.
-    private static final float MAX_ALPHA = 0.98f;
+    private static final float MAX_ALPHA = 1.0f;
 
     private Texture smokeTexture;
     private float alpha; // Visibility level

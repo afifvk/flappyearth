@@ -19,6 +19,7 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getInputOutputManager().registerInputDevice(new TouchInputDevice());
 
         contextManager.getAssetManager().load("assets/pipe.png", Texture.class);
+        contextManager.getAssetManager().load("assets/background.png", Texture.class);
         contextManager.getAssetManager().load("assets/flappy00.png", Texture.class);
         contextManager.getAssetManager().load("assets/flappy01.png", Texture.class);
         contextManager.getAssetManager().load("assets/flappy02.png", Texture.class);

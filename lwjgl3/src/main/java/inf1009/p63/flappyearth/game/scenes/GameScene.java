@@ -1,7 +1,9 @@
 package inf1009.p63.flappyearth.game.scenes;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 import inf1009.p63.flappyearth.engine.core.GameContextManager;
@@ -79,7 +81,7 @@ public class GameScene extends Scene {
         if (smokeEffect != null) {
         smokeEffect.dispose();
         }
-        smokeEffect = new SmokeEffect(0.8f);
+        smokeEffect = new SmokeEffect(0.1f);
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
 
@@ -149,6 +151,9 @@ public class GameScene extends Scene {
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
 
+        Gdx.gl.glClearColor(0.53f, 0.81f, 0.98f, 1f);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
         // 1. Update Camera Position (Follow the Player)
         if (playerManager.getPlayer() != null) {
             float playerX = playerManager.getPlayer().getBounds().x;
@@ -161,12 +166,21 @@ public class GameScene extends Scene {
         rendererManager.getBatch().setProjectionMatrix(worldCamera.combined);
         rendererManager.getShapeRenderer().setProjectionMatrix(worldCamera.combined);
 
+        // Draw background pinned to the camera viewport so it always fills the screen.
+        SpriteBatch gameBatch = rendererManager.getBatch();
+        if (context.getAssetManager().isLoaded("assets/background.png")) {
+            Texture background = context.getAssetManager().getTexture("assets/background.png");
+            float leftX = worldCamera.position.x - (screenW / 2f);
+            gameBatch.begin();
+            gameBatch.draw(background, leftX, 0f, screenW, screenH);
+            gameBatch.end();
+        }
+
         // 3. Draw the World (Pipes, Player, Background)
         // This method handles its own batch.begin/end internally
         rendererManager.render(entityManager.getRenderables());
 
         // 4. Draw the Smoke OVER the world
-        SpriteBatch gameBatch = rendererManager.getBatch();
         gameBatch.begin();
         if (smokeEffect != null && playerManager.getPlayer() != null) {
             float pX = playerManager.getPlayer().getBounds().x;

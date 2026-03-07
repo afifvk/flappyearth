@@ -64,11 +64,7 @@ public class CollisionStep implements StepManager {
                     eventManager.publish(GameEvents.GOOD_COLLECTED,
                             new GoodCollectedEvent(col.getCollectibleType().name(), col.getId()));
                 } else if (col.getTag().equals(Tags.COLLECTIBLE_BAD)) {
-                    // Bad collectibles should cause harm (like obstacles)
-                    if (!activeEffects.isShieldActive()) {
-                        eventManager.publish(GameEvents.BAD_HIT,
-                                new BadHitEvent(col.getCollectibleType().name(), col.getId()));
-                    }
+                    // Bad collectibles are currently just consumed with no damage.
                 }
                 entityManager.queueRemove(col);
             }

@@ -1,9 +1,7 @@
 package inf1009.p63.flappyearth.engine.managers;
 
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import inf1009.p63.flappyearth.engine.interfaces.Renderable;
 import inf1009.p63.flappyearth.engine.entities.RenderData;
@@ -26,10 +24,6 @@ public class RendererManager {
     }
 
     public void render(List<Renderable> renderables) {
-        // Clear screen to sky blue
-        Gdx.gl.glClearColor(0.53f, 0.81f, 0.98f, 1f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
         // Draw textured assets
         batch.begin();
         for (Renderable r : renderables) {
