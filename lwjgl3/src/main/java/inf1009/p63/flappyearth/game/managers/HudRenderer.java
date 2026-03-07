@@ -11,7 +11,7 @@ import inf1009.p63.flappyearth.game.state.GameState;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HudManager {
+public class HudRenderer {
 
     private static final float HUD_PADDING = 12f;
     private static final float HEADER_Y_OFFSET = 12f;
@@ -28,12 +28,12 @@ public class HudManager {
     private final List<Integer> checkpointTargets;
     private String stageTitle;
 
-    public HudManager(ActiveEffects activeEffects,
-                      GameState gameState,
-                      ScoreManager scoreManager,
-                      EnvironmentProgress environmentProgress,
-                      List<Integer> checkpointTargets,
-                      String stageTitle) {
+    public HudRenderer(ActiveEffects activeEffects,
+                       GameState gameState,
+                       ScoreManager scoreManager,
+                       EnvironmentProgress environmentProgress,
+                       List<Integer> checkpointTargets,
+                       String stageTitle) {
         this.activeEffects = activeEffects;
         this.gameState     = gameState;
         this.scoreManager = scoreManager;

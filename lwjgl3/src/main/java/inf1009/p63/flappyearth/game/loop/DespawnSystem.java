@@ -9,13 +9,13 @@ import inf1009.p63.flappyearth.game.entities.Player;
 
 import java.util.List;
 
-public class CleanupStep implements StepManager {
+public class DespawnSystem implements StepManager {
 
     private static final float CLEANUP_MARGIN = 200f;
 
     private final EntityManager entityManager;
 
-    public CleanupStep(EntityManager entityManager) {
+    public DespawnSystem(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 

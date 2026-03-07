@@ -11,7 +11,7 @@ import inf1009.p63.flappyearth.game.scenes.GameScene;
 import inf1009.p63.flappyearth.game.scenes.GameSceneId;
 import inf1009.p63.flappyearth.game.scenes.MenuScene;
 import inf1009.p63.flappyearth.game.scenes.StagePlan;
-import inf1009.p63.flappyearth.game.scenes.StageTemplate;
+import inf1009.p63.flappyearth.game.scenes.StageConfig;
 import inf1009.p63.flappyearth.game.state.GameSession;
 
 import java.util.Arrays;
@@ -24,16 +24,17 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getInputOutputManager().registerInputDevice(new TouchInputDevice());
 
         StagePlan stagePlan = new StagePlan(Arrays.asList(
-            new StageTemplate(GameSceneId.STAGE_ONE.id(), "Stage 1: Impact Zone", "Collect 5 good items", 0.20f, 0.45f, 0.95f),
-            new StageTemplate(GameSceneId.STAGE_TWO.id(), "Stage 2: Recovery Line", "Collect 5 good items", 0.98f, 0.94f, 0.62f),
-            new StageTemplate(GameSceneId.STAGE_THREE.id(), "Stage 3: Turning Point", "Reach 15 to finish", 0.98f, 0.76f, 0.48f),
-            new StageTemplate(GameSceneId.STAGE_FOUR.id(), "Stage 4: New Earth", "Peaceful skies", 0.46f, 0.72f, 0.50f)
+            new StageConfig(GameSceneId.STAGE_ONE.id(), "Stage 1: Impact Zone", "Collect 5 good items", 0.20f, 0.45f, 0.95f, 0.70f),
+            new StageConfig(GameSceneId.STAGE_TWO.id(), "Stage 2: Recovery Line", "Collect 5 good items", 0.98f, 0.94f, 0.62f, 0.35f),
+            new StageConfig(GameSceneId.STAGE_THREE.id(), "Stage 3: Turning Point", "Reach 15 to finish", 0.98f, 0.76f, 0.48f, 0f),
+            new StageConfig(GameSceneId.STAGE_FOUR.id(), "Stage 4: New Earth", "Peaceful skies", 0.46f, 0.72f, 0.50f, 0f)
         ));
 
         GameSession gameSession = new GameSession(stagePlan.getFinalTargetGoodCollectibles());
 
         contextManager.getAssetManager().load("pipe.png", Texture.class);
         contextManager.getAssetManager().load("background.png", Texture.class);
+        contextManager.getAssetManager().load("smoke.png", Texture.class);
         contextManager.getAssetManager().load("flappy00.png", Texture.class);
         contextManager.getAssetManager().load("flappy01.png", Texture.class);
         contextManager.getAssetManager().load("flappy02.png", Texture.class);
@@ -44,7 +45,7 @@ public class FlappyEarthSetup implements GameSetup {
 
         sceneManager.registerScene(GameSceneId.MENU.id(), new MenuScene(sceneManager, contextManager, gameSession, stagePlan));
 
-        for (StageTemplate stage : stagePlan.getStages()) {
+        for (StageConfig stage : stagePlan.getStages()) {
             sceneManager.registerScene(stage.getSceneId(),
                     new GameScene(sceneManager, contextManager, gameSession, stagePlan, stage));
         }

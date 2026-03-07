@@ -11,7 +11,7 @@ import inf1009.p63.flappyearth.game.factories.CollectibleFactory;
 import inf1009.p63.flappyearth.game.factories.ObstacleFactory;
 import inf1009.p63.flappyearth.game.state.GameState;
 
-public class SpawnStep implements StepManager {
+public class SpawnSystem implements StepManager {
 
     private static final float COLLECTIBLE_MARGIN = 20f;
     private static final int   MAX_GOOD           = 2;
@@ -30,12 +30,12 @@ public class SpawnStep implements StepManager {
     private float spawnTimer     = 0f;
     private float lastPipeSpawnX = Float.MIN_VALUE;
 
-    public SpawnStep(EntityManager entityManager,
-                     ObstacleFactory obstacleFactory,
-                     CollectibleFactory collectibleFactory,
-                     RandomManager random, GameState state,
-                     GameConfig config,
-                     float initialSpawnDelaySeconds) {
+    public SpawnSystem(EntityManager entityManager,
+                       ObstacleFactory obstacleFactory,
+                       CollectibleFactory collectibleFactory,
+                       RandomManager random, GameState state,
+                       GameConfig config,
+                       float initialSpawnDelaySeconds) {
         this.entityManager      = entityManager;
         this.obstacleFactory    = obstacleFactory;
         this.collectibleFactory = collectibleFactory;

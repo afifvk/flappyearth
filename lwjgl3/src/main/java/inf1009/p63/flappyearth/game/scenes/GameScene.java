@@ -1,7 +1,6 @@
 package inf1009.p63.flappyearth.game.scenes;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -18,21 +17,24 @@ import inf1009.p63.flappyearth.game.config.Tags;
 import inf1009.p63.flappyearth.game.entities.Player;
 import inf1009.p63.flappyearth.game.events.GameEvents;
 import inf1009.p63.flappyearth.game.factories.EntityFactory;
-import inf1009.p63.flappyearth.game.loop.CleanupStep;
-import inf1009.p63.flappyearth.game.loop.CollisionStep;
+import inf1009.p63.flappyearth.game.loop.CollisionSystem;
+import inf1009.p63.flappyearth.game.loop.DespawnSystem;
+import inf1009.p63.flappyearth.game.loop.DistanceScoreSystem;
 import inf1009.p63.flappyearth.game.loop.EffectStep;
 import inf1009.p63.flappyearth.game.loop.GameLoop;
 import inf1009.p63.flappyearth.game.loop.InputStep;
 import inf1009.p63.flappyearth.game.loop.MovementStep;
-import inf1009.p63.flappyearth.game.loop.ScoreStep;
-import inf1009.p63.flappyearth.game.loop.SpawnStep;
+import inf1009.p63.flappyearth.game.loop.SpawnSystem;
 import inf1009.p63.flappyearth.game.loop.UpdateStep;
-import inf1009.p63.flappyearth.game.input.GameInputAction;
-import inf1009.p63.flappyearth.game.managers.EcoFactPopupManager;
-import inf1009.p63.flappyearth.game.managers.HudManager;
+import inf1009.p63.flappyearth.game.controllers.DeathController;
+import inf1009.p63.flappyearth.game.controllers.EndingSceneController;
+import inf1009.p63.flappyearth.game.controllers.GameCameraController;
+import inf1009.p63.flappyearth.game.controllers.StageController;
+import inf1009.p63.flappyearth.game.managers.EcoFactPopupRenderer;
+import inf1009.p63.flappyearth.game.managers.HudRenderer;
 import inf1009.p63.flappyearth.game.managers.PlayerManager;
+import inf1009.p63.flappyearth.game.managers.SmokeEffect;
 import inf1009.p63.flappyearth.game.state.ActiveEffects;
-import inf1009.p63.flappyearth.game.state.EnvironmentProgress;
 import inf1009.p63.flappyearth.game.state.GameSession;
 import inf1009.p63.flappyearth.game.state.GameState;
 
@@ -42,54 +44,45 @@ public class GameScene extends Scene {
     private final GameContextManager context;
     private final GameSession gameSession;
     private final StagePlan stagePlan;
-    private final StageTemplate stageTemplate;
+    private final StageConfig stageConfig;
 
     private EntityManager entityManager;
     private RendererManager rendererManager;
 
     private PlayerManager playerManager;
-    private HudManager hudManager;
-    private EcoFactPopupManager factPopupManager;
+    private HudRenderer hudRenderer;
+    private EcoFactPopupRenderer factPopupRenderer;
+    private SmokeEffect smokeEffect;
 
     private EntityFactory entityFactory;
     private GameLoop gameLoopManager;
     private OrthographicCamera worldCamera;
+    private StageController stageController;
+    private DeathController deathController;
+    private GameCameraController cameraController;
+    private EndingSceneController endingSceneController;
 
     private EventManager.EventListener goodCollectedProgressListener;
 
     private final BitmapFont introFont;
     private final GlyphLayout introLayout;
     private static final float INTRO_DURATION_SECONDS = 3.0f;
-    private static final float GAME_OVER_DELAY_SECONDS = 1.0f;
     private static final float STAGE_OVERLAY_DURATION_SECONDS = 1.5f;
-    private static final float ENDING_SPAWN_DELAY_SECONDS = 3.0f;
-    private static final float ENDING_TARGET_HEIGHT_RATIO = 0.55f;
-    private static final float ENDING_FLAP_WINDOW = 24f;
     private float introTimer;
     private boolean showIntroText;
     private float stageOverlayTimer;
     private boolean showStageOverlay;
 
-    private boolean transitioningToNextStage;
-    private boolean deathCameraLocked;
-    private float deathCameraX;
-    private boolean gameOverDelayActive;
-    private float gameOverDelayTimer;
-    private boolean endingSceneActive;
-    private boolean endingAwaitContinue;
-    private boolean endingSpawnWarmup;
-    private float endingSpawnWarmupTimer;
-
     public GameScene(SceneManager sceneManager,
                      GameContextManager context,
                      GameSession gameSession,
                      StagePlan stagePlan,
-                     StageTemplate stageTemplate) {
+                     StageConfig stageConfig) {
         this.sceneManager = sceneManager;
         this.context = context;
         this.gameSession = gameSession;
         this.stagePlan = stagePlan;
-        this.stageTemplate = stageTemplate;
+        this.stageConfig = stageConfig;
 
         this.entityManager = new EntityManager();
         this.rendererManager = new RendererManager();
@@ -102,24 +95,13 @@ public class GameScene extends Scene {
 
     @Override
     public void onEnter() {
-        transitioningToNextStage = false;
-        deathCameraLocked = false;
-        deathCameraX = 0f;
-        gameOverDelayActive = false;
-        gameOverDelayTimer = 0f;
-        endingSceneActive = stagePlan.isFinalStage(stageTemplate.getSceneId());
-        endingAwaitContinue = endingSceneActive;
-        endingSpawnWarmup = false;
-        endingSpawnWarmupTimer = 0f;
-        showStageOverlay = !stageTemplate.getSceneId().equals(stagePlan.getInitialStageId()) && !endingSceneActive;
-        stageOverlayTimer = showStageOverlay ? STAGE_OVERLAY_DURATION_SECONDS : 0f;
         gameSession.prepareForStageEntry();
 
-        if (hudManager != null) {
-            hudManager.dispose();
+        if (hudRenderer != null) {
+            hudRenderer.dispose();
         }
-        if (factPopupManager != null) {
-            factPopupManager.dispose();
+        if (factPopupRenderer != null) {
+            factPopupRenderer.dispose();
         }
         if (entityManager != null) {
             entityManager.clear();
@@ -128,7 +110,7 @@ public class GameScene extends Scene {
 
         context.getEventManager().subscribe(GameEvents.GOOD_COLLECTED, goodCollectedProgressListener);
 
-        showIntroText = stageTemplate.getSceneId().equals(stagePlan.getInitialStageId());
+        showIntroText = stageConfig.getSceneId().equals(stagePlan.getInitialStageId());
         introTimer = showIntroText ? INTRO_DURATION_SECONDS : 0f;
 
         float screenW = Gdx.graphics.getWidth();
@@ -138,22 +120,41 @@ public class GameScene extends Scene {
         worldCamera.position.set(screenW / 2f, screenH / 2f, 0);
         worldCamera.update();
 
+        stageController = new StageController(
+            sceneManager,
+            stagePlan,
+            stageConfig,
+            gameSession.getEnvironmentProgress());
+        deathController = new DeathController(sceneManager, gameSession);
+        cameraController = new GameCameraController(worldCamera);
+        endingSceneController = new EndingSceneController();
+
+        stageController.onEnter();
+        deathController.onEnter();
+        cameraController.onEnter();
+        endingSceneController.onEnter(stagePlan.isFinalStage(stageConfig.getSceneId()), gameSession.getGameState());
+
+        showStageOverlay = !stageConfig.getSceneId().equals(stagePlan.getInitialStageId())
+            && !endingSceneController.isActive();
+        stageOverlayTimer = showStageOverlay ? STAGE_OVERLAY_DURATION_SECONDS : 0f;
+
         GameState gameState = gameSession.getGameState();
         ActiveEffects activeEffects = gameSession.getActiveEffects();
-        gameState.setControlsEnabled(!endingSceneActive);
-        gameState.setSpawningEnabled(!endingSceneActive);
 
         GameConfig config = GameConfig.defaultConfig();
 
         playerManager = new PlayerManager(entityManager, context.getEventManager(), config);
-        hudManager = new HudManager(
+        hudRenderer = new HudRenderer(
                 activeEffects,
                 gameState,
                 gameSession.getScoreManager(),
                 gameSession.getEnvironmentProgress(),
             stagePlan.getCheckpointTargets(),
-                stageTemplate.getTitle());
-        factPopupManager = new EcoFactPopupManager(context.getEventManager());
+                stageConfig.getTitle());
+        factPopupRenderer = new EcoFactPopupRenderer(context.getEventManager());
+        smokeEffect = new SmokeEffect(
+            context.getAssetManager(),
+            stageConfig.getSmokeOverlayAlpha());
 
         entityFactory = new EntityFactory(context.getRandomManager());
         playerManager.spawnPlayer(80f, screenH / 2f, config);
@@ -161,26 +162,26 @@ public class GameScene extends Scene {
         gameLoopManager = new GameLoop();
         gameLoopManager.addStep(new InputStep(
                 context.getInputOutputManager(), context.getEventManager(), gameState));
-        gameLoopManager.addStep(new SpawnStep(
+        gameLoopManager.addStep(new SpawnSystem(
                 entityManager,
                 entityFactory.getObstacleFactory(),
                 entityFactory.getCollectibleFactory(),
             context.getRandomManager(), gameState, config,
-            endingSceneActive ? 0f : 3f));
+            endingSceneController.isActive() ? 0f : 3f));
         gameLoopManager.addStep(new UpdateStep(
                 entityManager, context.getTimeManager(), gameState));
         gameLoopManager.addStep(new MovementStep(
                 entityManager, context.getMovementManager(),
                 context.getTimeManager(), gameState));
-        gameLoopManager.addStep(new CollisionStep(
+        gameLoopManager.addStep(new CollisionSystem(
                 entityManager, context.getCollisionManager(),
                 context.getEventManager(), gameState, activeEffects));
-        gameLoopManager.addStep(new ScoreStep(
+        gameLoopManager.addStep(new DistanceScoreSystem(
             gameState, gameSession.getScoreManager()));
         gameLoopManager.addStep(new EffectStep(
                 activeEffects,
                 context.getTimeManager()));
-        gameLoopManager.addStep(new CleanupStep(entityManager));
+        gameLoopManager.addStep(new DespawnSystem(entityManager));
         entityManager.flush();
     }
 
@@ -196,82 +197,36 @@ public class GameScene extends Scene {
         GameState gameState = gameSession.getGameState();
         Player player = (Player) entityManager.getFirstByTag(Tags.PLAYER);
 
-        if (endingSceneActive) {
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-                sceneManager.switchTo(GameSceneId.MENU.id());
-                return;
-            }
-
-            if ((endingAwaitContinue || endingSpawnWarmup) && player != null) {
-                updateEndingAutoFlight(player);
-            }
-
-            if (endingAwaitContinue && context.getInputOutputManager().isActionJustPressed(GameInputAction.FLAP.id())) {
-                endingAwaitContinue = false;
-                endingSpawnWarmup = true;
-                endingSpawnWarmupTimer = ENDING_SPAWN_DELAY_SECONDS;
-                gameState.setControlsEnabled(false);
-            }
-
-            if (endingSpawnWarmup) {
-                endingSpawnWarmupTimer = Math.max(0f, endingSpawnWarmupTimer - delta);
-                if (endingSpawnWarmupTimer <= 0f) {
-                    endingSpawnWarmup = false;
-                    gameState.setControlsEnabled(true);
-                    gameState.setSpawningEnabled(true);
-                }
-            }
+        if (endingSceneController.update(
+                delta,
+                player,
+                context.getInputOutputManager(),
+                sceneManager,
+                gameState)) {
+            return;
         }
 
-        if (gameState.isDeathSequenceActive()) {
-            if (player != null) {
-                if (!player.isDeathFallActive()) {
-                    startDeathSequence(player);
-                }
-                player.update(delta);
-                player.movement(delta);
-                if (!gameOverDelayActive && player.getBounds().y + player.getBounds().height < 0f) {
-                    gameOverDelayActive = true;
-                    gameOverDelayTimer = GAME_OVER_DELAY_SECONDS;
-                }
-                if (gameOverDelayActive) {
-                    gameOverDelayTimer = Math.max(0f, gameOverDelayTimer - delta);
-                }
-                if (gameOverDelayActive && gameOverDelayTimer <= 0f) {
-                    gameState.finishDeathSequence();
-                }
-            }
-        } else {
+        if (!gameState.isDeathSequenceActive()) {
             gameLoopManager.update(delta);
-            factPopupManager.update(delta);
-
-            player = (Player) entityManager.getFirstByTag(Tags.PLAYER);
-            boolean isSafeEndingWindow = endingSceneActive && (endingAwaitContinue || endingSpawnWarmup);
-            if (!isSafeEndingWindow && player != null && player.getBounds().y + player.getBounds().height < 0f) {
-                startDeathSequence(player, 1f);
-            }
+            factPopupRenderer.update(delta);
         }
 
-        if (gameState.getRequestedScene() == GameState.SceneRequest.GAME_OVER) {
-            GameOverScene gameOverScene = (GameOverScene) sceneManager.getScene(GameSceneId.GAME_OVER.id());
-            gameOverScene.setScore(gameSession.getScoreManager().getCurrentScore());
-            sceneManager.switchTo(GameSceneId.GAME_OVER.id());
+        player = (Player) entityManager.getFirstByTag(Tags.PLAYER);
+        deathController.update(
+                delta,
+                player,
+                cameraController,
+                endingSceneController.isSafeEndingWindow());
+
+        if (deathController.routeToGameOverIfRequested()) {
             return;
         }
 
-        if (transitioningToNextStage) {
+        if (stageController.isTransitioning()) {
             return;
         }
 
-        EnvironmentProgress progress = gameSession.getEnvironmentProgress();
-        int stageTarget = stagePlan.getTargetForStage(stageTemplate.getSceneId());
-        if (progress.getGoodCollectiblesCollected() >= stageTarget) {
-            String nextSceneId = stagePlan.getNextStageId(stageTemplate.getSceneId());
-            if (nextSceneId != null) {
-                transitioningToNextStage = true;
-                sceneManager.switchTo(nextSceneId);
-            }
-        }
+        stageController.update();
     }
 
     @Override
@@ -279,30 +234,27 @@ public class GameScene extends Scene {
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
 
-        Gdx.gl.glClearColor(stageTemplate.getClearR(), stageTemplate.getClearG(), stageTemplate.getClearB(), 1f);
+        Gdx.gl.glClearColor(stageConfig.getClearR(), stageConfig.getClearG(), stageConfig.getClearB(), 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        if (deathCameraLocked) {
-            worldCamera.position.set(deathCameraX, screenH / 2f, 0f);
-            worldCamera.update();
-        } else if (playerManager.getPlayer() != null) {
-            float playerX = playerManager.getPlayer().getBounds().x;
-            worldCamera.position.set(playerX + screenW / 4f, screenH / 2f, 0);
-            worldCamera.update();
-        }
+        Player player = playerManager != null ? playerManager.getPlayer() : null;
+        cameraController.apply(screenW, screenH, player);
 
-        rendererManager.getBatch().setProjectionMatrix(worldCamera.combined);
-        rendererManager.getShapeRenderer().setProjectionMatrix(worldCamera.combined);
+        rendererManager.getBatch().setProjectionMatrix(cameraController.getCamera().combined);
+        rendererManager.getShapeRenderer().setProjectionMatrix(cameraController.getCamera().combined);
 
         rendererManager.render(entityManager.getRenderables());
 
         SpriteBatch hudBatch = rendererManager.getBatch();
         hudBatch.getProjectionMatrix().setToOrtho2D(0, 0, screenW, screenH);
         rendererManager.getShapeRenderer().setProjectionMatrix(hudBatch.getProjectionMatrix());
-        hudManager.render(rendererManager.getShapeRenderer(), hudBatch, screenW, screenH);
+        hudRenderer.render(rendererManager.getShapeRenderer(), hudBatch, screenW, screenH);
 
         hudBatch.begin();
-        factPopupManager.render(hudBatch, screenW, screenH);
+        if (smokeEffect != null) {
+            smokeEffect.render(hudBatch, screenW, screenH);
+        }
+        factPopupRenderer.render(hudBatch, screenW, screenH);
 
         if (showIntroText && introTimer > 0f) {
             String lineOne = "Restore the world.";
@@ -326,11 +278,11 @@ public class GameScene extends Scene {
         }
 
         if (showStageOverlay && stageOverlayTimer > 0f) {
-            String header = stagePlan.isFinalStage(stageTemplate.getSceneId())
+            String header = stagePlan.isFinalStage(stageConfig.getSceneId())
                     ? "Cleanup Complete"
                     : "Checkpoint Reached";
-            String title = stageTemplate.getTitle();
-            String subtitle = stageTemplate.getSubtitle();
+            String title = stageConfig.getTitle();
+            String subtitle = stageConfig.getSubtitle();
 
             introLayout.setText(introFont, header);
             float headerX = (screenW - introLayout.width) / 2f;
@@ -348,7 +300,7 @@ public class GameScene extends Scene {
             introFont.draw(hudBatch, introLayout, subtitleX, subtitleY);
         }
 
-        if (endingSceneActive && endingAwaitContinue) {
+        if (endingSceneController.isActive() && endingSceneController.isAwaitingContinue()) {
             String lineOne = "You have saved the world.";
             String lineTwo = "Let us all do our part to keep Earth clean.";
             String lineThree = "Press SPACE to continue playing";
@@ -371,8 +323,9 @@ public class GameScene extends Scene {
             introFont.draw(hudBatch, introLayout, (screenW - introLayout.width) / 2f, y4);
         }
 
-        if (endingSceneActive && endingSpawnWarmup) {
-            String warmupText = "Take control in " + (int) Math.ceil(endingSpawnWarmupTimer) + "...";
+        if (endingSceneController.isActive() && endingSceneController.isSpawnWarmup()) {
+            String warmupText = "Take control in "
+                + (int) Math.ceil(endingSceneController.getSpawnWarmupTimer()) + "...";
             introLayout.setText(introFont, warmupText);
             introFont.draw(hudBatch, introLayout,
                     (screenW - introLayout.width) / 2f,
@@ -382,39 +335,10 @@ public class GameScene extends Scene {
         hudBatch.end();
     }
 
-    private void updateEndingAutoFlight(Player player) {
-        float screenH = Gdx.graphics.getHeight();
-        float targetY = screenH * ENDING_TARGET_HEIGHT_RATIO;
-        float playerCenterY = player.getBounds().y + (player.getBounds().height / 2f);
-        if (playerCenterY < targetY - ENDING_FLAP_WINDOW) {
-            player.flap();
-        }
-    }
-
     @Override
     public void onExit() {
         if (goodCollectedProgressListener != null) {
             context.getEventManager().unsubscribe(GameEvents.GOOD_COLLECTED, goodCollectedProgressListener);
-        }
-    }
-
-    private void startDeathSequence(Player player) {
-        startDeathSequence(player, gameSession.getGameState().getDeathFallSpeedMultiplier());
-    }
-
-    private void startDeathSequence(Player player, float deathFallSpeedMultiplier) {
-        if (player == null) return;
-
-        GameState gameState = gameSession.getGameState();
-        if (!gameState.isDeathSequenceActive()) {
-            gameState.startDeathSequence(deathFallSpeedMultiplier);
-        }
-        player.startDeathFall(gameState.getDeathFallSpeedMultiplier());
-        deathCameraLocked = true;
-        deathCameraX = worldCamera.position.x;
-        if (!gameOverDelayActive && player.getBounds().y + player.getBounds().height < 0f) {
-            gameOverDelayActive = true;
-            gameOverDelayTimer = GAME_OVER_DELAY_SECONDS;
         }
     }
 
@@ -427,11 +351,11 @@ public class GameScene extends Scene {
         if (entityManager != null) {
             entityManager.dispose();
         }
-        if (hudManager != null) {
-            hudManager.dispose();
+        if (hudRenderer != null) {
+            hudRenderer.dispose();
         }
-        if (factPopupManager != null) {
-            factPopupManager.dispose();
+        if (factPopupRenderer != null) {
+            factPopupRenderer.dispose();
         }
         if (introFont != null) {
             introFont.dispose();

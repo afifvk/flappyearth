@@ -4,7 +4,7 @@ import inf1009.p63.flappyearth.engine.interfaces.StepManager;
 import inf1009.p63.flappyearth.game.managers.ScoreManager;
 import inf1009.p63.flappyearth.game.state.GameState;
 
-public class ScoreStep implements StepManager {
+public class DistanceScoreSystem implements StepManager {
 
     private static final float SCORE_TICK_SECONDS = 0.1f;
 
@@ -12,8 +12,8 @@ public class ScoreStep implements StepManager {
     private final ScoreManager scoreManager;
     private float scoreTimer = 0f;
 
-    public ScoreStep(GameState state,
-                     ScoreManager scoreManager) {
+    public DistanceScoreSystem(GameState state,
+                               ScoreManager scoreManager) {
         this.state        = state;
         this.scoreManager = scoreManager;
     }

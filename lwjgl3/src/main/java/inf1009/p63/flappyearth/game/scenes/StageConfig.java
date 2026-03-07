@@ -1,6 +1,6 @@
 package inf1009.p63.flappyearth.game.scenes;
 
-public class StageTemplate {
+public class StageConfig {
 
     private final String sceneId;
     private final String title;
@@ -8,19 +8,22 @@ public class StageTemplate {
     private final float clearR;
     private final float clearG;
     private final float clearB;
+    private final float smokeOverlayAlpha;
 
-    public StageTemplate(String sceneId,
-                         String title,
-                         String subtitle,
-                         float clearR,
-                         float clearG,
-                         float clearB) {
+    public StageConfig(String sceneId,
+                       String title,
+                       String subtitle,
+                       float clearR,
+                       float clearG,
+                       float clearB,
+                       float smokeOverlayAlpha) {
         this.sceneId = sceneId;
         this.title = title;
         this.subtitle = subtitle;
         this.clearR = clearR;
         this.clearG = clearG;
         this.clearB = clearB;
+        this.smokeOverlayAlpha = Math.max(0f, Math.min(1f, smokeOverlayAlpha));
     }
 
     public String getSceneId() {
@@ -45,5 +48,9 @@ public class StageTemplate {
 
     public float getClearB() {
         return clearB;
+    }
+
+    public float getSmokeOverlayAlpha() {
+        return smokeOverlayAlpha;
     }
 }

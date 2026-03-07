@@ -10,10 +10,10 @@ public class StagePlan {
 
     private static final int TARGET_PER_STAGE = 1;
 
-    private final List<StageTemplate> stages;
+    private final List<StageConfig> stages;
     private final Map<String, Integer> indexBySceneId;
 
-    public StagePlan(List<StageTemplate> stages) {
+    public StagePlan(List<StageConfig> stages) {
         if (stages == null || stages.isEmpty()) {
             throw new IllegalArgumentException("Stage plan must contain at least one stage");
         }
@@ -22,7 +22,7 @@ public class StagePlan {
         this.indexBySceneId = new HashMap<>();
 
         for (int i = 0; i < this.stages.size(); i++) {
-            StageTemplate stage = this.stages.get(i);
+            StageConfig stage = this.stages.get(i);
             if (indexBySceneId.containsKey(stage.getSceneId())) {
                 throw new IllegalArgumentException("Duplicate stage scene ID: " + stage.getSceneId());
             }
@@ -30,7 +30,7 @@ public class StagePlan {
         }
     }
 
-    public List<StageTemplate> getStages() {
+    public List<StageConfig> getStages() {
         return stages;
     }
 
@@ -38,7 +38,7 @@ public class StagePlan {
         return stages.get(0).getSceneId();
     }
 
-    public StageTemplate getStageOrThrow(String sceneId) {
+    public StageConfig getStageOrThrow(String sceneId) {
         Integer index = indexBySceneId.get(sceneId);
         if (index == null) {
             throw new IllegalArgumentException("Unknown stage ID: " + sceneId);

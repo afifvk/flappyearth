@@ -10,7 +10,7 @@ import inf1009.p63.flappyearth.game.events.GameEvents;
 import java.util.HashMap;
 import java.util.Map;
 
-public class EcoFactPopupManager {
+public class EcoFactPopupRenderer {
 
     private static final float POPUP_DURATION = 4f;
 
@@ -23,7 +23,7 @@ public class EcoFactPopupManager {
     private String  currentFact   = null;
     private float   popupTimer    = 0f;
 
-    public EcoFactPopupManager(EventManager eventManager) {
+    public EcoFactPopupRenderer(EventManager eventManager) {
         this.eventManager = eventManager;
 
         facts.put("industrial_pollution",   "Factories emit 30% of global CO2. Support clean energy!");

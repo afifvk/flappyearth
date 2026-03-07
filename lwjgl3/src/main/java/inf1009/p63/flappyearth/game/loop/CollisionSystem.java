@@ -16,7 +16,7 @@ import inf1009.p63.flappyearth.game.state.GameState;
 
 import java.util.List;
 
-public class CollisionStep implements StepManager {
+public class CollisionSystem implements StepManager {
 
     private final EntityManager    entityManager;
     private final CollisionManager collisionManager;
@@ -26,11 +26,11 @@ public class CollisionStep implements StepManager {
 
     private static final float INVINCIBILITY_DURATION = 1.0f;
 
-    public CollisionStep(EntityManager entityManager,
-                         CollisionManager collisionManager,
-                         EventManager eventManager,
-                         GameState state,
-                         ActiveEffects activeEffects) {
+    public CollisionSystem(EntityManager entityManager,
+                           CollisionManager collisionManager,
+                           EventManager eventManager,
+                           GameState state,
+                           ActiveEffects activeEffects) {
         this.entityManager    = entityManager;
         this.collisionManager = collisionManager;
         this.eventManager     = eventManager;
