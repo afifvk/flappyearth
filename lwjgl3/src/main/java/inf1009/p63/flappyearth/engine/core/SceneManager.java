@@ -35,27 +35,22 @@ public class SceneManager {
     }
 
     public void setScene(Scene next) {
-        // Exit current scene (but don't dispose - scenes are reused)
         if (current != null) {
             current.onExit();
         }
-        // Clear stack without disposing scenes here
         while (!stack.isEmpty()) {
             Scene s = stack.pop();
             s.onExit();
         }
-        // Enter new scene
         current = next;
         if (current != null) {
             current.onEnter();
         }
     }
 
-    // Push scene onto stack for later return
     public void pushScene(Scene next) {
         if (current != null) {
             stack.push(current);
-            // Don't call onExit here - scene is being paused, not exited
         }
         current = next;
         if (current != null) {
@@ -63,11 +58,9 @@ public class SceneManager {
         }
     }
 
-    // Return to previous scene
     public void popScene() {
         if (current != null) {
             current.onExit();
-            // Don't dispose scene here
         }
         current = stack.isEmpty() ? null : stack.pop();
     }

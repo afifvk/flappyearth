@@ -24,20 +24,24 @@ public class RendererManager {
     }
 
     public void render(List<Renderable> renderables) {
-        // Draw textured assets
         batch.begin();
         for (Renderable r : renderables) {
             RenderData d = r.getRenderData();
             if (d == null) continue;
             if (assetManager != null && assetManager.isLoaded(d.assetKey)) {
                 Texture tex = assetManager.getTexture(d.assetKey);
-                //flip vertically (check)
-                batch.draw(tex, d.x, d.y, d.width, d.height, 0, 0, tex.getWidth(), tex.getHeight(), false, d.isFlipped);
+                batch.draw(tex,
+                           d.x, d.y,
+                           d.width / 2f, d.height / 2f,
+                           d.width, d.height,
+                           1f, 1f,
+                           d.rotationDegrees,
+                           0, 0, tex.getWidth(), tex.getHeight(),
+                           false, d.isFlipped);
             }
         }
         batch.end();
 
-        // Draw colored rectangles 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         for (Renderable r : renderables) {
             RenderData d = r.getRenderData();
@@ -56,8 +60,14 @@ public class RendererManager {
         if (assetManager != null && assetManager.isLoaded(d.assetKey)) {
             Texture tex = assetManager.getTexture(d.assetKey);
             batch.begin();
-            // flip vertically
-            batch.draw(tex, d.x, d.y, d.width, d.height, 0, 0, tex.getWidth(), tex.getHeight(), false, d.isFlipped);
+            batch.draw(tex,
+                       d.x, d.y,
+                       d.width / 2f, d.height / 2f,
+                       d.width, d.height,
+                       1f, 1f,
+                       d.rotationDegrees,
+                       0, 0, tex.getWidth(), tex.getHeight(),
+                       false, d.isFlipped);
             batch.end();
         } else {
             shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);

@@ -47,41 +47,35 @@ public class CollisionStep implements StepManager {
         Player player = (Player) entityManager.getFirstByTag(Tags.PLAYER);
         if (player == null) return;
 
-        // Pipe collisions - lose a heart
         if (!state.isInvincible() && !activeEffects.isShieldActive()) {
             List<Obstacle> obstacles = entityManager.getByType(Obstacle.class);
+            float playerCenterX = player.getBounds().x + (player.getBounds().width / 2f);
+            float playerCenterY = player.getBounds().y + (player.getBounds().height / 2f);
             for (Obstacle obs : obstacles) {
-                if (collisionManager.overlaps(player, obs)) {
+                // Pipe hits use the bird center to keep collisions forgiving.
+                if (collisionManager.containsPoint(obs, playerCenterX, playerCenterY)) {
                     state.loseHeart();
                     state.setInvincible(INVINCIBILITY_DURATION);
                     eventManager.publish(GameEvents.BAD_HIT,
                             new BadHitEvent(obs.getObstacleType().name(), obs.getId()));
                     if (state.isDead()) {
-                        state.setAlive(false);
-                        state.setGameOverPending(true);
-                        state.setRequestedScene(GameState.SceneRequest.GAME_OVER);
+                        state.startDeathSequence(1.25f);
                     }
                     return;
                 }
             }
         }
 
-        // Collectible collisions
         List<Collectible> collectibles = entityManager.getByType(Collectible.class);
         for (Collectible col : collectibles) {
-            if (collisionManager.overlaps(player, col)) {
+            // Collectibles still use full overlap so grazing them counts.
+            if (collisionManager.overlapsExact(player, col)) {
                 if (col.getTag().equals(Tags.COLLECTIBLE_GOOD)) {
                     eventManager.publish(GameEvents.GOOD_COLLECTED,
                             new GoodCollectedEvent(col.getCollectibleType().name(), col.getId()));
                 } else if (col.getTag().equals(Tags.COLLECTIBLE_BAD)) {
-                    state.loseHeart();
-                    eventManager.publish(GameEvents.BAD_HIT,
-                            new BadHitEvent(col.getCollectibleType().name(), col.getId()));
-                    if (state.isDead()) {
-                        state.setAlive(false);
-                        state.setGameOverPending(true);
-                        state.setRequestedScene(GameState.SceneRequest.GAME_OVER);
-                    }
+                    entityManager.queueRemove(col);
+                    return;
                 }
                 entityManager.queueRemove(col);
             }

@@ -17,10 +17,8 @@ public class EffectStep implements StepManager {
 
     @Override
     public void execute(float delta) {
-        // Update active effect timers
         activeEffects.update(delta);
 
-        // Slow-motion effect modifies game speed
         if (activeEffects.isSlowTimeActive()) {
             timeManager.setSlowFactor(0.4f);
         } else {

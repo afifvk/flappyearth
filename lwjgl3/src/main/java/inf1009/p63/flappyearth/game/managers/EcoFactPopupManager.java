@@ -17,12 +17,15 @@ public class EcoFactPopupManager {
     private final BitmapFont   font = new BitmapFont();
     private final GlyphLayout  layout = new GlyphLayout();
     private final Map<String, String> facts = new HashMap<>();
+    private final EventManager eventManager;
+    private final EventManager.EventListener factRequestedListener;
 
     private String  currentFact   = null;
     private float   popupTimer    = 0f;
 
     public EcoFactPopupManager(EventManager eventManager) {
-        // Initialize environmental facts
+        this.eventManager = eventManager;
+
         facts.put("industrial_pollution",   "Factories emit 30% of global CO2. Support clean energy!");
         facts.put("ocean_plastic",          "8M tonnes of plastic enter oceans every year. Reduce, reuse, recycle!");
         facts.put("oil_pollution",          "A single litre of oil can contaminate 1M litres of drinking water.");
@@ -32,13 +35,13 @@ public class EcoFactPopupManager {
         facts.put("deforestation_facts",    "1 tree absorbs ~22 kg of CO2 per year. Plant more trees!");
         facts.put("single_use_plastic_facts","Single-use plastics take 400+ years to decompose.");
 
-        // Listen for fact requests and display them
-        eventManager.subscribe(GameEvents.FACT_REQUESTED, data -> {
+        factRequestedListener = data -> {
             if (!(data instanceof FunFactRequestedEvent)) return;
             String topic = ((FunFactRequestedEvent) data).topic;
             String fact  = facts.getOrDefault(topic, "Every small action for the planet counts!");
             showFact(fact);
-        });
+        };
+        eventManager.subscribe(GameEvents.FACT_REQUESTED, factRequestedListener);
     }
 
     private void showFact(String fact) {
@@ -61,6 +64,7 @@ public class EcoFactPopupManager {
     }
 
     public void dispose() {
+        eventManager.unsubscribe(GameEvents.FACT_REQUESTED, factRequestedListener);
         if (font != null) font.dispose();
     }
 }

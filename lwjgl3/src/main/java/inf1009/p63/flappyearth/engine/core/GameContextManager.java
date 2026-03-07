@@ -15,7 +15,7 @@ public class GameContextManager {
     private InputOutputManager inputOutputManager;
     private MovementManager movementManager;
     private CollisionManager collisionManager;
-    private SoundManager soundManager;
+    private SoundManager soundManager;  
     private EventManager eventManager;
     private TimeManager timeManager;
     private RandomManager randomManager;
@@ -32,7 +32,6 @@ public class GameContextManager {
     }
 
     public void dispose() {
-        // Clean up all resources
         if (assetManager       != null) assetManager.dispose();
         if (soundManager       != null) soundManager.dispose();
         if (eventManager       != null) eventManager.clearAll();

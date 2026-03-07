@@ -10,11 +10,14 @@ import inf1009.p63.flappyearth.engine.core.GameContextManager;
 import inf1009.p63.flappyearth.engine.core.Scene;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
 import inf1009.p63.flappyearth.game.input.GameInputAction;
+import inf1009.p63.flappyearth.game.state.GameSession;
 
 public class MenuScene extends Scene {
 
     private final SceneManager      sceneManager;
     private final GameContextManager context;
+    private final GameSession gameSession;
+    private final StagePlan stagePlan;
 
     private final SpriteBatch batch;
     private final BitmapFont  titleFont;
@@ -22,11 +25,15 @@ public class MenuScene extends Scene {
     private final GlyphLayout layout;
     private final OrthographicCamera camera;
 
-    public MenuScene(SceneManager sceneManager, GameContextManager context) {
+    public MenuScene(SceneManager sceneManager,
+                     GameContextManager context,
+                     GameSession gameSession,
+                     StagePlan stagePlan) {
         this.sceneManager = sceneManager;
         this.context      = context;
-        
-        // Create resources once in constructor (scene is reused)
+        this.gameSession  = gameSession;
+        this.stagePlan    = stagePlan;
+
         this.batch     = new SpriteBatch();
         this.titleFont = new BitmapFont();
         this.subFont   = new BitmapFont();
@@ -37,15 +44,13 @@ public class MenuScene extends Scene {
     }
 
     @Override
-    public void onEnter() {
-        // Scene is reused, resources already created in constructor
-    }
+    public void onEnter() {}
 
     @Override
     public void update(float delta) {
-        // Start game on player input - use type-safe scene switching
         if (context.getInputOutputManager().isActionJustPressed(GameInputAction.FLAP.id())) {
-            sceneManager.switchTo(GameSceneId.GAME.id());
+            gameSession.resetForNewRun();
+            sceneManager.switchTo(stagePlan.getInitialStageId());
         }
     }
 
@@ -54,7 +59,6 @@ public class MenuScene extends Scene {
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
 
-        // Setup camera for proper rendering at any resolution
         camera.setToOrtho(false, screenW, screenH);
         batch.setProjectionMatrix(camera.combined);
 
@@ -68,12 +72,12 @@ public class MenuScene extends Scene {
                 (screenW - layout.width) / 2f,
                 screenH * 0.75f);
 
-        layout.setText(subFont, "Tap or SPACE to Play");
+        layout.setText(subFont, "Press SPACE or tap to deploy");
         subFont.draw(batch, layout,
                 (screenW - layout.width) / 2f,
                 screenH * 0.55f);
 
-        layout.setText(subFont, "Fly through a world worth saving!");
+        layout.setText(subFont, "Recover the skies. Rebuild the world.");
         subFont.draw(batch, layout,
                 (screenW - layout.width) / 2f,
                 screenH * 0.48f);

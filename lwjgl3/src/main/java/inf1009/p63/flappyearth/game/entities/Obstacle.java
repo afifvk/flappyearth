@@ -11,20 +11,17 @@ public abstract class Obstacle extends GameEntity {
     private final ObstacleType obstacleType;
     private final String        factTopic;
     private boolean             passed = false;
-    private boolean             isFlipped = false;  // For top pipes
+    private boolean             isFlipped = false;
 
     public Obstacle(float x, float y, float width, float height,
                        String assetKey, ObstacleType type, String factTopic) {
         super(x, y, width, height, assetKey, Tags.HAZARD);
         this.obstacleType = type;
-        // Environmental fact associated with this obstacle
         this.factTopic    = factTopic;
     }
 
     @Override
-    public void update(float delta) {
-        // Base obstacle doesn't animate
-    }
+    public void update(float delta) {}
 
     public ObstacleType getObstacleType() { return obstacleType; }
     public String       getFactTopic()    { return factTopic; }

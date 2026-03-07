@@ -15,14 +15,12 @@ public class PlayerManager {
                          GameConfig config) {
         this.entityManager = entityManager;
 
-        // Listen for flap input and make player jump
         eventManager.subscribe(GameEvents.FLAP_REQUESTED, data -> {
             if (player != null) player.flap();
         });
     }
 
     public void spawnPlayer(float startX, float startY, GameConfig config) {
-        // This calls the original Player constructor with 5 arguments
         player = new Player(startX, startY, config.playerSpeed,
                             config.gravity, config.jumpImpulse);
         entityManager.queueAdd(player);

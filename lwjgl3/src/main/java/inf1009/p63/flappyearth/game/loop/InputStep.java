@@ -23,8 +23,8 @@ public class InputStep implements StepManager {
     @Override
     public void execute(float delta) {
         if (!state.isAlive()) return;
+        if (!state.isControlsEnabled()) return;
 
-        // Publish flap event when player presses button
         if (input.isActionJustPressed(GameInputAction.FLAP.id())) {
             eventManager.publish(GameEvents.FLAP_REQUESTED, null);
         }

@@ -4,7 +4,7 @@ import com.badlogic.gdx.math.Rectangle;
 
 public abstract class Entity {
     private final Rectangle bounds;
-    private String tag; // Generic tag for classification/filtering
+    private String tag;
 
     public Entity(float x, float y, float width, float height) {
         this(x, y, width, height, null);

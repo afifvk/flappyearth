@@ -13,7 +13,6 @@ public class GameLoop {
         steps.add(step);
     }
 
-    // Execute all game steps in order
     public void update(float delta) {
         for (StepManager step : steps) {
             step.execute(delta);

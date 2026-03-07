@@ -18,11 +18,9 @@ public class CollectibleFactory {
 
     public void spawnRandom(EntityManager entityManager, RandomManager random,
                             float x, float y) {
-        // Queue random collectible to spawn
         entityManager.queueAdd(createRandom(random, x, y));
     }
 
-    // Spawn random good collectible
     public void spawnGood(EntityManager entityManager, RandomManager random,
                           float x, float y) {
         int pick = random.range(0, 3);
@@ -36,7 +34,6 @@ public class CollectibleFactory {
         entityManager.queueAdd(good);
     }
 
-    // Spawn random bad collectible
     public void spawnBad(EntityManager entityManager, RandomManager random,
                          float x, float y) {
         int pick = random.range(0, 3);
@@ -50,7 +47,6 @@ public class CollectibleFactory {
         entityManager.queueAdd(bad);
     }
 
-    // Pick random collectible type
     private Collectible createRandom(RandomManager random, float x, float y) {
         int pick = random.range(0, 7);
         switch (pick) {

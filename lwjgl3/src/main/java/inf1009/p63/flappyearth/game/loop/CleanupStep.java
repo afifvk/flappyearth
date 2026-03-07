@@ -24,7 +24,6 @@ public class CleanupStep implements StepManager {
         Player player = (Player) entityManager.getFirstByTag(Tags.PLAYER);
         if (player == null) return;
 
-        // Remove entities that left the screen
         float cullX = player.getBounds().x - Gdx.graphics.getWidth() - CLEANUP_MARGIN;
 
         List<Entity> all = entityManager.getAll();

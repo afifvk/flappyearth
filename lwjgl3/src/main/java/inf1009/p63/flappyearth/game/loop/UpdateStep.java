@@ -26,9 +26,7 @@ public class UpdateStep implements StepManager {
     public void execute(float delta) {
         if (!state.isAlive()) return;
 
-        // Scale delta time for slow-motion effects
         float scaledDelta = timeManager.scale(delta);
-        // Update all entities (gravity, animations, etc)
         List<Updatable> updatables = entityManager.getUpdatables();
         for (Updatable u : updatables) {
             u.update(scaledDelta);

@@ -6,7 +6,6 @@ public class ActiveEffects {
     private float slowTimeTimer = 0f;
 
     public void update(float delta) {
-        // Count down effect timers
         if (shieldTimer   > 0) shieldTimer   = Math.max(0, shieldTimer   - delta);
         if (slowTimeTimer > 0) slowTimeTimer = Math.max(0, slowTimeTimer - delta);
     }

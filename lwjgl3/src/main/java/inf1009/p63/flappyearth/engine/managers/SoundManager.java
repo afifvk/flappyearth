@@ -14,13 +14,11 @@ public class SoundManager {
     public SoundManager() {
     }
 
-    // Play various game sounds
     public void playFlap()        { if (flapSound        != null) flapSound.play(0.8f); }
     public void playCollectGood() { if (collectGoodSound != null) collectGoodSound.play(1f); }
     public void playHitBad()      { if (hitBadSound      != null) hitBadSound.play(1f); }
     public void playGameOver()    { if (gameOverSound    != null) gameOverSound.play(1f); }
 
-    // Background music control
     public void startMusic() {
         if (backgroundMusic != null) {
             backgroundMusic.setLooping(true);

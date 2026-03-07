@@ -21,10 +21,8 @@ public abstract class GameEntity extends Entity implements Updatable, Renderable
 
     public GameEntity(float x, float y, float width, float height, String assetKey, String tag) {
         super(x, y, width, height, tag);
-        // Auto-increment unique ID for tracking
         this.id       = ++idCounter;
         this.assetKey = assetKey;
-        // Default white color
         this.colorR   = 1f;
         this.colorG   = 1f;
         this.colorB   = 1f;

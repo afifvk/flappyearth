@@ -27,7 +27,6 @@ public class ObstacleFactory {
         entityManager.queueAdd(upperPipe);
     }
 
-    // Create pipe with flip flag for top pipes
     private Obstacle createRandom(float x, float y, float w, float h, boolean isTop) {
         return new Pipe(x, y, w, h, isTop);
     }

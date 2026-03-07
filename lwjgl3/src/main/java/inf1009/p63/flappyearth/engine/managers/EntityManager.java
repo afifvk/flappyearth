@@ -24,7 +24,6 @@ public class EntityManager {
     }
 
     public void flush() {
-        // Apply queued add/remove operations - deferred to end of frame
         entities.addAll(addQueue);
         addQueue.clear();
         entities.removeAll(removeQueue);
@@ -35,7 +34,6 @@ public class EntityManager {
         return entities;
     }
 
-    // Get entities implementing Updatable interface
     public List<Updatable> getUpdatables() {
         List<Updatable> result = new ArrayList<>();
         for (Entity e : entities) {
@@ -44,7 +42,6 @@ public class EntityManager {
         return result;
     }
 
-    // Get entities implementing Renderable interface
     public List<Renderable> getRenderables() {
         List<Renderable> result = new ArrayList<>();
         for (Entity e : entities) {
@@ -53,7 +50,6 @@ public class EntityManager {
         return result;
     }
 
-    // Get entities implementing iCollidable interface
     public List<Collidable> getCollidables() {
         List<Collidable> result = new ArrayList<>();
         for (Entity e : entities) {
@@ -62,7 +58,6 @@ public class EntityManager {
         return result;
     }
 
-    // Get entities implementing iMovable interface
     public List<Movable> getMovables() {
         List<Movable> result = new ArrayList<>();
         for (Entity e : entities) {
@@ -71,7 +66,6 @@ public class EntityManager {
         return result;
     }
 
-    // Get entities by exact class type
     @SuppressWarnings("unchecked")
     public <T extends Entity> List<T> getByType(Class<T> type) {
         List<T> result = new ArrayList<>();
@@ -81,7 +75,6 @@ public class EntityManager {
         return result;
     }
 
-    // Get first entity by exact class type
     @SuppressWarnings("unchecked")
     public <T extends Entity> T getFirstByType(Class<T> type) {
         for (Entity e : entities) {
@@ -90,7 +83,6 @@ public class EntityManager {
         return null;
     }
 
-    // Get entities by tag
     public List<Entity> getByTag(String tag) {
         List<Entity> result = new ArrayList<>();
         if (tag == null) return result;
@@ -100,7 +92,6 @@ public class EntityManager {
         return result;
     }
 
-    // Get first entity by tag
     public Entity getFirstByTag(String tag) {
         if (tag == null) return null;
         for (Entity e : entities) {

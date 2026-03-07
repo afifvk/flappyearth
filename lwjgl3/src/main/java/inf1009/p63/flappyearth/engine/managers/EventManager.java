@@ -14,18 +14,15 @@ public class EventManager {
 
     private final Map<String, List<EventListener>> listeners = new HashMap<>();
 
-    // Register listener for event type
     public void subscribe(String eventType, EventListener listener) {
         listeners.computeIfAbsent(eventType, k -> new ArrayList<>()).add(listener);
     }
 
-    // Unregister listener
     public void unsubscribe(String eventType, EventListener listener) {
         List<EventListener> list = listeners.get(eventType);
         if (list != null) list.remove(listener);
     }
 
-    // Send event to all listening subscribers
     public void publish(String eventType, Object data) {
         List<EventListener> list = listeners.get(eventType);
         if (list == null) return;

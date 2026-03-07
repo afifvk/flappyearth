@@ -10,6 +10,5 @@ public abstract class Scene {
     public abstract void render();
     public abstract void onExit();
 
-    // Subclasses override if they have resources to dispose
     public void disposeResources() {}
 }

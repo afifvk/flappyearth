@@ -12,7 +12,6 @@ public class SlowDownObstaclesEffect implements GameEffect {
 
     @Override
     public void apply(ActiveEffects effects) {
-        // Activate slow-motion for duration
         effects.activateSlowTime(duration);
     }
 }

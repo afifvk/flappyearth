@@ -11,7 +11,6 @@ public class EntityFactory {
 
     public EntityFactory(RandomManager random) {
         this.random             = random;
-        // Initialize specific factories
         this.obstacleFactory    = new ObstacleFactory();
         this.collectibleFactory = new CollectibleFactory();
     }

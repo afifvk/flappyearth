@@ -18,7 +18,6 @@ public class GameMaster extends ApplicationAdapter {
 
     @Override
     public void create() {
-        // Original setup logic
         sceneManager = new SceneManager();
         contextManager = new GameContextManager();
         contextManager.init();
@@ -29,7 +28,6 @@ public class GameMaster extends ApplicationAdapter {
 
     @Override
     public void render() {
-        // The sceneManager handles all rendering for the current scene
         float delta = Gdx.graphics.getDeltaTime();
         sceneManager.update(delta);
         sceneManager.render();

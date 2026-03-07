@@ -35,7 +35,6 @@ public class MovementStep implements StepManager {
 
         entityManager.flush();
 
-        // Scale time for effects like slow-motion
         float scaledDelta = timeManager.scale(delta);
         List<Movable> movables = entityManager.getMovables();
         movementManager.moveAll(movables, scaledDelta);
@@ -46,12 +45,9 @@ public class MovementStep implements StepManager {
             float playerY = player.getBounds().y;
             float playerH = player.getBounds().height;
 
-            // touching top is safe
             if (playerY + playerH > screenH) {
                 player.getBounds().y = screenH - playerH;
             }
-
-            
         }
     }
 }

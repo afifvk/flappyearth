@@ -8,22 +8,18 @@ public class AssetManager {
     private final com.badlogic.gdx.assets.AssetManager gdxAssets;
 
     public AssetManager() {
-        // Initialize GDX asset manager
         gdxAssets = new com.badlogic.gdx.assets.AssetManager(
                 new InternalFileHandleResolver());
     }
 
-    // Queue asset for loading
     public <T> void load(String path, Class<T> type) {
         gdxAssets.load(path, type);
     }
 
-    // Wait for all queued assets to finish loading
     public void finishLoading() {
         gdxAssets.finishLoading();
     }
 
-    // Update loading progress, return true when done
     public boolean update() {
         return gdxAssets.update();
     }

@@ -16,7 +16,6 @@ public class GameConfig {
                       float gravity, float jumpImpulse, float playerSpeed,
                       float obstacleSpawnInterval, float collectibleSpawnChance,
                       float gapSize) {
-        // Game difficulty and spawn parameters
         this.levelName              = levelName;
         this.gravity                = gravity;
         this.jumpImpulse            = jumpImpulse;
@@ -26,7 +25,6 @@ public class GameConfig {
         this.gapSize                = gapSize;
     }
 
-    // Default difficulty settings
     public static GameConfig defaultConfig() {
         return new GameConfig(
                 "Default", -562.5f, 330f, 156f, 3.6f, 0.4f, 180f);

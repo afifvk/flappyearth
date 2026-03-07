@@ -27,8 +27,7 @@ public class GameOverScene extends Scene {
         this.sceneManager = sceneManager;
         this.context      = context;
         this.finalScore   = 0;
-        
-        // Create resources once in constructor (scene is reused)
+
         this.batch       = new SpriteBatch();
         this.headingFont = new BitmapFont();
         this.bodyFont    = new BitmapFont();
@@ -38,17 +37,12 @@ public class GameOverScene extends Scene {
         this.bodyFont.getData().setScale(1.5f);
     }
 
-    /**
-     * Sets the final score to display. Call before transiting to this scene.
-     */
     public void setScore(int score) {
         this.finalScore = score;
     }
 
     @Override
-    public void onEnter() {
-        // Scene is reused, resources already created in constructor
-    }
+    public void onEnter() {}
 
     @Override
     public void update(float delta) {
@@ -62,7 +56,6 @@ public class GameOverScene extends Scene {
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
 
-        // Setup camera for proper rendering at any resolution
         camera.setToOrtho(false, screenW, screenH);
         batch.setProjectionMatrix(camera.combined);
 

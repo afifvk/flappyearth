@@ -19,7 +19,6 @@ public class Lwjgl3Launcher {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
         config.setForegroundFPS(60);
         config.setTitle("FlappyEarth");
-        // VSync and frame rate settings
         config.useVsync(true);
         config.setForegroundFPS(60);
         config.setWindowedMode(640, 480);

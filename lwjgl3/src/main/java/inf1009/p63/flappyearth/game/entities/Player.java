@@ -16,14 +16,22 @@ public class Player extends GameEntity implements Movable {
 
     private boolean passed = false;
 
-    // Animation
     private static final String[] BIRD_FRAMES = {
         "flappy00.png", "flappy01.png", "flappy02.png",
         "flappy03.png", "flappy04.png", "flappy05.png"
     };
-    private static final float FRAME_DURATION = 0.1f;  // 100ms per frame
+    private static final float FRAME_DURATION = 0.1f;
     private int currentFrame = 0;
     private float animationTimer = 0f;
+
+    private boolean deathFallActive = false;
+    private float rotationDegrees = 0f;
+    private float deathFallSpeedMultiplier = 1f;
+    private static final float DEATH_ROTATION_SPEED = 360f;
+    private static final float DEATH_FALL_SPEED = 361f;
+    private static final float MAX_UPWARD_TILT = 25f;
+    private static final float MAX_DOWNWARD_TILT = -55f;
+    private static final float TILT_VELOCITY_FACTOR = 0.12f;
 
     public Player(float x, float y, float velX, float gravity, float jumpImpulse) {
         super(x, y, 60, 45, BIRD_FRAMES[0], Tags.PLAYER);
@@ -35,10 +43,15 @@ public class Player extends GameEntity implements Movable {
 
     @Override
     public void update(float delta) {
-        // Apply gravity each frame
+        if (deathFallActive) {
+            rotationDegrees = Math.max(-90f, rotationDegrees - (DEATH_ROTATION_SPEED * delta));
+            return;
+        }
+
         velY += gravity * delta;
-        
-        // Update animation frame
+        rotationDegrees = Math.max(MAX_DOWNWARD_TILT,
+            Math.min(MAX_UPWARD_TILT, velY * TILT_VELOCITY_FACTOR));
+
         animationTimer += delta;
         if (animationTimer >= FRAME_DURATION) {
             animationTimer = 0f;
@@ -48,14 +61,19 @@ public class Player extends GameEntity implements Movable {
 
     @Override
     public RenderData getRenderData() {
-        // Return current animation frame
         Rectangle b = getBounds();
-        return new RenderData(BIRD_FRAMES[currentFrame], b.x, b.y, b.width, b.height);
+        return new RenderData(BIRD_FRAMES[currentFrame], b.x, b.y, b.width, b.height,
+                1f, 1f, 1f, false, rotationDegrees);
     }
 
     @Override
     public void movement(float delta) {
-        // Move based on velocity
+        if (deathFallActive) {
+            Rectangle b = getBounds();
+            b.y -= (DEATH_FALL_SPEED * deathFallSpeedMultiplier) * delta;
+            return;
+        }
+
         Rectangle b = getBounds();
         b.x += velX * delta;
         b.y += velY * delta;
@@ -70,9 +88,20 @@ public class Player extends GameEntity implements Movable {
     @Override public float getVelocityX() { return velX; }
     @Override public float getVelocityY() { return velY; }
 
-    // Jump by resetting vertical velocity
     public void flap() {
+        if (deathFallActive) return;
         velY = jumpImpulse;
+    }
+
+    public void startDeathFall(float speedMultiplier) {
+        deathFallActive = true;
+        deathFallSpeedMultiplier = speedMultiplier;
+        velX = 0f;
+        velY = 0f;
+    }
+
+    public boolean isDeathFallActive() {
+        return deathFallActive;
     }
 
     public boolean hasPassed()       { return passed; }

@@ -25,6 +25,14 @@ public class CollisionManager {
         return shrink(a.getBounds()).overlaps(shrink(b.getBounds()));
     }
 
+    public boolean overlapsExact(Collidable a, Collidable b) {
+        return a.getBounds().overlaps(b.getBounds());
+    }
+
+    public boolean containsPoint(Collidable collidable, float x, float y) {
+        return collidable.getBounds().contains(x, y);
+    }
+
     private Rectangle shrink(Rectangle r) {
         float newW = r.width  * HITBOX_SHRINK;
         float newH = r.height * HITBOX_SHRINK;

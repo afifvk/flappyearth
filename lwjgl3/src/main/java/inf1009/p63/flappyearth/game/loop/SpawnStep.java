@@ -16,6 +16,7 @@ public class SpawnStep implements StepManager {
     private static final float COLLECTIBLE_MARGIN = 20f;
     private static final int   MAX_GOOD           = 2;
     private static final int   MAX_BAD            = 2;
+    private static final float PIPE_SPAWN_LEAD    = 40f;
 
     private final EntityManager      entityManager;
     private final ObstacleFactory    obstacleFactory;
@@ -23,6 +24,8 @@ public class SpawnStep implements StepManager {
     private final RandomManager      random;
     private final GameState          state;
     private final GameConfig         config;
+    private float initialSpawnDelay;
+    private boolean firstSpawnPending;
 
     private float spawnTimer     = 0f;
     private float lastPipeSpawnX = Float.MIN_VALUE;
@@ -31,22 +34,22 @@ public class SpawnStep implements StepManager {
                      ObstacleFactory obstacleFactory,
                      CollectibleFactory collectibleFactory,
                      RandomManager random, GameState state,
-                     GameConfig config) {
+                     GameConfig config,
+                     float initialSpawnDelaySeconds) {
         this.entityManager      = entityManager;
         this.obstacleFactory    = obstacleFactory;
         this.collectibleFactory = collectibleFactory;
         this.random             = random;
         this.state              = state;
         this.config             = config;
+        this.initialSpawnDelay  = Math.max(0f, initialSpawnDelaySeconds);
+        this.firstSpawnPending  = true;
     }
 
     @Override
     public void execute(float delta) {
         if (!state.isAlive()) return;
-
-        spawnTimer += delta;
-        if (spawnTimer < config.obstacleSpawnInterval) return;
-        spawnTimer = 0f;
+        if (!state.isSpawningEnabled()) return;
 
         float screenH = Gdx.graphics.getHeight();
         float screenW = Gdx.graphics.getWidth();
@@ -54,8 +57,21 @@ public class SpawnStep implements StepManager {
         Player player = (Player) entityManager.getFirstByTag(Tags.PLAYER);
         if (player == null) return;
 
+        if (firstSpawnPending) {
+            if (initialSpawnDelay > 0f) {
+                initialSpawnDelay = Math.max(0f, initialSpawnDelay - delta);
+                return;
+            }
+            firstSpawnPending = false;
+        } else {
+            spawnTimer += delta;
+            if (spawnTimer < config.obstacleSpawnInterval) return;
+            spawnTimer = 0f;
+        }
+
         float playerX    = player.getBounds().x;
-        float pipeSpawnX = playerX + screenW + 80f;
+        float cameraRightEdgeX = playerX + (screenW * 0.75f);
+        float pipeSpawnX = cameraRightEdgeX + PIPE_SPAWN_LEAD;
 
         float minGapY    = config.gapSize / 2f + 50f;
         float maxGapY    = screenH - config.gapSize / 2f - 50f;
@@ -63,9 +79,7 @@ public class SpawnStep implements StepManager {
 
         obstacleFactory.spawnColumn(entityManager, pipeSpawnX, gapCentreY, config.gapSize, screenH);
 
-        // Spawn collectibles in open space BETWEEN last pipe and current pipe
         if (lastPipeSpawnX != Float.MIN_VALUE) {
-            float midX = lastPipeSpawnX + (pipeSpawnX - lastPipeSpawnX) / 2f;
             float minY = COLLECTIBLE_MARGIN + 50f;
             float maxY = screenH - COLLECTIBLE_MARGIN - 50f;
 
@@ -73,10 +87,12 @@ public class SpawnStep implements StepManager {
             int badCount  = entityManager.getByTag(Tags.COLLECTIBLE_BAD).size();
 
             if (goodCount < MAX_GOOD && random.chance(config.collectibleSpawnChance)) {
-                collectibleFactory.spawnGood(entityManager, random, midX, random.range(minY, maxY));
+                float spawnX = pipeSpawnX + random.range(100f, 220f);
+                collectibleFactory.spawnGood(entityManager, random, spawnX, random.range(minY, maxY));
             }
             if (badCount < MAX_BAD && random.chance(config.collectibleSpawnChance)) {
-                collectibleFactory.spawnBad(entityManager, random, midX, random.range(minY, maxY));
+                float spawnX = pipeSpawnX + random.range(100f, 220f);
+                collectibleFactory.spawnBad(entityManager, random, spawnX, random.range(minY, maxY));
             }
         }
 
