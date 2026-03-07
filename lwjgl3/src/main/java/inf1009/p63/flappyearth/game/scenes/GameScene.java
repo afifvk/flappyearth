@@ -13,6 +13,7 @@ import inf1009.p63.flappyearth.engine.managers.EntityManager;
 import inf1009.p63.flappyearth.engine.managers.RendererManager;
 import inf1009.p63.flappyearth.game.config.GameConfig;
 import inf1009.p63.flappyearth.game.effects.SmokeEffect;
+import inf1009.p63.flappyearth.game.events.GameEvents;
 import inf1009.p63.flappyearth.game.factories.EntityFactory;
 import inf1009.p63.flappyearth.game.loop.CleanupStep;
 import inf1009.p63.flappyearth.game.loop.CollisionStep;
@@ -30,6 +31,7 @@ import inf1009.p63.flappyearth.game.managers.PlayerManager;
 import inf1009.p63.flappyearth.game.managers.ScoreManager;
 import inf1009.p63.flappyearth.game.state.ActiveEffects;
 import inf1009.p63.flappyearth.game.state.GameState;
+import inf1009.p63.flappyearth.game.events.GameEvents;
 
 public class GameScene extends Scene {
 
@@ -82,6 +84,10 @@ public class GameScene extends Scene {
         smokeEffect.dispose();
         }
         smokeEffect = new SmokeEffect(0.1f);
+context.getEventManager().subscribe(GameEvents.BAD_HIT, data ->
+        smokeEffect.adjustVisibility(+0.15f));
+context.getEventManager().subscribe(GameEvents.GOOD_COLLECTED, data ->
+        smokeEffect.adjustVisibility(-0.1f));
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
 
@@ -96,7 +102,7 @@ public class GameScene extends Scene {
 
         playerManager      = new PlayerManager(entityManager,
                                                context.getEventManager(), config);
-        hudManager         = new HudManager(scoreManager, activeEffects);
+hudManager = new HudManager(activeEffects, gameState);
         factPopupManager   = new EcoFactPopupManager(context.getEventManager());
 
         entityFactory = new EntityFactory(context.getRandomManager());

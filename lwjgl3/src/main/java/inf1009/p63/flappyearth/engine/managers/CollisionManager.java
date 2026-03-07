@@ -7,24 +7,31 @@ import java.util.List;
 
 public class CollisionManager {
 
+    private static final float HITBOX_SHRINK = 0.6f;
+
     public Collidable checkFirst(Collidable a, List<? extends Collidable> others) {
-        // Get first collision hit
-        Rectangle boundsA = a.getBounds();
+        Rectangle boundsA = shrink(a.getBounds());
         for (Collidable other : others) {
-            if (boundsA.overlaps(other.getBounds())) {
-                return other;
-            }
+            if (boundsA.overlaps(shrink(other.getBounds()))) return other;
         }
         return null;
     }
 
     public boolean overlapsAny(Collidable a, List<? extends Collidable> others) {
-        // Check if any overlap exists
         return checkFirst(a, others) != null;
     }
 
-    // Rectangle-based collision test
     public boolean overlaps(Collidable a, Collidable b) {
-        return a.getBounds().overlaps(b.getBounds());
+        return shrink(a.getBounds()).overlaps(shrink(b.getBounds()));
+    }
+
+    private Rectangle shrink(Rectangle r) {
+        float newW = r.width  * HITBOX_SHRINK;
+        float newH = r.height * HITBOX_SHRINK;
+        return new Rectangle(
+            r.x + (r.width  - newW) / 2f,
+            r.y + (r.height - newH) / 2f,
+            newW, newH
+        );
     }
 }

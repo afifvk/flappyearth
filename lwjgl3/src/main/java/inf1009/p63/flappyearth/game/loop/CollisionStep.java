@@ -21,14 +21,16 @@ public class CollisionStep implements StepManager {
     private final EntityManager    entityManager;
     private final CollisionManager collisionManager;
     private final EventManager     eventManager;
-    private final GameState state;
+    private final GameState        state;
     private final ActiveEffects    activeEffects;
 
+    private static final float INVINCIBILITY_DURATION = 1.0f;
+
     public CollisionStep(EntityManager entityManager,
-                                CollisionManager collisionManager,
-                                EventManager eventManager,
-                                GameState state,
-                                ActiveEffects activeEffects) {
+                         CollisionManager collisionManager,
+                         EventManager eventManager,
+                         GameState state,
+                         ActiveEffects activeEffects) {
         this.entityManager    = entityManager;
         this.collisionManager = collisionManager;
         this.eventManager     = eventManager;
@@ -40,23 +42,31 @@ public class CollisionStep implements StepManager {
     public void execute(float delta) {
         if (!state.isAlive()) return;
 
+        state.tickInvincibility(delta);
+
         Player player = (Player) entityManager.getFirstByTag(Tags.PLAYER);
         if (player == null) return;
 
-        // Check collisions with obstacles
-        List<Obstacle> obstacles = entityManager.getByType(Obstacle.class);
-        for (Obstacle obs : obstacles) {
-            if (collisionManager.overlaps(player, obs)) {
-                // Shield blocks damage
-                if (!activeEffects.isShieldActive()) {
+        // Pipe collisions - lose a heart
+        if (!state.isInvincible() && !activeEffects.isShieldActive()) {
+            List<Obstacle> obstacles = entityManager.getByType(Obstacle.class);
+            for (Obstacle obs : obstacles) {
+                if (collisionManager.overlaps(player, obs)) {
+                    state.loseHeart();
+                    state.setInvincible(INVINCIBILITY_DURATION);
                     eventManager.publish(GameEvents.BAD_HIT,
                             new BadHitEvent(obs.getObstacleType().name(), obs.getId()));
+                    if (state.isDead()) {
+                        state.setAlive(false);
+                        state.setGameOverPending(true);
+                        state.setRequestedScene(GameState.SceneRequest.GAME_OVER);
+                    }
+                    return;
                 }
-                return;
             }
         }
 
-        // Check collisions with collectibles
+        // Collectible collisions
         List<Collectible> collectibles = entityManager.getByType(Collectible.class);
         for (Collectible col : collectibles) {
             if (collisionManager.overlaps(player, col)) {
@@ -64,7 +74,14 @@ public class CollisionStep implements StepManager {
                     eventManager.publish(GameEvents.GOOD_COLLECTED,
                             new GoodCollectedEvent(col.getCollectibleType().name(), col.getId()));
                 } else if (col.getTag().equals(Tags.COLLECTIBLE_BAD)) {
-                    // Bad collectibles are currently just consumed with no damage.
+                    state.loseHeart();
+                    eventManager.publish(GameEvents.BAD_HIT,
+                            new BadHitEvent(col.getCollectibleType().name(), col.getId()));
+                    if (state.isDead()) {
+                        state.setAlive(false);
+                        state.setGameOverPending(true);
+                        state.setRequestedScene(GameState.SceneRequest.GAME_OVER);
+                    }
                 }
                 entityManager.queueRemove(col);
             }
