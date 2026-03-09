@@ -46,15 +46,19 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("sound/bird_hit.mp3", Sound.class);
         contextManager.getAssetManager().load("sound/bird_die.mp3", Sound.class);
         contextManager.getAssetManager().load("sound/bird_point.mp3", Sound.class);
+        // jump/whoosh sound for flap
+        contextManager.getAssetManager().load("sound/bird_whoosh.mp3", Sound.class);
         contextManager.getAssetManager().finishLoading();
 
         // Wire sound assets into sound manager
         Sound hit = contextManager.getAssetManager().get("sound/bird_hit.mp3", Sound.class);
         Sound die = contextManager.getAssetManager().get("sound/bird_die.mp3", Sound.class);
         Sound point = contextManager.getAssetManager().get("sound/bird_point.mp3", Sound.class);
+        Sound whoosh = contextManager.getAssetManager().get("sound/bird_whoosh.mp3", Sound.class);
         contextManager.getSoundManager().setHitBadSound(hit);
         contextManager.getSoundManager().setGameOverSound(die);
         contextManager.getSoundManager().setPointSound(point);
+        contextManager.getSoundManager().setFlapSound(whoosh);
 
         sceneManager.registerScene(GameSceneId.MENU.id(), new MenuScene(sceneManager, contextManager, gameSession, stagePlan));
 

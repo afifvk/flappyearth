@@ -188,7 +188,7 @@ public class GameScene extends Scene {
 
         GameConfig config = GameConfig.defaultConfig();
 
-        playerManager = new PlayerManager(entityManager, context.getEventManager(), config);
+        playerManager = new PlayerManager(entityManager, context.getEventManager(), config, context.getSoundManager());
         hudRenderer = new HudRenderer(
                 activeEffects,
                 gameState,
