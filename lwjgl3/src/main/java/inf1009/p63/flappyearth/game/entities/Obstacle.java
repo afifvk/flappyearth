@@ -17,7 +17,6 @@ public abstract class Obstacle extends GameEntity {
     // Crash animation state
     private boolean crashActive = false;
     private float   crashTimer = 0f;
-    private float   crashRotationDegrees = 0f;
     private float   crashVelX = 0f;
     private float   crashVelY = 0f;
 
@@ -32,13 +31,11 @@ public abstract class Obstacle extends GameEntity {
     public void update(float delta) {
         if (!crashActive) return;
 
-        // Apply simple physics while crashing
-        crashVelY -= 800f * delta; // gravity downwards
+        // Apply simple physics while crashing: fall straight down (no spin)
+        crashVelY -= 800f * delta; // gravity accelerates downward velocity
         Rectangle b = getBounds();
-        b.x += crashVelX * delta;
-        b.y += crashVelY * delta;
-
-        crashRotationDegrees += 360f * delta;
+        b.x += crashVelX * delta; // crashVelX can be small or zero
+        b.y += crashVelY * delta; // negative vy falls down
 
         crashTimer = Math.max(0f, crashTimer - delta);
     }
@@ -47,12 +44,12 @@ public abstract class Obstacle extends GameEntity {
         if (crashActive) return;
         crashActive = true;
         crashTimer = duration;
-        this.crashVelX = initialVelX;
-        this.crashVelY = initialVelY;
+        // Force no spin: horizontal velocity optional, but keep vertical towards falling
+        this.crashVelX = 0f; // fall straight down by default
+        this.crashVelY = initialVelY < 0f ? initialVelY : -150f; // ensure downward
     }
 
     public boolean isCrashActive() { return crashActive; }
-    public float getCrashRotation() { return crashRotationDegrees; }
 
     public ObstacleType getObstacleType() { return obstacleType; }
     public String       getFactTopic()    { return factTopic; }
@@ -65,9 +62,10 @@ public abstract class Obstacle extends GameEntity {
     public inf1009.p63.flappyearth.engine.entities.RenderData getRenderData() {
         Rectangle b = getBounds();
         if (crashActive) {
+            // No spin during crash — render with default rotation (0f)
             return new inf1009.p63.flappyearth.engine.entities.RenderData(
-                    getAssetKey(), b.x, b.y, b.width, b.height,
-                    getColorR(), getColorG(), getColorB(), isFlipped(), crashRotationDegrees);
+                getAssetKey(), b.x, b.y, b.width, b.height,
+                getColorR(), getColorG(), getColorB(), isFlipped());
         }
         return super.getRenderData();
     }
