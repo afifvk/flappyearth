@@ -26,4 +26,19 @@ public class EntityFactory {
     public void spawnCollectible(EntityManager entityManager, float x, float y) {
         collectibleFactory.spawnRandom(entityManager, random, x, y);
     }
+
+    public void spawnDebrisForObstacle(EntityManager entityManager, inf1009.p63.flappyearth.game.entities.Obstacle obstacle) {
+        // create a few small debris pieces originating from obstacle bounds
+        float x = obstacle.getBounds().x + obstacle.getBounds().width / 2f;
+        float y = obstacle.getBounds().y + obstacle.getBounds().height / 2f;
+        int pieces = 4 + random.range(0,2);
+        for (int i = 0; i < pieces; i++) {
+            float w = 12f + random.range(0f, 8f);
+            float h = 8f + random.range(0f, 6f);
+            float vx = random.range(-200f, 200f);
+            float vy = random.range(100f, 350f);
+            float life = 0.9f + random.range(0f, 0.6f);
+            entityManager.queueAdd(new inf1009.p63.flappyearth.game.entities.Debris(x, y, w, h, vx, vy, life, entityManager));
+        }
+    }
 }

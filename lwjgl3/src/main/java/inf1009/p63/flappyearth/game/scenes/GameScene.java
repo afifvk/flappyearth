@@ -19,7 +19,9 @@ import inf1009.p63.flappyearth.game.controllers.DeathController;
 import inf1009.p63.flappyearth.game.controllers.EndingSceneController;
 import inf1009.p63.flappyearth.game.controllers.GameCameraController;
 import inf1009.p63.flappyearth.game.controllers.StageController;
+import inf1009.p63.flappyearth.game.entities.Obstacle;
 import inf1009.p63.flappyearth.game.entities.Player;
+import inf1009.p63.flappyearth.game.events.BadHitEvent;
 import inf1009.p63.flappyearth.game.events.GameEvents;
 import inf1009.p63.flappyearth.game.factories.EntityFactory;
 import inf1009.p63.flappyearth.game.loop.CollisionSystem;
@@ -115,11 +117,34 @@ public class GameScene extends Scene {
         context.getEventManager().subscribe(GameEvents.GOOD_COLLECTED, goodCollectedProgressListener);
         badHitListener = data -> {
             context.getSoundManager().playHitBad();
+
+            // Bring the player forward and flicker
             Player p = playerManager != null ? playerManager.getPlayer() : null;
             if (p != null) {
                 entityManager.bringToFront(p);
                 p.flicker(0.6f);
             }
+
+            // Parse event and start pipe crash + spawn debris
+            if (data instanceof BadHitEvent) {
+                BadHitEvent ev = (BadHitEvent) data;
+                int hitId = ev.entityId;
+                Obstacle hitObs = null;
+                for (Obstacle o : entityManager.getByType(Obstacle.class)) {
+                    if (o.getId() == hitId) { hitObs = o; break; }
+                }
+                if (hitObs != null) {
+                    // start obstacle crash with some random velocity
+                    float vX = context.getRandomManager().range(-120f, 120f);
+                    float vY = context.getRandomManager().range(150f, 300f);
+                    hitObs.startCrash(vX, vY, 1.2f);
+                    // spawn debris pieces via factory
+                    if (entityFactory != null) {
+                        entityFactory.spawnDebrisForObstacle(entityManager, hitObs);
+                    }
+                }
+            }
+
             activeEffects.activateScreenShake(0.35f, 12f);
             if (gameSession.getGameState().isDead()) {
                 context.getSoundManager().playGameOver();
