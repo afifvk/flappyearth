@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import inf1009.p63.flappyearth.engine.core.GameContextManager;
 import inf1009.p63.flappyearth.engine.core.Scene;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
@@ -14,6 +15,10 @@ import inf1009.p63.flappyearth.engine.managers.EventManager;
 import inf1009.p63.flappyearth.engine.managers.RendererManager;
 import inf1009.p63.flappyearth.game.config.GameConfig;
 import inf1009.p63.flappyearth.game.config.Tags;
+import inf1009.p63.flappyearth.game.controllers.DeathController;
+import inf1009.p63.flappyearth.game.controllers.EndingSceneController;
+import inf1009.p63.flappyearth.game.controllers.GameCameraController;
+import inf1009.p63.flappyearth.game.controllers.StageController;
 import inf1009.p63.flappyearth.game.entities.Player;
 import inf1009.p63.flappyearth.game.events.GameEvents;
 import inf1009.p63.flappyearth.game.factories.EntityFactory;
@@ -26,10 +31,6 @@ import inf1009.p63.flappyearth.game.loop.InputStep;
 import inf1009.p63.flappyearth.game.loop.MovementStep;
 import inf1009.p63.flappyearth.game.loop.SpawnSystem;
 import inf1009.p63.flappyearth.game.loop.UpdateStep;
-import inf1009.p63.flappyearth.game.controllers.DeathController;
-import inf1009.p63.flappyearth.game.controllers.EndingSceneController;
-import inf1009.p63.flappyearth.game.controllers.GameCameraController;
-import inf1009.p63.flappyearth.game.controllers.StageController;
 import inf1009.p63.flappyearth.game.managers.EcoFactPopupRenderer;
 import inf1009.p63.flappyearth.game.managers.HudRenderer;
 import inf1009.p63.flappyearth.game.managers.PlayerManager;
@@ -63,6 +64,9 @@ public class GameScene extends Scene {
     private EndingSceneController endingSceneController;
 
     private EventManager.EventListener goodCollectedProgressListener;
+    private EventManager.EventListener badHitListener;
+    private EventManager.EventListener obstaclePassedListener;
+    private ActiveEffects activeEffects;
 
     private final BitmapFont introFont;
     private final GlyphLayout introLayout;
@@ -109,6 +113,22 @@ public class GameScene extends Scene {
         goodCollectedProgressListener = data -> gameSession.getEnvironmentProgress().addGoodCollectible();
 
         context.getEventManager().subscribe(GameEvents.GOOD_COLLECTED, goodCollectedProgressListener);
+        badHitListener = data -> {
+            context.getSoundManager().playHitBad();
+            Player p = playerManager != null ? playerManager.getPlayer() : null;
+            if (p != null) {
+                entityManager.bringToFront(p);
+                p.flicker(0.6f);
+            }
+            activeEffects.activateScreenShake(0.35f, 12f);
+            if (gameSession.getGameState().isDead()) {
+                context.getSoundManager().playGameOver();
+            }
+        };
+        context.getEventManager().subscribe(GameEvents.BAD_HIT, badHitListener);
+        // Play point sound when obstacle is passed
+        obstaclePassedListener = data -> context.getSoundManager().playPoint();
+        context.getEventManager().subscribe(GameEvents.OBSTACLE_PASSED, obstaclePassedListener);
 
         showIntroText = stageConfig.getSceneId().equals(stagePlan.getInitialStageId());
         introTimer = showIntroText ? INTRO_DURATION_SECONDS : 0f;
@@ -139,7 +159,7 @@ public class GameScene extends Scene {
         stageOverlayTimer = showStageOverlay ? STAGE_OVERLAY_DURATION_SECONDS : 0f;
 
         GameState gameState = gameSession.getGameState();
-        ActiveEffects activeEffects = gameSession.getActiveEffects();
+        this.activeEffects = gameSession.getActiveEffects();
 
         GameConfig config = GameConfig.defaultConfig();
 
@@ -243,6 +263,17 @@ public class GameScene extends Scene {
         rendererManager.getBatch().setProjectionMatrix(cameraController.getCamera().combined);
         rendererManager.getShapeRenderer().setProjectionMatrix(cameraController.getCamera().combined);
 
+        // Apply screen shake if active
+        if (activeEffects != null && activeEffects.isScreenShaking()) {
+            float mag = activeEffects.getScreenShakeMagnitude();
+            float ox = context.getRandomManager().range(-mag, mag);
+            float oy = context.getRandomManager().range(-mag, mag);
+            cameraController.getCamera().position.add(ox, oy, 0f);
+            cameraController.getCamera().update();
+            rendererManager.getBatch().setProjectionMatrix(cameraController.getCamera().combined);
+            rendererManager.getShapeRenderer().setProjectionMatrix(cameraController.getCamera().combined);
+        }
+
         rendererManager.render(entityManager.getRenderables());
 
         SpriteBatch hudBatch = rendererManager.getBatch();
@@ -339,6 +370,12 @@ public class GameScene extends Scene {
     public void onExit() {
         if (goodCollectedProgressListener != null) {
             context.getEventManager().unsubscribe(GameEvents.GOOD_COLLECTED, goodCollectedProgressListener);
+        }
+        if (badHitListener != null) {
+            context.getEventManager().unsubscribe(GameEvents.BAD_HIT, badHitListener);
+        }
+        if (obstaclePassedListener != null) {
+            context.getEventManager().unsubscribe(GameEvents.OBSTACLE_PASSED, obstaclePassedListener);
         }
     }
 

@@ -33,6 +33,9 @@ public class Player extends GameEntity implements Movable {
     private static final float MAX_DOWNWARD_TILT = -55f;
     private static final float TILT_VELOCITY_FACTOR = 0.12f;
 
+    private float flickerTimer = 0f;
+    private static final float FLICKER_FREQUENCY = 20f; // flashes per second
+
     public Player(float x, float y, float velX, float gravity, float jumpImpulse) {
         super(x, y, 60, 45, BIRD_FRAMES[0], Tags.PLAYER);
         this.velX        = velX;
@@ -57,13 +60,24 @@ public class Player extends GameEntity implements Movable {
             animationTimer = 0f;
             currentFrame = (currentFrame + 1) % BIRD_FRAMES.length;
         }
+
+        if (flickerTimer > 0f) {
+            flickerTimer = Math.max(0f, flickerTimer - delta);
+        }
     }
 
     @Override
     public RenderData getRenderData() {
         Rectangle b = getBounds();
+        float r = 1f, g = 1f, bl = 1f;
+        if (flickerTimer > 0f) {
+            float phase = (float) Math.floor(flickerTimer * FLICKER_FREQUENCY);
+            if (((int) phase) % 2 == 0) {
+                r = g = bl = 0.25f;
+            }
+        }
         return new RenderData(BIRD_FRAMES[currentFrame], b.x, b.y, b.width, b.height,
-                1f, 1f, 1f, false, rotationDegrees);
+                r, g, bl, false, rotationDegrees);
     }
 
     @Override
@@ -98,6 +112,10 @@ public class Player extends GameEntity implements Movable {
         deathFallSpeedMultiplier = speedMultiplier;
         velX = 0f;
         velY = 0f;
+    }
+
+    public void flicker(float duration) {
+        flickerTimer = Math.max(flickerTimer, duration);
     }
 
     public boolean isDeathFallActive() {

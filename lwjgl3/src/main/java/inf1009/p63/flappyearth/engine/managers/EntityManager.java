@@ -1,13 +1,13 @@
 package inf1009.p63.flappyearth.engine.managers;
 
-import inf1009.p63.flappyearth.engine.interfaces.Renderable;
-import inf1009.p63.flappyearth.engine.interfaces.Collidable;
-import inf1009.p63.flappyearth.engine.interfaces.Movable;
-import inf1009.p63.flappyearth.engine.interfaces.Updatable;
-import inf1009.p63.flappyearth.engine.entities.Entity;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import inf1009.p63.flappyearth.engine.entities.Entity;
+import inf1009.p63.flappyearth.engine.interfaces.Collidable;
+import inf1009.p63.flappyearth.engine.interfaces.Movable;
+import inf1009.p63.flappyearth.engine.interfaces.Renderable;
+import inf1009.p63.flappyearth.engine.interfaces.Updatable;
 
 public class EntityManager {
 
@@ -108,5 +108,14 @@ public class EntityManager {
 
     public void dispose() {
         clear();
+    }
+
+    /** Move an entity to render last (front). Safe when entity is not present. */
+    public void bringToFront(Entity e) {
+        if (e == null) return;
+        // If in addQueue, prefer to leave it; try to operate on main list.
+        if (entities.remove(e)) {
+            entities.add(e);
+        }
     }
 }

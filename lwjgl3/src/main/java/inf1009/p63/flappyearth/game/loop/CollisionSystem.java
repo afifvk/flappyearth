@@ -64,6 +64,19 @@ public class CollisionSystem implements StepManager {
                     return;
                 }
             }
+
+            // Check for passing obstacles (score). Only count each obstacle once and
+            // only count the top pipe so pairs are only counted once.
+            for (Obstacle obs : obstacles) {
+                if (obs.isFlipped() && !obs.isPassed()) {
+                    // If player's left x has moved beyond the obstacle's right edge
+                    if (player.getX() > obs.getX() + obs.getWidth()) {
+                        obs.setPassed(true);
+                        eventManager.publish(GameEvents.OBSTACLE_PASSED,
+                                new inf1009.p63.flappyearth.game.events.ObstaclePassedEvent(obs.getId()));
+                    }
+                }
+            }
         }
 
         List<Collectible> collectibles = entityManager.getByType(Collectible.class);

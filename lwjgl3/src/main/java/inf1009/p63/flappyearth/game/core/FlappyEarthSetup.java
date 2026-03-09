@@ -1,6 +1,10 @@
 package inf1009.p63.flappyearth.game.core;
 
+import java.util.Arrays;
+
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
+
 import inf1009.p63.flappyearth.engine.core.GameContextManager;
 import inf1009.p63.flappyearth.engine.core.GameSetup;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
@@ -10,11 +14,9 @@ import inf1009.p63.flappyearth.game.scenes.GameOverScene;
 import inf1009.p63.flappyearth.game.scenes.GameScene;
 import inf1009.p63.flappyearth.game.scenes.GameSceneId;
 import inf1009.p63.flappyearth.game.scenes.MenuScene;
-import inf1009.p63.flappyearth.game.scenes.StagePlan;
 import inf1009.p63.flappyearth.game.scenes.StageConfig;
+import inf1009.p63.flappyearth.game.scenes.StagePlan;
 import inf1009.p63.flappyearth.game.state.GameSession;
-
-import java.util.Arrays;
 
 public class FlappyEarthSetup implements GameSetup {
 
@@ -41,7 +43,18 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("flappy03.png", Texture.class);
         contextManager.getAssetManager().load("flappy04.png", Texture.class);
         contextManager.getAssetManager().load("flappy05.png", Texture.class);
+        contextManager.getAssetManager().load("sound/bird_hit.mp3", Sound.class);
+        contextManager.getAssetManager().load("sound/bird_die.mp3", Sound.class);
+        contextManager.getAssetManager().load("sound/bird_point.mp3", Sound.class);
         contextManager.getAssetManager().finishLoading();
+
+        // Wire sound assets into sound manager
+        Sound hit = contextManager.getAssetManager().get("sound/bird_hit.mp3", Sound.class);
+        Sound die = contextManager.getAssetManager().get("sound/bird_die.mp3", Sound.class);
+        Sound point = contextManager.getAssetManager().get("sound/bird_point.mp3", Sound.class);
+        contextManager.getSoundManager().setHitBadSound(hit);
+        contextManager.getSoundManager().setGameOverSound(die);
+        contextManager.getSoundManager().setPointSound(point);
 
         sceneManager.registerScene(GameSceneId.MENU.id(), new MenuScene(sceneManager, contextManager, gameSession, stagePlan));
 

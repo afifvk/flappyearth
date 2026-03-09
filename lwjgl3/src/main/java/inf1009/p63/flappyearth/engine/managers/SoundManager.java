@@ -8,6 +8,7 @@ public class SoundManager {
     private Sound flapSound;
     private Sound collectGoodSound;
     private Sound hitBadSound;
+    private Sound pointSound;
     private Sound gameOverSound;
     private Music backgroundMusic;
 
@@ -17,6 +18,7 @@ public class SoundManager {
     public void playFlap()        { if (flapSound        != null) flapSound.play(0.8f); }
     public void playCollectGood() { if (collectGoodSound != null) collectGoodSound.play(1f); }
     public void playHitBad()      { if (hitBadSound      != null) hitBadSound.play(1f); }
+    public void playPoint()       { if (pointSound       != null) pointSound.play(1f); }
     public void playGameOver()    { if (gameOverSound    != null) gameOverSound.play(1f); }
 
     public void startMusic() {
@@ -32,6 +34,7 @@ public class SoundManager {
     public void setFlapSound(Sound sound)           { this.flapSound = sound; }
     public void setCollectGoodSound(Sound sound)    { this.collectGoodSound = sound; }
     public void setHitBadSound(Sound sound)         { this.hitBadSound = sound; }
+    public void setPointSound(Sound sound)          { this.pointSound = sound; }
     public void setGameOverSound(Sound sound)       { this.gameOverSound = sound; }
     public void setBackgroundMusic(Music music)     { this.backgroundMusic = music; }
 
