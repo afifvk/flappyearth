@@ -1,5 +1,6 @@
 # Gradle caches and build output
 .gradle/
+.gradle-home/
 build/
 core/build/
 lwjgl3/build/
