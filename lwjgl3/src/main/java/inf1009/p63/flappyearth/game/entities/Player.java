@@ -35,13 +35,6 @@ public class Player extends GameEntity implements Movable {
 
     private float flickerTimer = 0f;
     private static final float FLICKER_FREQUENCY = 20f; // flashes per second
-    private boolean heavyDebuffActive = false;
-    private float heavyDebuffTimer = 0f;
-    private static final float HEAVY_DEBUFF_DURATION = 4f;
-    private static final float HEAVY_FLAP_MULTIPLIER = 0.45f;
-    private boolean slipperyDebuffActive = false;
-    private float slipperyDebuffTimer = 0f;
-    private static final float SLIPPERY_DEBUFF_DURATION = 3f;
 
     public Player(float x, float y, float velX, float gravity, float jumpImpulse) {
         super(x, y, 60, 45, BIRD_FRAMES[0], Tags.PLAYER);
@@ -70,20 +63,6 @@ public class Player extends GameEntity implements Movable {
 
         if (flickerTimer > 0f) {
             flickerTimer = Math.max(0f, flickerTimer - delta);
-        }
-
-        if (heavyDebuffTimer > 0f) {
-            heavyDebuffTimer = Math.max(0f, heavyDebuffTimer - delta);
-            if (heavyDebuffTimer == 0f) {
-                heavyDebuffActive = false;
-            }
-        }
-
-        if (slipperyDebuffTimer > 0f) {
-            slipperyDebuffTimer = Math.max(0f, slipperyDebuffTimer - delta);
-            if (slipperyDebuffTimer == 0f) {
-                slipperyDebuffActive = false;
-            }
         }
     }
 
@@ -125,11 +104,7 @@ public class Player extends GameEntity implements Movable {
 
     public void flap() {
         if (deathFallActive) return;
-        float impulse = heavyDebuffActive ? jumpImpulse * HEAVY_FLAP_MULTIPLIER : jumpImpulse;
-        if (slipperyDebuffActive && Math.random() < 0.35d) {
-            impulse *= 0.55f;
-        }
-        velY = impulse;
+        velY = jumpImpulse;
     }
 
     public void startDeathFall(float speedMultiplier) {
@@ -141,16 +116,6 @@ public class Player extends GameEntity implements Movable {
 
     public void flicker(float duration) {
         flickerTimer = Math.max(flickerTimer, duration);
-    }
-
-    public void applyHeavyDebuff() {
-        heavyDebuffActive = true;
-        heavyDebuffTimer = HEAVY_DEBUFF_DURATION;
-    }
-
-    public void applySlipperyDebuff() {
-        slipperyDebuffActive = true;
-        slipperyDebuffTimer = SLIPPERY_DEBUFF_DURATION;
     }
 
     public boolean isDeathFallActive() {

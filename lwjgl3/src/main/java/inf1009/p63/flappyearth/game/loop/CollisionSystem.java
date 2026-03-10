@@ -8,7 +8,6 @@ import inf1009.p63.flappyearth.game.config.Tags;
 import inf1009.p63.flappyearth.game.entities.Collectible;
 import inf1009.p63.flappyearth.game.entities.Obstacle;
 import inf1009.p63.flappyearth.game.entities.Player;
-import inf1009.p63.flappyearth.game.events.BadCollectedEvent;
 import inf1009.p63.flappyearth.game.events.BadHitEvent;
 import inf1009.p63.flappyearth.game.events.GameEvents;
 import inf1009.p63.flappyearth.game.events.GoodCollectedEvent;
@@ -88,8 +87,6 @@ public class CollisionSystem implements StepManager {
                     eventManager.publish(GameEvents.GOOD_COLLECTED,
                             new GoodCollectedEvent(col.getCollectibleType().name(), col.getId()));
                 } else if (col.getTag().equals(Tags.COLLECTIBLE_BAD)) {
-                    eventManager.publish(GameEvents.BAD_COLLECTED,
-                            new BadCollectedEvent(col.getCollectibleType().name(), col.getId()));
                     entityManager.queueRemove(col);
                     return;
                 }
