@@ -37,6 +37,7 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("pipe.png", Texture.class);
         contextManager.getAssetManager().load("background.png", Texture.class);
         contextManager.getAssetManager().load("smoke.png", Texture.class);
+        contextManager.getAssetManager().load("smog_cloud.png", Texture.class);
         contextManager.getAssetManager().load("flappy00.png", Texture.class);
         contextManager.getAssetManager().load("flappy01.png", Texture.class);
         contextManager.getAssetManager().load("flappy02.png", Texture.class);
@@ -46,6 +47,13 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("sound/bird_hit.mp3", Sound.class);
         contextManager.getAssetManager().load("sound/bird_die.mp3", Sound.class);
         contextManager.getAssetManager().load("sound/bird_point.mp3", Sound.class);
+        contextManager.getAssetManager().load("plastic_waste.png", Texture.class);
+        contextManager.getAssetManager().load("oil_spill.png",Texture.class);
+        contextManager.getAssetManager().load("smog_factory.png",Texture.class);
+        contextManager.getAssetManager().load("recycling.png",Texture.class);
+        contextManager.getAssetManager().load("reusable_bottle.png",Texture.class);
+        contextManager.getAssetManager().load("solar_panel.png",Texture.class);
+        contextManager.getAssetManager().load("tree_sapling.png",Texture.class);
         // jump/whoosh sound for flap
         contextManager.getAssetManager().load("sound/bird_whoosh.mp3", Sound.class);
         contextManager.getAssetManager().finishLoading();

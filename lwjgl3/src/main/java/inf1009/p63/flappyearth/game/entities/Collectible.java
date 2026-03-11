@@ -8,7 +8,7 @@ public abstract class Collectible extends GameEntity {
         TREE_SAPLING,
         REUSABLE_BOTTLE,
         CAR_EXHAUST,
-        FACTORY_SMOKE,
+        SMOG,
         OIL_SPILL,
         PLASTIC_WASTE
     }

@@ -3,6 +3,7 @@ package inf1009.p63.flappyearth.game.scenes;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -21,6 +22,7 @@ import inf1009.p63.flappyearth.game.controllers.GameCameraController;
 import inf1009.p63.flappyearth.game.controllers.StageController;
 import inf1009.p63.flappyearth.game.entities.Obstacle;
 import inf1009.p63.flappyearth.game.entities.Player;
+import inf1009.p63.flappyearth.game.events.BadCollectedEvent;
 import inf1009.p63.flappyearth.game.events.BadHitEvent;
 import inf1009.p63.flappyearth.game.events.GameEvents;
 import inf1009.p63.flappyearth.game.factories.EntityFactory;
@@ -66,9 +68,17 @@ public class GameScene extends Scene {
     private EndingSceneController endingSceneController;
 
     private EventManager.EventListener goodCollectedProgressListener;
+    private EventManager.EventListener badCollectedListener;
     private EventManager.EventListener badHitListener;
     private EventManager.EventListener obstaclePassedListener;
     private ActiveEffects activeEffects;
+    private boolean smogActive;
+    private float smogTimer;
+    private static final float SMOG_DURATION = 3f;
+    private Texture smogTexture;
+    private String debuffMessage = "";
+    private float debuffMessageTimer = 0f;
+    private static final float DEBUFF_MESSAGE_DURATION = 2.5f;
 
     private final BitmapFont introFont;
     private final GlyphLayout introLayout;
@@ -113,8 +123,35 @@ public class GameScene extends Scene {
             entityManager.clear();
         }
         goodCollectedProgressListener = data -> gameSession.getEnvironmentProgress().addGoodCollectible();
+        badCollectedListener = data -> {
+            if (data instanceof BadCollectedEvent) {
+                BadCollectedEvent event = (BadCollectedEvent) data;
+                Player player = playerManager != null ? playerManager.getPlayer() : null;
+                switch (event.collectibleType) {
+                    case "SMOG":
+                        activateSmogEffect();
+                        showDebuffMessage("SMOG hit!");
+                        break;
+                    case "PLASTIC_WASTE":
+                        if (player != null) {
+                            player.applyHeavyDebuff();
+                        }
+                        showDebuffMessage("Plastic Waste hit! Heavy movement!");
+                        break;
+                    case "OIL_SPILL":
+                        if (player != null) {
+                            player.applySlipperyDebuff();
+                        }
+                        showDebuffMessage("Oil Spill hit! Slippery controls!");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
 
         context.getEventManager().subscribe(GameEvents.GOOD_COLLECTED, goodCollectedProgressListener);
+        context.getEventManager().subscribe(GameEvents.BAD_COLLECTED, badCollectedListener);
         badHitListener = data -> {
             context.getSoundManager().playHitBad();
 
@@ -200,6 +237,9 @@ public class GameScene extends Scene {
         smokeEffect = new SmokeEffect(
             context.getAssetManager(),
             stageConfig.getSmokeOverlayAlpha());
+        smogActive = false;
+        smogTimer = 0f;
+        smogTexture = context.getAssetManager().get("smog_cloud.png", Texture.class);
 
         entityFactory = new EntityFactory(context.getRandomManager());
         playerManager.spawnPlayer(80f, screenH / 2f, config);
@@ -237,6 +277,19 @@ public class GameScene extends Scene {
         }
         if (stageOverlayTimer > 0f) {
             stageOverlayTimer = Math.max(0f, stageOverlayTimer - delta);
+        }
+        if (smogActive) {
+            smogTimer -= delta;
+            if (smogTimer <= 0f) {
+                smogTimer = 0f;
+                smogActive = false;
+            }
+        }
+        if (debuffMessageTimer > 0f) {
+            debuffMessageTimer = Math.max(0f, debuffMessageTimer - delta);
+            if (debuffMessageTimer == 0f) {
+                debuffMessage = "";
+            }
         }
 
         GameState gameState = gameSession.getGameState();
@@ -307,8 +360,29 @@ public class GameScene extends Scene {
         hudRenderer.render(rendererManager.getShapeRenderer(), hudBatch, screenW, screenH);
 
         hudBatch.begin();
+        if (debuffMessageTimer > 0f && !debuffMessage.isEmpty()) {
+            introLayout.setText(introFont, debuffMessage);
+            float msgX = (screenW - introLayout.width) / 2f;
+            float msgY = screenH * 0.75f;
+            introFont.draw(hudBatch, introLayout, msgX, msgY);
+        }
         if (smokeEffect != null) {
             smokeEffect.render(hudBatch, screenW, screenH);
+        }
+        if (smogActive && smogTexture != null) {
+
+            float alpha = 0.9f; // stronger smog
+            hudBatch.setColor(1f, 1f, 1f, alpha);
+
+            // Very large smog clouds
+            hudBatch.draw(smogTexture, -100f, screenH * 0.65f, 900f, 550f);
+            hudBatch.draw(smogTexture, screenW * 0.25f, screenH * 0.45f, 800f, 500f);
+            hudBatch.draw(smogTexture, screenW * 0.60f, screenH * 0.60f, 850f, 520f);
+            hudBatch.draw(smogTexture, screenW * 0.10f, screenH * 0.20f, 850f, 520f);
+            hudBatch.draw(smogTexture, screenW * 0.55f, screenH * 0.15f, 900f, 550f);
+            hudBatch.draw(smogTexture, screenW * 0.40f, screenH * 0.75f, 850f, 520f);
+
+            hudBatch.setColor(1f, 1f, 1f, 1f);
         }
         factPopupRenderer.render(hudBatch, screenW, screenH);
 
@@ -396,6 +470,9 @@ public class GameScene extends Scene {
         if (goodCollectedProgressListener != null) {
             context.getEventManager().unsubscribe(GameEvents.GOOD_COLLECTED, goodCollectedProgressListener);
         }
+        if (badCollectedListener != null) {
+            context.getEventManager().unsubscribe(GameEvents.BAD_COLLECTED, badCollectedListener);
+        }
         if (badHitListener != null) {
             context.getEventManager().unsubscribe(GameEvents.BAD_HIT, badHitListener);
         }
@@ -422,5 +499,15 @@ public class GameScene extends Scene {
         if (introFont != null) {
             introFont.dispose();
         }
+    }
+
+    private void activateSmogEffect() {
+        smogActive = true;
+        smogTimer = SMOG_DURATION;
+    }
+
+    private void showDebuffMessage(String message) {
+        debuffMessage = message;
+        debuffMessageTimer = DEBUFF_MESSAGE_DURATION;
     }
 }

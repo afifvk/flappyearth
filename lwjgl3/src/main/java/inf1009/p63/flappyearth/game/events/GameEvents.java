@@ -8,6 +8,8 @@ public final class GameEvents {
 
     public static final String GOOD_COLLECTED     = "GOOD_COLLECTED";
 
+    public static final String BAD_COLLECTED      = "BAD_COLLECTED";
+
     public static final String BAD_HIT            = "BAD_HIT";
 
     public static final String OBSTACLE_PASSED    = "OBSTACLE_PASSED";

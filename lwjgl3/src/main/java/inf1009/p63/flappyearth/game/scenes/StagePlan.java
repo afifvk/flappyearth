@@ -8,7 +8,7 @@ import java.util.Map;
 
 public class StagePlan {
 
-    private static final int TARGET_PER_STAGE = 1;
+    private static final int[] CHECKPOINT_TARGETS = {1, 5, 15};
 
     private final List<StageConfig> stages;
     private final Map<String, Integer> indexBySceneId;
@@ -72,19 +72,21 @@ public class StagePlan {
     }
 
     public int getTargetForStage(String sceneId) {
-        int checkpointCount = Math.max(1, stages.size() - 1);
-        int stageNumber = Math.min(getStageIndex(sceneId) + 1, checkpointCount);
-        return stageNumber * TARGET_PER_STAGE;
+        int checkpointCount = Math.min(Math.max(1, stages.size() - 1), CHECKPOINT_TARGETS.length);
+        int checkpointIndex = Math.min(getStageIndex(sceneId), checkpointCount - 1);
+        return CHECKPOINT_TARGETS[checkpointIndex];
     }
 
     public int getFinalTargetGoodCollectibles() {
-        return Math.max(1, stages.size() - 1) * TARGET_PER_STAGE;
+        int checkpointCount = Math.min(Math.max(1, stages.size() - 1), CHECKPOINT_TARGETS.length);
+        return CHECKPOINT_TARGETS[checkpointCount - 1];
     }
 
     public List<Integer> getCheckpointTargets() {
         List<Integer> checkpointTargets = new ArrayList<>();
-        for (int i = 1; i < stages.size(); i++) {
-            checkpointTargets.add(i * TARGET_PER_STAGE);
+        int checkpointCount = Math.min(Math.max(1, stages.size() - 1), CHECKPOINT_TARGETS.length);
+        for (int i = 0; i < checkpointCount; i++) {
+            checkpointTargets.add(CHECKPOINT_TARGETS[i]);
         }
         return checkpointTargets;
     }
