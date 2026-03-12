@@ -91,7 +91,7 @@ public class GameScene extends Scene {
     private static final float FACTORY_SMOKE_ALPHA = 0.8f;
     private static final float TRASH_PILE_DURATION = 1.5f;
     private static final float TRASH_PILE_PULL_STRENGTH = 420f;
-    private static final int OIL_SPLOTCH_COUNT = 4;
+    private static final int OIL_SPLOTCH_COUNT = 7;
     private final float[] oilSplotchXNorm = new float[OIL_SPLOTCH_COUNT];
     private final float[] oilSplotchYNorm = new float[OIL_SPLOTCH_COUNT];
     private final float[] oilSplotchSizeNorm = new float[OIL_SPLOTCH_COUNT];
@@ -591,7 +591,7 @@ public class GameScene extends Scene {
         for (int i = 0; i < OIL_SPLOTCH_COUNT; i++) {
             oilSplotchXNorm[i] = context.getRandomManager().range(0.18f, 0.82f);
             oilSplotchYNorm[i] = context.getRandomManager().range(0.18f, 0.82f);
-            oilSplotchSizeNorm[i] = context.getRandomManager().range(0.10f, 0.16f);
+            oilSplotchSizeNorm[i] = context.getRandomManager().range(0.08f, 0.13f);
             oilSplotchRotation[i] = context.getRandomManager().range(0f, 360f);
         }
     }
