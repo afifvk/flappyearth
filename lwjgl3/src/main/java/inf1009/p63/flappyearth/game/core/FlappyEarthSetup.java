@@ -46,6 +46,7 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("flappy05.png", Texture.class);
         contextManager.getAssetManager().load("sound/bird_hit.mp3", Sound.class);
         contextManager.getAssetManager().load("sound/bird_die.mp3", Sound.class);
+        contextManager.getAssetManager().load("sound/game_over.mp3", Sound.class);
         contextManager.getAssetManager().load("sound/bird_point.mp3", Sound.class);
         contextManager.getAssetManager().load("plastic_waste.png", Texture.class);
         contextManager.getAssetManager().load("oil_spill.png", Texture.class);
