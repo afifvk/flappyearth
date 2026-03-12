@@ -162,11 +162,9 @@ public class GameScene extends Scene {
             Player p = playerManager != null ? playerManager.getPlayer() : null;
             if (p != null) {
                 entityManager.bringToFront(p);
-                // This is help to triggers visual shake in player
                 p.takeDamage(1); 
             }
 
-            // Helps to parse event and start pipe crash + spawn debris
             if (data instanceof BadHitEvent) {
                 BadHitEvent ev = (BadHitEvent) data;
                 int hitId = ev.entityId;
@@ -188,9 +186,6 @@ public class GameScene extends Scene {
             }
 
             activeEffects.activateScreenShake(0.35f, 12f);
-            if (gameSession.getGameState().isDead()) {
-                context.getSoundManager().playGameOver();
-            }
         };
         context.getEventManager().subscribe(GameEvents.BAD_HIT, badHitListener);
         obstaclePassedListener = data -> context.getSoundManager().playPoint();
@@ -243,11 +238,13 @@ public class GameScene extends Scene {
                 stageConfig.getSmokeOverlayAlpha());
         smogActive = false;
         smogTimer = 0f;
-
         context.getAssetManager().load("heart_full.png", Texture.class);
         context.getAssetManager().load("heart_empty.png", Texture.class);
+        context.getAssetManager().load("sound/game_over.mp3", com.badlogic.gdx.audio.Sound.class);
         context.getAssetManager().finishLoading();
 
+        context.getSoundManager().setGameOverSound(context.getAssetManager().get("sound/game_over.mp3", com.badlogic.gdx.audio.Sound.class));
+        
         smogTexture = context.getAssetManager().get("smog_cloud.png", Texture.class);
         heartFullTexture = context.getAssetManager().get("heart_full.png", Texture.class);
         heartEmptyTexture = context.getAssetManager().get("heart_empty.png", Texture.class);
