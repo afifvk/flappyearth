@@ -1,7 +1,7 @@
 package inf1009.p63.flappyearth.game.entities;
 
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 
 import inf1009.p63.flappyearth.engine.entities.RenderData;
 import inf1009.p63.flappyearth.engine.interfaces.Movable;
@@ -44,6 +44,11 @@ public class Player extends GameEntity implements Movable {
     private float slipperyDebuffTimer = 0f;
     private static final float SLIPPERY_DEBUFF_DURATION = 3f;
 
+    //Health
+    private int maxHealth = 3;
+    private int currentHealth = 3;
+    private float shakeTimer = 0f;
+
     public Player(float x, float y, float velX, float gravity, float jumpImpulse) {
         super(x, y, 60, 45, BIRD_FRAMES[0], Tags.PLAYER);
         this.velX        = velX;
@@ -83,6 +88,11 @@ public class Player extends GameEntity implements Movable {
             if (slipperyDebuffTimer == 0f) {
                 slipperyDebuffActive = false;
             }
+        }
+        
+        // Health shaker
+        if (shakeTimer > 0f) {
+            shakeTimer = Math.max(0f, shakeTimer - delta);
         }
     }
 
@@ -132,6 +142,31 @@ public class Player extends GameEntity implements Movable {
         }
         velY = appliedJumpImpulse;
     }
+
+    // Health method
+    public void takeDamage(int damage) {
+        if (deathFallActive || flickerTimer > 0f) return; // To Prevent double damage while invulnerable/dead
+        
+        currentHealth -= damage;
+        shakeTimer = 0.5f; // Shake time
+        flicker(1f);       // Flash the bird for 1 sec
+
+        if (currentHealth <= 0) {
+            currentHealth = 0;
+            startDeathFall(1f);
+        }
+    }
+
+    public void heal(int amount) {
+        if (!deathFallActive) {
+            currentHealth = Math.min(maxHealth, currentHealth + amount);
+        }
+    }
+
+    public int getCurrentHealth() { return currentHealth; }
+    public int getMaxHealth() { return maxHealth; }
+    public float getShakeTimer() { return shakeTimer; }
+
 
     public void startDeathFall(float speedMultiplier) {
         deathFallActive = true;
