@@ -572,15 +572,11 @@ public class GameScene extends Scene {
     private void renderOilBlotOverlay(float screenW, float screenH) {
         ShapeRenderer shapeRenderer = rendererManager.getShapeRenderer();
         float intensity = activeEffects.getOilBlotIntensity();
-        float alpha = 0.18f + (0.28f * intensity);
+        float alpha = 0.22f + (0.33f * intensity);
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(0.04f, 0.04f, 0.04f, alpha);
-        shapeRenderer.circle(screenW * 0.18f, screenH * 0.74f, screenW * 0.16f);
-        shapeRenderer.circle(screenW * 0.28f, screenH * 0.64f, screenW * 0.11f);
-        shapeRenderer.circle(screenW * 0.80f, screenH * 0.28f, screenW * 0.18f);
-        shapeRenderer.circle(screenW * 0.68f, screenH * 0.20f, screenW * 0.10f);
-        shapeRenderer.circle(screenW * 0.90f, screenH * 0.82f, screenW * 0.09f);
+        shapeRenderer.rect(0f, 0f, screenW, screenH);
         shapeRenderer.end();
     }
 }
