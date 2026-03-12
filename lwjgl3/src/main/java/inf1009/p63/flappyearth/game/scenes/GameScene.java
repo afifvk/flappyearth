@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -90,6 +91,13 @@ public class GameScene extends Scene {
     private static final float FACTORY_SMOKE_ALPHA = 0.8f;
     private static final float TRASH_PILE_DURATION = 1.5f;
     private static final float TRASH_PILE_PULL_STRENGTH = 420f;
+    private static final int OIL_SPLOTCH_COUNT = 4;
+    private final float[] oilSplotchXNorm = new float[OIL_SPLOTCH_COUNT];
+    private final float[] oilSplotchYNorm = new float[OIL_SPLOTCH_COUNT];
+    private final float[] oilSplotchSizeNorm = new float[OIL_SPLOTCH_COUNT];
+    private final float[] oilSplotchRotation = new float[OIL_SPLOTCH_COUNT];
+    private boolean oilSplotchPatternReady;
+    private float oilSplotchAnimTime;
 
     private final BitmapFont introFont;
     private final GlyphLayout introLayout;
@@ -135,6 +143,8 @@ public class GameScene extends Scene {
         if (entityManager != null) {
             entityManager.clear();
         }
+        oilSplotchPatternReady = false;
+        oilSplotchAnimTime = 0f;
         goodCollectedProgressListener = data -> gameSession.getEnvironmentProgress().addGoodCollectible();
         badCollectedListener = data -> {
             if (data instanceof BadCollectedEvent) {
@@ -395,7 +405,15 @@ public class GameScene extends Scene {
         hudRenderer.render(rendererManager.getShapeRenderer(), hudBatch, screenW, screenH);
 
         if (activeEffects != null && activeEffects.isOilBlotActive()) {
+            if (!oilSplotchPatternReady) {
+                generateOilSplotchPattern();
+                oilSplotchPatternReady = true;
+            }
+            oilSplotchAnimTime += Gdx.graphics.getDeltaTime();
             renderOilBlotOverlay(screenW, screenH);
+        } else {
+            oilSplotchPatternReady = false;
+            oilSplotchAnimTime = 0f;
         }
 
         float hudScale = screenH / 1080f;
@@ -569,18 +587,57 @@ public class GameScene extends Scene {
         debuffMessageTimer = DEBUFF_MESSAGE_DURATION;
     }
 
+    private void generateOilSplotchPattern() {
+        for (int i = 0; i < OIL_SPLOTCH_COUNT; i++) {
+            oilSplotchXNorm[i] = context.getRandomManager().range(0.18f, 0.82f);
+            oilSplotchYNorm[i] = context.getRandomManager().range(0.18f, 0.82f);
+            oilSplotchSizeNorm[i] = context.getRandomManager().range(0.10f, 0.16f);
+            oilSplotchRotation[i] = context.getRandomManager().range(0f, 360f);
+        }
+    }
+
     private void renderOilBlotOverlay(float screenW, float screenH) {
         ShapeRenderer shapeRenderer = rendererManager.getShapeRenderer();
         float intensity = activeEffects.getOilBlotIntensity();
-        float alpha = 0.22f + (0.33f * intensity);
-        float blotWidth = screenW * 0.60f;
-        float blotHeight = screenH * 0.60f;
-        float blotX = (screenW - blotWidth) * 0.5f;
-        float blotY = (screenH - blotHeight) * 0.5f;
+        float alpha = 0.18f + (0.26f * intensity);
+        float minScreenDim = Math.min(screenW, screenH);
+
+        float[] lobeDistance = {0.62f, 0.74f, 0.58f, 0.70f, 0.64f};
+        float[] lobeSize = {0.58f, 0.44f, 0.52f, 0.40f, 0.47f};
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(0.04f, 0.04f, 0.04f, alpha);
-        shapeRenderer.rect(blotX, blotY, blotWidth, blotHeight);
+        for (int i = 0; i < OIL_SPLOTCH_COUNT; i++) {
+            float centerX = oilSplotchXNorm[i] * screenW;
+            float centerY = oilSplotchYNorm[i] * screenH;
+            float baseRadius = oilSplotchSizeNorm[i] * minScreenDim;
+            float rotation = oilSplotchRotation[i];
+            float phase = oilSplotchAnimTime * 3.2f + (i * 0.9f);
+            float wobble = 1f + (0.06f * MathUtils.sin(phase));
+            float wobbleX = MathUtils.cos(phase * 0.8f) * baseRadius * 0.07f;
+            float wobbleY = MathUtils.sin(phase * 1.1f) * baseRadius * 0.05f;
+
+            centerX += wobbleX;
+            centerY += wobbleY;
+            baseRadius *= wobble;
+
+            shapeRenderer.circle(centerX, centerY, baseRadius);
+
+            for (int l = 0; l < lobeDistance.length; l++) {
+                float angle = rotation + (l * (360f / lobeDistance.length));
+                float offset = baseRadius * lobeDistance[l];
+                float lobeRadius = baseRadius * lobeSize[l];
+                float lx = centerX + MathUtils.cosDeg(angle) * offset;
+                float ly = centerY + MathUtils.sinDeg(angle) * offset;
+                shapeRenderer.circle(lx, ly, lobeRadius);
+            }
+
+            float dripX = centerX + MathUtils.cosDeg(rotation + 230f) * baseRadius * 0.55f;
+            float dripY = centerY + MathUtils.sinDeg(rotation + 230f) * baseRadius * 0.55f;
+            float dripDrop = (0.35f + 0.65f * ((MathUtils.sin(phase * 1.7f) + 1f) * 0.5f)) * baseRadius;
+            shapeRenderer.circle(dripX, dripY, baseRadius * 0.24f);
+            shapeRenderer.circle(dripX, dripY - dripDrop, baseRadius * 0.17f);
+        }
         shapeRenderer.end();
     }
 }
