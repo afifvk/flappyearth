@@ -26,10 +26,10 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getInputOutputManager().registerInputDevice(new TouchInputDevice());
 
         StagePlan stagePlan = new StagePlan(Arrays.asList(
-            new StageConfig(GameSceneId.STAGE_ONE.id(), "Stage 1: Impact Zone", "Collect 5 good items", 0.20f, 0.45f, 0.95f, 0.70f),
-            new StageConfig(GameSceneId.STAGE_TWO.id(), "Stage 2: Recovery Line", "Collect 5 good items", 0.98f, 0.94f, 0.62f, 0.35f),
-            new StageConfig(GameSceneId.STAGE_THREE.id(), "Stage 3: Turning Point", "Reach 15 to finish", 0.98f, 0.76f, 0.48f, 0f),
-            new StageConfig(GameSceneId.STAGE_FOUR.id(), "Stage 4: New Earth", "Peaceful skies", 0.46f, 0.72f, 0.50f, 0f)
+                new StageConfig(GameSceneId.STAGE_ONE.id(), "Stage 1: Impact Zone", "Collect 5 good items", 0.20f, 0.45f, 0.95f, 0.70f),
+                new StageConfig(GameSceneId.STAGE_TWO.id(), "Stage 2: Recovery Line", "Collect 5 good items", 0.98f, 0.94f, 0.62f, 0.35f),
+                new StageConfig(GameSceneId.STAGE_THREE.id(), "Stage 3: Turning Point", "Reach 15 to finish", 0.98f, 0.76f, 0.48f, 0f),
+                new StageConfig(GameSceneId.STAGE_FOUR.id(), "Stage 4: New Earth", "Peaceful skies", 0.46f, 0.72f, 0.50f, 0f)
         ));
 
         GameSession gameSession = new GameSession(stagePlan.getFinalTargetGoodCollectibles());
@@ -48,12 +48,15 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("sound/bird_die.mp3", Sound.class);
         contextManager.getAssetManager().load("sound/bird_point.mp3", Sound.class);
         contextManager.getAssetManager().load("plastic_waste.png", Texture.class);
-        contextManager.getAssetManager().load("oil_spill.png",Texture.class);
-        contextManager.getAssetManager().load("smog_factory.png",Texture.class);
-        contextManager.getAssetManager().load("recycling.png",Texture.class);
-        contextManager.getAssetManager().load("reusable_bottle.png",Texture.class);
-        contextManager.getAssetManager().load("solar_panel.png",Texture.class);
-        contextManager.getAssetManager().load("tree_sapling.png",Texture.class);
+        contextManager.getAssetManager().load("oil_spill.png", Texture.class);
+        contextManager.getAssetManager().load("smog_factory.png", Texture.class);
+        contextManager.getAssetManager().load("recycling.png", Texture.class);
+        contextManager.getAssetManager().load("reusable_bottle.png", Texture.class);
+        contextManager.getAssetManager().load("solar_panel.png", Texture.class);
+        contextManager.getAssetManager().load("tree_sapling.png", Texture.class);
+        //New Hearts
+        contextManager.getAssetManager().load("heart_full.png", Texture.class);
+        contextManager.getAssetManager().load("heart_empty.png", Texture.class);
         // jump/whoosh sound for flap
         contextManager.getAssetManager().load("sound/bird_whoosh.mp3", Sound.class);
         contextManager.getAssetManager().finishLoading();
