@@ -3,6 +3,8 @@ package inf1009.p63.flappyearth.lwjgl3;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import inf1009.p63.flappyearth.engine.core.GameMaster;
+import inf1009.p63.flappyearth.game.config.DisplaySettings;
+import inf1009.p63.flappyearth.game.config.DisplaySettingsFactory;
 import inf1009.p63.flappyearth.game.core.FlappyEarthSetup;
 
 public class Lwjgl3Launcher {
@@ -10,19 +12,21 @@ public class Lwjgl3Launcher {
         if (StartupHelper.startNewJvmIfRequired()) return;
         createApplication();
     }
-
     private static void createApplication() {
-        new Lwjgl3Application(new GameMaster(new FlappyEarthSetup()), getDefaultConfiguration());
+        DisplaySettings settings = DisplaySettingsFactory.createFromRuntime();
+        new Lwjgl3Application(new GameMaster(new FlappyEarthSetup(settings)), getDefaultConfiguration(settings));
     }
 
-    private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
+    private static Lwjgl3ApplicationConfiguration getDefaultConfiguration(DisplaySettings settings) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-        config.setForegroundFPS(60);
-        config.setTitle("FlappyEarth");
-        config.useVsync(true);
-        config.setForegroundFPS(60);
-        config.setWindowedMode(640, 480);
-        config.setMaximized(true);
+        config.setForegroundFPS(settings.getTargetFps());
+        config.setTitle(settings.getTitle());
+        config.useVsync(settings.isVSync());
+        config.setResizable(settings.isResizable());
+        config.setWindowedMode(settings.getLaunchWidth(), settings.getLaunchHeight());
+        if (settings.isStartMaximized()) {
+            config.setMaximized(true);
+        }
         return config;
     }
 }

@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.viewport.StretchViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 
 import inf1009.p63.flappyearth.engine.core.GameContextManager;
 import inf1009.p63.flappyearth.engine.core.Scene;
@@ -15,6 +17,7 @@ import inf1009.p63.flappyearth.engine.managers.EntityManager;
 import inf1009.p63.flappyearth.engine.managers.EventManager;
 import inf1009.p63.flappyearth.engine.managers.RendererManager;
 import inf1009.p63.flappyearth.game.config.GameConfig;
+import inf1009.p63.flappyearth.game.config.GameplayDimensions;
 import inf1009.p63.flappyearth.game.config.Tags;
 import inf1009.p63.flappyearth.game.controllers.DeathController;
 import inf1009.p63.flappyearth.game.controllers.EndingSceneController;
@@ -50,6 +53,7 @@ public class GameScene extends Scene {
     private final GameSession gameSession;
     private final StagePlan stagePlan;
     private final StageConfig stageConfig;
+    private final GameplayDimensions dimensions;
 
     private EntityManager entityManager;
     private RendererManager rendererManager;
@@ -62,6 +66,7 @@ public class GameScene extends Scene {
     private EntityFactory entityFactory;
     private GameLoop gameLoopManager;
     private OrthographicCamera worldCamera;
+    private Viewport worldViewport;
     private StageController stageController;
     private DeathController deathController;
     private GameCameraController cameraController;
@@ -94,15 +99,17 @@ public class GameScene extends Scene {
     private boolean showStageOverlay;
 
     public GameScene(SceneManager sceneManager,
-            GameContextManager context,
-            GameSession gameSession,
-            StagePlan stagePlan,
-            StageConfig stageConfig) {
+                     GameContextManager context,
+                     GameSession gameSession,
+                     StagePlan stagePlan,
+                     StageConfig stageConfig,
+                     GameplayDimensions dimensions) {
         this.sceneManager = sceneManager;
         this.context = context;
         this.gameSession = gameSession;
         this.stagePlan = stagePlan;
         this.stageConfig = stageConfig;
+        this.dimensions = dimensions;
 
         this.entityManager = new EntityManager();
         this.rendererManager = new RendererManager();
@@ -184,7 +191,7 @@ public class GameScene extends Scene {
                     }
                 }
             }
-
+  
             activeEffects.activateScreenShake(0.35f, 12f);
         };
         context.getEventManager().subscribe(GameEvents.BAD_HIT, badHitListener);
@@ -194,11 +201,9 @@ public class GameScene extends Scene {
         showIntroText = stageConfig.getSceneId().equals(stagePlan.getInitialStageId());
         introTimer = showIntroText ? INTRO_DURATION_SECONDS : 0f;
 
-        float screenW = Gdx.graphics.getWidth();
-        float screenH = Gdx.graphics.getHeight();
-
-        worldCamera = new OrthographicCamera(screenW, screenH);
-        worldCamera.position.set(screenW / 2f, screenH / 2f, 0);
+        worldCamera = new OrthographicCamera();
+        worldViewport = new StretchViewport(dimensions.getWorldWidth(), dimensions.getWorldHeight(), worldCamera);
+        worldViewport.update(Gdx.graphics.getWidth(), Gdx.graphics.getHeight(), true);
         worldCamera.update();
 
         stageController = new StageController(
@@ -207,8 +212,8 @@ public class GameScene extends Scene {
                 stageConfig,
                 gameSession.getEnvironmentProgress());
         deathController = new DeathController(sceneManager, gameSession);
-        cameraController = new GameCameraController(worldCamera);
-        endingSceneController = new EndingSceneController();
+        cameraController = new GameCameraController(worldCamera, dimensions);
+        endingSceneController = new EndingSceneController(dimensions);
 
         stageController.onEnter();
         deathController.onEnter();
@@ -250,7 +255,7 @@ public class GameScene extends Scene {
         heartEmptyTexture = context.getAssetManager().get("heart_empty.png", Texture.class);
 
         entityFactory = new EntityFactory(context.getRandomManager());
-        playerManager.spawnPlayer(80f, screenH / 2f, config);
+        playerManager.spawnPlayer(80f, dimensions.getWorldHeight() / 2f, config);
 
         gameLoopManager = new GameLoop();
         gameLoopManager.addStep(new InputStep(
@@ -260,12 +265,13 @@ public class GameScene extends Scene {
                 entityFactory.getObstacleFactory(),
                 entityFactory.getCollectibleFactory(),
                 context.getRandomManager(), gameState, config,
+            dimensions,
                 endingSceneController.isActive() ? 0f : 3f));
         gameLoopManager.addStep(new UpdateStep(
                 entityManager, context.getTimeManager(), gameState));
         gameLoopManager.addStep(new MovementStep(
                 entityManager, context.getMovementManager(),
-                context.getTimeManager(), gameState));
+            context.getTimeManager(), gameState, dimensions));
         gameLoopManager.addStep(new CollisionSystem(
                 entityManager, context.getCollisionManager(),
                 context.getEventManager(), gameState, activeEffects));
@@ -274,7 +280,7 @@ public class GameScene extends Scene {
         gameLoopManager.addStep(new EffectStep(
                 activeEffects,
                 context.getTimeManager()));
-        gameLoopManager.addStep(new DespawnSystem(entityManager));
+        gameLoopManager.addStep(new DespawnSystem(entityManager, dimensions));
         entityManager.flush();
     }
 
@@ -339,12 +345,15 @@ public class GameScene extends Scene {
     public void render() {
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
+        worldViewport.update((int) screenW, (int) screenH, false);
 
         Gdx.gl.glClearColor(stageConfig.getClearR(), stageConfig.getClearG(), stageConfig.getClearB(), 1f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         Player player = playerManager != null ? playerManager.getPlayer() : null;
-        cameraController.apply(screenW, screenH, player);
+        cameraController.apply(player);
+
+        worldViewport.apply(false);
 
         rendererManager.getBatch().setProjectionMatrix(cameraController.getCamera().combined);
         rendererManager.getShapeRenderer().setProjectionMatrix(cameraController.getCamera().combined);
@@ -362,10 +371,37 @@ public class GameScene extends Scene {
 
         rendererManager.render(entityManager.getRenderables());
 
+        // Draw atmospheric overlays in world space so they affect only gameplay, not HUD.
+        SpriteBatch worldBatch = rendererManager.getBatch();
+        worldBatch.begin();
+        float worldW = dimensions.getWorldWidth();
+        float worldH = dimensions.getWorldHeight();
+        float cameraLeft = cameraController.getCamera().position.x - (worldW / 2f);
+        float cameraBottom = cameraController.getCamera().position.y - (worldH / 2f);
+        if (smokeEffect != null) {
+            smokeEffect.render(worldBatch, cameraLeft, cameraBottom, worldW, worldH);
+        }
+        if (smogActive && smogTexture != null) {
+            float alpha = 0.9f;
+            worldBatch.setColor(1f, 1f, 1f, alpha);
+            worldBatch.draw(smogTexture, cameraLeft - 100f, cameraBottom + (worldH * 0.65f), 900f, 550f);
+            worldBatch.draw(smogTexture, cameraLeft + (worldW * 0.25f), cameraBottom + (worldH * 0.45f), 800f, 500f);
+            worldBatch.draw(smogTexture, cameraLeft + (worldW * 0.60f), cameraBottom + (worldH * 0.60f), 850f, 520f);
+            worldBatch.draw(smogTexture, cameraLeft + (worldW * 0.10f), cameraBottom + (worldH * 0.20f), 850f, 520f);
+            worldBatch.draw(smogTexture, cameraLeft + (worldW * 0.55f), cameraBottom + (worldH * 0.15f), 900f, 550f);
+            worldBatch.draw(smogTexture, cameraLeft + (worldW * 0.40f), cameraBottom + (worldH * 0.75f), 850f, 520f);
+            worldBatch.setColor(1f, 1f, 1f, 1f);
+        }
+        worldBatch.end();
+
         SpriteBatch hudBatch = rendererManager.getBatch();
+        Gdx.gl.glViewport(0, 0, (int) screenW, (int) screenH);
         hudBatch.getProjectionMatrix().setToOrtho2D(0, 0, screenW, screenH);
         rendererManager.getShapeRenderer().setProjectionMatrix(hudBatch.getProjectionMatrix());
         hudRenderer.render(rendererManager.getShapeRenderer(), hudBatch, screenW, screenH);
+
+        float hudScale = screenH / 1080f;
+        introFont.getData().setScale(1.7f * hudScale);
 
         hudBatch.begin();
 
@@ -374,11 +410,12 @@ public class GameScene extends Scene {
 
             int maxHealth = gameState.getMaxHearts();
             int currentHealth = gameState.getHearts();
-            float shakeTimer = player.getShakeTimer(); 
+            float shakeTimer = player.getShakeTimer();
 
-            float startX = 20f;
-            float startY = screenH - 60f;
-            float spacing = 40f;
+            float heartSize = 32f * hudScale;
+            float startX = 20f * hudScale;
+            float startY = screenH - 60f * hudScale;
+            float spacing = 44f * hudScale;
 
             for (int i = 0; i < maxHealth; i++) {
                 float drawX = startX + (i * spacing);
@@ -398,9 +435,9 @@ public class GameScene extends Scene {
                 }
 
                 if (i < currentHealth) {
-                    hudBatch.draw(heartFullTexture, drawX, drawY, 32f, 32f);
+                    hudBatch.draw(heartFullTexture, drawX, drawY, heartSize, heartSize);
                 } else {
-                    hudBatch.draw(heartEmptyTexture, drawX, drawY, 32f, 32f);
+                    hudBatch.draw(heartEmptyTexture, drawX, drawY, heartSize, heartSize);
                 }
             }
         }
@@ -411,20 +448,6 @@ public class GameScene extends Scene {
             float msgX = (screenW - introLayout.width) / 2f;
             float msgY = screenH * 0.75f;
             introFont.draw(hudBatch, introLayout, msgX, msgY);
-        }
-        if (smokeEffect != null) {
-            smokeEffect.render(hudBatch, screenW, screenH);
-        }
-        if (smogActive && smogTexture != null) {
-            float alpha = 0.9f;
-            hudBatch.setColor(1f, 1f, 1f, alpha);
-            hudBatch.draw(smogTexture, -100f, screenH * 0.65f, 900f, 550f);
-            hudBatch.draw(smogTexture, screenW * 0.25f, screenH * 0.45f, 800f, 500f);
-            hudBatch.draw(smogTexture, screenW * 0.60f, screenH * 0.60f, 850f, 520f);
-            hudBatch.draw(smogTexture, screenW * 0.10f, screenH * 0.20f, 850f, 520f);
-            hudBatch.draw(smogTexture, screenW * 0.55f, screenH * 0.15f, 900f, 550f);
-            hudBatch.draw(smogTexture, screenW * 0.40f, screenH * 0.75f, 850f, 520f);
-            hudBatch.setColor(1f, 1f, 1f, 1f);
         }
         factPopupRenderer.render(hudBatch, screenW, screenH);
 

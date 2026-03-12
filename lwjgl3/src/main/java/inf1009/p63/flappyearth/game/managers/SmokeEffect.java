@@ -16,13 +16,13 @@ public class SmokeEffect {
         this.overlayAlpha = Math.max(0f, Math.min(1f, overlayAlpha));
     }
 
-    public void render(SpriteBatch batch, float screenW, float screenH) {
+    public void render(SpriteBatch batch, float x, float y, float width, float height) {
         if (overlayAlpha <= 0f) return;
         if (assetManager == null || !assetManager.isLoaded(SMOKE_ASSET_KEY)) return;
 
         Texture smokeTexture = assetManager.getTexture(SMOKE_ASSET_KEY);
         batch.setColor(1f, 1f, 1f, overlayAlpha);
-        batch.draw(smokeTexture, 0f, 0f, screenW, screenH);
+        batch.draw(smokeTexture, x, y, width, height);
         batch.setColor(1f, 1f, 1f, 1f);
     }
 }

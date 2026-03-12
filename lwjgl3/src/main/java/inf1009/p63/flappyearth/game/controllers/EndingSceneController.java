@@ -3,6 +3,7 @@ package inf1009.p63.flappyearth.game.controllers;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
+import inf1009.p63.flappyearth.game.config.GameplayDimensions;
 import inf1009.p63.flappyearth.engine.managers.InputOutputManager;
 import inf1009.p63.flappyearth.game.entities.Player;
 import inf1009.p63.flappyearth.game.input.GameInputAction;
@@ -12,13 +13,15 @@ import inf1009.p63.flappyearth.game.state.GameState;
 public class EndingSceneController {
 
     private static final float ENDING_SPAWN_DELAY_SECONDS = 3.0f;
-    private static final float ENDING_TARGET_HEIGHT_RATIO = 0.55f;
-    private static final float ENDING_FLAP_WINDOW = 24f;
-
     private boolean active;
     private boolean awaitingContinue;
     private boolean spawnWarmup;
     private float spawnWarmupTimer;
+    private final GameplayDimensions dimensions;
+
+    public EndingSceneController(GameplayDimensions dimensions) {
+        this.dimensions = dimensions;
+    }
 
     public void onEnter(boolean isFinalStage, GameState gameState) {
         active = isFinalStage;
@@ -86,10 +89,9 @@ public class EndingSceneController {
     }
 
     private void autoPilot(Player player) {
-        float screenH = Gdx.graphics.getHeight();
-        float targetY = screenH * ENDING_TARGET_HEIGHT_RATIO;
+        float targetY = dimensions.getWorldHeight() * dimensions.getEndingTargetHeightRatio();
         float playerCenterY = player.getBounds().y + (player.getBounds().height / 2f);
-        if (playerCenterY < targetY - ENDING_FLAP_WINDOW) {
+        if (playerCenterY < targetY - dimensions.getEndingFlapWindow()) {
             player.flap();
         }
     }

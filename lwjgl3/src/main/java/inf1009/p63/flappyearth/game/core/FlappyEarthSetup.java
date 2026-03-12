@@ -8,6 +8,9 @@ import com.badlogic.gdx.graphics.Texture;
 import inf1009.p63.flappyearth.engine.core.GameContextManager;
 import inf1009.p63.flappyearth.engine.core.GameSetup;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
+import inf1009.p63.flappyearth.game.config.DisplaySettings;
+import inf1009.p63.flappyearth.game.config.DisplaySettingsFactory;
+import inf1009.p63.flappyearth.game.config.GameplayDimensions;
 import inf1009.p63.flappyearth.game.input.KeyboardInputDevice;
 import inf1009.p63.flappyearth.game.input.TouchInputDevice;
 import inf1009.p63.flappyearth.game.scenes.GameOverScene;
@@ -20,6 +23,16 @@ import inf1009.p63.flappyearth.game.state.GameSession;
 
 public class FlappyEarthSetup implements GameSetup {
 
+    private final DisplaySettings displaySettings;
+
+    public FlappyEarthSetup() {
+        this(DisplaySettingsFactory.createFromRuntime());
+    }
+
+    public FlappyEarthSetup(DisplaySettings displaySettings) {
+        this.displaySettings = displaySettings;
+    }
+
     @Override
     public void configure(GameContextManager contextManager, SceneManager sceneManager) {
         contextManager.getInputOutputManager().registerInputDevice(new KeyboardInputDevice());
@@ -31,6 +44,7 @@ public class FlappyEarthSetup implements GameSetup {
                 new StageConfig(GameSceneId.STAGE_THREE.id(), "Stage 3: Turning Point", "Reach 15 to finish", 0.98f, 0.76f, 0.48f, 0f),
                 new StageConfig(GameSceneId.STAGE_FOUR.id(), "Stage 4: New Earth", "Peaceful skies", 0.46f, 0.72f, 0.50f, 0f)
         ));
+        GameplayDimensions dimensions = GameplayDimensions.fromDisplaySettings(displaySettings);
 
         GameSession gameSession = new GameSession(stagePlan.getFinalTargetGoodCollectibles());
 
@@ -76,7 +90,13 @@ public class FlappyEarthSetup implements GameSetup {
 
         for (StageConfig stage : stagePlan.getStages()) {
             sceneManager.registerScene(stage.getSceneId(),
-                    new GameScene(sceneManager, contextManager, gameSession, stagePlan, stage));
+                new GameScene(
+                    sceneManager,
+                    contextManager,
+                    gameSession,
+                    stagePlan,
+                    stage,
+                    dimensions));
         }
 
         sceneManager.registerScene(GameSceneId.GAME_OVER.id(), new GameOverScene(sceneManager, contextManager));

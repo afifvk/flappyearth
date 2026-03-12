@@ -1,11 +1,11 @@
 package inf1009.p63.flappyearth.game.loop;
 
-import com.badlogic.gdx.Gdx;
 import inf1009.p63.flappyearth.engine.interfaces.Movable;
 import inf1009.p63.flappyearth.engine.interfaces.StepManager;
 import inf1009.p63.flappyearth.engine.managers.EntityManager;
 import inf1009.p63.flappyearth.engine.managers.MovementManager;
 import inf1009.p63.flappyearth.engine.managers.TimeManager;
+import inf1009.p63.flappyearth.game.config.GameplayDimensions;
 import inf1009.p63.flappyearth.game.config.Tags;
 import inf1009.p63.flappyearth.game.entities.Player;
 import inf1009.p63.flappyearth.game.state.GameState;
@@ -18,15 +18,18 @@ public class MovementStep implements StepManager {
     private final MovementManager movementManager;
     private final TimeManager    timeManager;
     private final GameState state;
+    private final GameplayDimensions dimensions;
 
     public MovementStep(EntityManager entityManager,
                                MovementManager movementManager,
                                TimeManager timeManager,
-                               GameState state) {
+                               GameState state,
+                               GameplayDimensions dimensions) {
         this.entityManager   = entityManager;
         this.movementManager = movementManager;
         this.timeManager     = timeManager;
         this.state           = state;
+        this.dimensions      = dimensions;
     }
 
     @Override
@@ -41,12 +44,12 @@ public class MovementStep implements StepManager {
 
         Player player = (Player) entityManager.getFirstByTag(Tags.PLAYER);
         if (player != null) {
-            float screenH = Gdx.graphics.getHeight();
             float playerY = player.getBounds().y;
             float playerH = player.getBounds().height;
 
-            if (playerY + playerH > screenH) {
-                player.getBounds().y = screenH - playerH;
+            float worldHeight = dimensions.getWorldHeight();
+            if (playerY + playerH > worldHeight) {
+                player.getBounds().y = worldHeight - playerH;
             }
         }
     }
