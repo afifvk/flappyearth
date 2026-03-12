@@ -2,6 +2,6 @@ package inf1009.p63.flappyearth.game.entities.collectibles;
 
 public class RecyclingCollectible extends GoodCollectible {
     public RecyclingCollectible(float x, float y) {
-        super(x, y, 60, 60, "recycling.png", CollectibleType.RECYCLING);
+        super(x, y, 60, 60, "gc_recylingbin.png", CollectibleType.RECYCLING);
     }
 }

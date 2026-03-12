@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
@@ -77,17 +78,18 @@ public class GameScene extends Scene {
     private EventManager.EventListener badHitListener;
     private EventManager.EventListener obstaclePassedListener;
     private ActiveEffects activeEffects;
-    private boolean smogActive;
-    private float smogTimer;
-    private static final float SMOG_DURATION = 3f;
-
-    private Texture smogTexture;
     private Texture heartFullTexture;
     private Texture heartEmptyTexture;
 
     private String debuffMessage = "";
     private float debuffMessageTimer = 0f;
     private static final float DEBUFF_MESSAGE_DURATION = 2.5f;
+    private static final float PLASTIC_BOTTLE_DURATION = 5f;
+    private static final float OIL_BLOT_DURATION = 5f;
+    private static final float FACTORY_SMOKE_DURATION = 5f;
+    private static final float FACTORY_SMOKE_ALPHA = 0.8f;
+    private static final float TRASH_PILE_DURATION = 1.5f;
+    private static final float TRASH_PILE_PULL_STRENGTH = 420f;
 
     private final BitmapFont introFont;
     private final GlyphLayout introLayout;
@@ -139,21 +141,32 @@ public class GameScene extends Scene {
                 BadCollectedEvent event = (BadCollectedEvent) data;
                 Player player = playerManager != null ? playerManager.getPlayer() : null;
                 switch (event.collectibleType) {
-                    case "SMOG":
-                        activateSmogEffect();
-                        showDebuffMessage("SMOG hit!");
-                        break;
-                    case "PLASTIC_WASTE":
+                    case "PLASTIC_BOTTLE":
                         if (player != null) {
-                            player.applyHeavyDebuff();
+                            player.applyReverseFlightDebuff(PLASTIC_BOTTLE_DURATION);
                         }
-                        showDebuffMessage("Plastic Waste hit! Heavy movement!");
+                        showDebuffMessage("Plastic Bottle hit! Flight reversed!");
                         break;
                     case "OIL_SPILL":
-                        if (player != null) {
-                            player.applySlipperyDebuff();
+                        if (activeEffects != null) {
+                            activeEffects.activateOilBlot(OIL_BLOT_DURATION);
                         }
-                        showDebuffMessage("Oil Spill hit! Slippery controls!");
+                        showDebuffMessage("Oil Spill hit! Oil on screen!");
+                        break;
+                    case "FACTORY":
+                        if (activeEffects != null) {
+                            activeEffects.activateSmokeSurge(FACTORY_SMOKE_DURATION, FACTORY_SMOKE_ALPHA);
+                        }
+                        showDebuffMessage("Factory hit! Smoke thickens!");
+                        break;
+                    case "TRASH_PILE":
+                        if (player != null) {
+                            player.applyTrashPileDebuff(TRASH_PILE_DURATION, TRASH_PILE_PULL_STRENGTH);
+                        }
+                        if (activeEffects != null) {
+                            activeEffects.activateScreenShake(TRASH_PILE_DURATION, 18f);
+                        }
+                        showDebuffMessage("Trash Pile hit! Losing control!");
                         break;
                     default:
                         break;
@@ -241,16 +254,12 @@ public class GameScene extends Scene {
         smokeEffect = new SmokeEffect(
                 context.getAssetManager(),
                 stageConfig.getSmokeOverlayAlpha());
-        smogActive = false;
-        smogTimer = 0f;
         context.getAssetManager().load("heart_full.png", Texture.class);
         context.getAssetManager().load("heart_empty.png", Texture.class);
         context.getAssetManager().load("sound/game_over.mp3", com.badlogic.gdx.audio.Sound.class);
         context.getAssetManager().finishLoading();
 
         context.getSoundManager().setGameOverSound(context.getAssetManager().get("sound/game_over.mp3", com.badlogic.gdx.audio.Sound.class));
-        
-        smogTexture = context.getAssetManager().get("smog_cloud.png", Texture.class);
         heartFullTexture = context.getAssetManager().get("heart_full.png", Texture.class);
         heartEmptyTexture = context.getAssetManager().get("heart_empty.png", Texture.class);
 
@@ -291,13 +300,6 @@ public class GameScene extends Scene {
         }
         if (stageOverlayTimer > 0f) {
             stageOverlayTimer = Math.max(0f, stageOverlayTimer - delta);
-        }
-        if (smogActive) {
-            smogTimer -= delta;
-            if (smogTimer <= 0f) {
-                smogTimer = 0f;
-                smogActive = false;
-            }
         }
         if (debuffMessageTimer > 0f) {
             debuffMessageTimer = Math.max(0f, debuffMessageTimer - delta);
@@ -379,18 +381,10 @@ public class GameScene extends Scene {
         float cameraLeft = cameraController.getCamera().position.x - (worldW / 2f);
         float cameraBottom = cameraController.getCamera().position.y - (worldH / 2f);
         if (smokeEffect != null) {
-            smokeEffect.render(worldBatch, cameraLeft, cameraBottom, worldW, worldH);
-        }
-        if (smogActive && smogTexture != null) {
-            float alpha = 0.9f;
-            worldBatch.setColor(1f, 1f, 1f, alpha);
-            worldBatch.draw(smogTexture, cameraLeft - 100f, cameraBottom + (worldH * 0.65f), 900f, 550f);
-            worldBatch.draw(smogTexture, cameraLeft + (worldW * 0.25f), cameraBottom + (worldH * 0.45f), 800f, 500f);
-            worldBatch.draw(smogTexture, cameraLeft + (worldW * 0.60f), cameraBottom + (worldH * 0.60f), 850f, 520f);
-            worldBatch.draw(smogTexture, cameraLeft + (worldW * 0.10f), cameraBottom + (worldH * 0.20f), 850f, 520f);
-            worldBatch.draw(smogTexture, cameraLeft + (worldW * 0.55f), cameraBottom + (worldH * 0.15f), 900f, 550f);
-            worldBatch.draw(smogTexture, cameraLeft + (worldW * 0.40f), cameraBottom + (worldH * 0.75f), 850f, 520f);
-            worldBatch.setColor(1f, 1f, 1f, 1f);
+            float smokeAlpha = activeEffects != null
+                    ? activeEffects.getSmokeOverlayAlpha(smokeEffect.getBaseOverlayAlpha())
+                    : smokeEffect.getBaseOverlayAlpha();
+            smokeEffect.render(worldBatch, cameraLeft, cameraBottom, worldW, worldH, smokeAlpha);
         }
         worldBatch.end();
 
@@ -399,6 +393,10 @@ public class GameScene extends Scene {
         hudBatch.getProjectionMatrix().setToOrtho2D(0, 0, screenW, screenH);
         rendererManager.getShapeRenderer().setProjectionMatrix(hudBatch.getProjectionMatrix());
         hudRenderer.render(rendererManager.getShapeRenderer(), hudBatch, screenW, screenH);
+
+        if (activeEffects != null && activeEffects.isOilBlotActive()) {
+            renderOilBlotOverlay(screenW, screenH);
+        }
 
         float hudScale = screenH / 1080f;
         introFont.getData().setScale(1.7f * hudScale);
@@ -566,13 +564,23 @@ public class GameScene extends Scene {
         }
     }
 
-    private void activateSmogEffect() {
-        smogActive = true;
-        smogTimer = SMOG_DURATION;
-    }
-
     private void showDebuffMessage(String message) {
         debuffMessage = message;
         debuffMessageTimer = DEBUFF_MESSAGE_DURATION;
+    }
+
+    private void renderOilBlotOverlay(float screenW, float screenH) {
+        ShapeRenderer shapeRenderer = rendererManager.getShapeRenderer();
+        float intensity = activeEffects.getOilBlotIntensity();
+        float alpha = 0.18f + (0.28f * intensity);
+
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
+        shapeRenderer.setColor(0.04f, 0.04f, 0.04f, alpha);
+        shapeRenderer.circle(screenW * 0.18f, screenH * 0.74f, screenW * 0.16f);
+        shapeRenderer.circle(screenW * 0.28f, screenH * 0.64f, screenW * 0.11f);
+        shapeRenderer.circle(screenW * 0.80f, screenH * 0.28f, screenW * 0.18f);
+        shapeRenderer.circle(screenW * 0.68f, screenH * 0.20f, screenW * 0.10f);
+        shapeRenderer.circle(screenW * 0.90f, screenH * 0.82f, screenW * 0.09f);
+        shapeRenderer.end();
     }
 }

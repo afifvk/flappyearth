@@ -8,9 +8,10 @@ public abstract class Collectible extends GameEntity {
         TREE_SAPLING,
         REUSABLE_BOTTLE,
         CAR_EXHAUST,
-        SMOG,
+        FACTORY,
         OIL_SPILL,
-        PLASTIC_WASTE
+        PLASTIC_BOTTLE,
+        TRASH_PILE
     }
 
     private final CollectibleType collectibleType;

@@ -8,6 +8,7 @@ import inf1009.p63.flappyearth.game.entities.collectibles.ReusableBottleCollecti
 import inf1009.p63.flappyearth.game.entities.collectibles.SolarPanelCollectible;
 import inf1009.p63.flappyearth.game.entities.collectibles.TreeSaplingCollectible;
 import inf1009.p63.flappyearth.game.entities.collectibles.SmogCollectible;
+import inf1009.p63.flappyearth.game.entities.collectibles.PlasticBottleCollectible;
 import inf1009.p63.flappyearth.game.entities.collectibles.PlasticWasteCollectible;
 import inf1009.p63.flappyearth.game.entities.collectibles.OilSpillCollectible;
 
@@ -38,32 +39,25 @@ public class CollectibleFactory {
         int pick = random.range(0, 3);
         Collectible bad;
         switch (pick) {
-            case 0: bad = new SmogCollectible(x, y); break;
+            case 0: bad = new PlasticBottleCollectible(x, y); break;
             case 1: bad = new OilSpillCollectible(x, y); break;
+            case 2: bad = new SmogCollectible(x, y); break;
             default: bad = new PlasticWasteCollectible(x, y);
         }
         entityManager.queueAdd(bad);
     }
 
-    //delete code below 
-    //public void spawnBad(EntityManager entityManager, RandomManager random,
-      //      float x, float y) {
-        //Collectible bad = new PlasticWasteCollectible(x, y);
-        //Collectible bad = new OilSpillCollectible(x, y);
-       // Collectible bad = new SmogCollectible(x, y);
-        //entityManager.queueAdd(bad);
-    //}
-
     private Collectible createRandom(RandomManager random, float x, float y) {
-        int pick = random.range(0, 7);
+        int pick = random.range(0, 8);
         switch (pick) {
             case 0:  return new RecyclingCollectible(x, y);
             case 1:  return new SolarPanelCollectible(x, y);
             case 2:  return new TreeSaplingCollectible(x, y);
             case 3:  return new ReusableBottleCollectible(x, y);
-            case 4:  return new SmogCollectible(x, y);
-            case 5:  return new PlasticWasteCollectible(x, y);
-            default: return new OilSpillCollectible(x, y);
+            case 4:  return new PlasticBottleCollectible(x, y);
+            case 5:  return new OilSpillCollectible(x, y);
+            case 6:  return new SmogCollectible(x, y);
+            default: return new PlasticWasteCollectible(x, y);
         }
     }
 }

@@ -62,13 +62,13 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("sound/bird_die.mp3", Sound.class);
         contextManager.getAssetManager().load("sound/game_over.mp3", Sound.class);
         contextManager.getAssetManager().load("sound/bird_point.mp3", Sound.class);
-        contextManager.getAssetManager().load("plastic_waste.png", Texture.class);
-        contextManager.getAssetManager().load("oil_spill.png", Texture.class);
-        contextManager.getAssetManager().load("smog_factory.png", Texture.class);
-        contextManager.getAssetManager().load("recycling.png", Texture.class);
-        contextManager.getAssetManager().load("reusable_bottle.png", Texture.class);
-        contextManager.getAssetManager().load("solar_panel.png", Texture.class);
-        contextManager.getAssetManager().load("tree_sapling.png", Texture.class);
+        contextManager.getAssetManager().load("bc_garbage.png", Texture.class);
+        contextManager.getAssetManager().load("bc_oilspill.png", Texture.class);
+        contextManager.getAssetManager().load("bc_factory.png", Texture.class);
+        contextManager.getAssetManager().load("gc_recylingbin.png", Texture.class);
+        contextManager.getAssetManager().load("bc_plasticbottle.png", Texture.class);
+        contextManager.getAssetManager().load("gc_solarpanel.png", Texture.class);
+        contextManager.getAssetManager().load("gc_sapling.png", Texture.class);
         //New Hearts
         contextManager.getAssetManager().load("heart_full.png", Texture.class);
         contextManager.getAssetManager().load("heart_empty.png", Texture.class);

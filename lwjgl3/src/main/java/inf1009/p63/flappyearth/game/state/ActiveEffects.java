@@ -6,6 +6,10 @@ public class ActiveEffects {
     private float slowTimeTimer = 0f;
     private float screenShakeTimer = 0f;
     private float screenShakeMagnitude = 0f;
+    private float oilBlotTimer = 0f;
+    private float oilBlotDuration = 0f;
+    private float smokeSurgeTimer = 0f;
+    private float smokeSurgeMinimumAlpha = 0f;
 
     public void update(float delta) {
         if (shieldTimer   > 0) shieldTimer   = Math.max(0, shieldTimer   - delta);
@@ -14,6 +18,18 @@ public class ActiveEffects {
             screenShakeTimer = Math.max(0, screenShakeTimer - delta);
             if (screenShakeTimer == 0f) {
                 screenShakeMagnitude = 0f;
+            }
+        }
+        if (oilBlotTimer > 0f) {
+            oilBlotTimer = Math.max(0f, oilBlotTimer - delta);
+            if (oilBlotTimer == 0f) {
+                oilBlotDuration = 0f;
+            }
+        }
+        if (smokeSurgeTimer > 0f) {
+            smokeSurgeTimer = Math.max(0f, smokeSurgeTimer - delta);
+            if (smokeSurgeTimer == 0f) {
+                smokeSurgeMinimumAlpha = 0f;
             }
         }
     }
@@ -27,17 +43,48 @@ public class ActiveEffects {
     public void    activateSlowTime(float d) { slowTimeTimer = d; }
 
     public void activateScreenShake(float duration, float magnitude) {
-        screenShakeTimer = duration;
-        screenShakeMagnitude = magnitude;
+        screenShakeTimer = Math.max(screenShakeTimer, duration);
+        screenShakeMagnitude = Math.max(screenShakeMagnitude, magnitude);
     }
 
     public boolean isScreenShaking() { return screenShakeTimer > 0f; }
     public float getScreenShakeMagnitude() { return screenShakeMagnitude; }
+
+    public void activateOilBlot(float duration) {
+        oilBlotTimer = Math.max(oilBlotTimer, duration);
+        oilBlotDuration = Math.max(oilBlotDuration, duration);
+    }
+
+    public boolean isOilBlotActive() { return oilBlotTimer > 0f; }
+
+    public float getOilBlotIntensity() {
+        if (oilBlotTimer <= 0f || oilBlotDuration <= 0f) {
+            return 0f;
+        }
+        return oilBlotTimer / oilBlotDuration;
+    }
+
+    public void activateSmokeSurge(float duration, float minimumAlpha) {
+        smokeSurgeTimer = Math.max(smokeSurgeTimer, duration);
+        smokeSurgeMinimumAlpha = Math.max(smokeSurgeMinimumAlpha, clamp01(minimumAlpha));
+    }
+
+    public float getSmokeOverlayAlpha(float baseAlpha) {
+        return smokeSurgeTimer > 0f ? Math.max(clamp01(baseAlpha), smokeSurgeMinimumAlpha) : clamp01(baseAlpha);
+    }
 
     public void reset() {
         shieldTimer   = 0f;
         slowTimeTimer = 0f;
         screenShakeTimer = 0f;
         screenShakeMagnitude = 0f;
+        oilBlotTimer = 0f;
+        oilBlotDuration = 0f;
+        smokeSurgeTimer = 0f;
+        smokeSurgeMinimumAlpha = 0f;
+    }
+
+    private float clamp01(float value) {
+        return Math.max(0f, Math.min(1f, value));
     }
 }

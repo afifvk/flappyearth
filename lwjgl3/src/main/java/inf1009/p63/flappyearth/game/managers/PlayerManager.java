@@ -20,8 +20,8 @@ public class PlayerManager {
 
         eventManager.subscribe(GameEvents.FLAP_REQUESTED, data -> {
             if (player != null) {
-                player.flap();
-                if (this.soundManager != null) this.soundManager.playFlap();
+                boolean flapped = player.flap();
+                if (flapped && this.soundManager != null) this.soundManager.playFlap();
             }
         });
     }

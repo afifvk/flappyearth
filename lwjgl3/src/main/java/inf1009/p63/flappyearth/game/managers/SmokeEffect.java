@@ -9,14 +9,18 @@ public class SmokeEffect {
     private static final String SMOKE_ASSET_KEY = "smoke.png";
 
     private final AssetManager assetManager;
-    private final float overlayAlpha;
+    private final float baseOverlayAlpha;
 
     public SmokeEffect(AssetManager assetManager, float overlayAlpha) {
         this.assetManager = assetManager;
-        this.overlayAlpha = Math.max(0f, Math.min(1f, overlayAlpha));
+        this.baseOverlayAlpha = Math.max(0f, Math.min(1f, overlayAlpha));
     }
 
-    public void render(SpriteBatch batch, float x, float y, float width, float height) {
+    public float getBaseOverlayAlpha() {
+        return baseOverlayAlpha;
+    }
+
+    public void render(SpriteBatch batch, float x, float y, float width, float height, float overlayAlpha) {
         if (overlayAlpha <= 0f) return;
         if (assetManager == null || !assetManager.isLoaded(SMOKE_ASSET_KEY)) return;
 

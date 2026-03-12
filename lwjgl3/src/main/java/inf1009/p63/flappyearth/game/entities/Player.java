@@ -36,13 +36,10 @@ public class Player extends GameEntity implements Movable {
 
     private float flickerTimer = 0f;
     private static final float FLICKER_FREQUENCY = 20f; // flashes per second
-    private boolean heavyDebuffActive = false;
-    private float heavyDebuffTimer = 0f;
-    private static final float HEAVY_DEBUFF_DURATION = 5f;
-    private static final float HEAVY_FLAP_MULTIPLIER = 0.45f;
-    private boolean slipperyDebuffActive = false;
-    private float slipperyDebuffTimer = 0f;
-    private static final float SLIPPERY_DEBUFF_DURATION = 3f;
+    private float reversedFlightTimer = 0f;
+    private float controlLockTimer = 0f;
+    private float forcedDropTimer = 0f;
+    private float forcedDropStrength = 0f;
 
     //Health
     private int maxHealth = 3;
@@ -64,7 +61,11 @@ public class Player extends GameEntity implements Movable {
             return;
         }
 
-        velY += gravity * delta;
+        float gravityDirection = reversedFlightTimer > 0f ? -1f : 1f;
+        velY += gravity * gravityDirection * delta;
+        if (forcedDropTimer > 0f) {
+            velY -= forcedDropStrength * delta;
+        }
         rotationDegrees = Math.max(MAX_DOWNWARD_TILT,
             Math.min(MAX_UPWARD_TILT, velY * TILT_VELOCITY_FACTOR));
 
@@ -77,16 +78,16 @@ public class Player extends GameEntity implements Movable {
         if (flickerTimer > 0f) {
             flickerTimer = Math.max(0f, flickerTimer - delta);
         }
-        if (heavyDebuffTimer > 0f) {
-            heavyDebuffTimer = Math.max(0f, heavyDebuffTimer - delta);
-            if (heavyDebuffTimer == 0f) {
-                heavyDebuffActive = false;
-            }
+        if (reversedFlightTimer > 0f) {
+            reversedFlightTimer = Math.max(0f, reversedFlightTimer - delta);
         }
-        if (slipperyDebuffTimer > 0f) {
-            slipperyDebuffTimer = Math.max(0f, slipperyDebuffTimer - delta);
-            if (slipperyDebuffTimer == 0f) {
-                slipperyDebuffActive = false;
+        if (controlLockTimer > 0f) {
+            controlLockTimer = Math.max(0f, controlLockTimer - delta);
+        }
+        if (forcedDropTimer > 0f) {
+            forcedDropTimer = Math.max(0f, forcedDropTimer - delta);
+            if (forcedDropTimer == 0f) {
+                forcedDropStrength = 0f;
             }
         }
         
@@ -132,15 +133,17 @@ public class Player extends GameEntity implements Movable {
     @Override public float getVelocityX() { return velX; }
     @Override public float getVelocityY() { return velY; }
 
-    public void flap() {
-        if (deathFallActive) return;
-        float appliedJumpImpulse = heavyDebuffActive
-                ? jumpImpulse * HEAVY_FLAP_MULTIPLIER
-                : jumpImpulse;
-        if (slipperyDebuffActive && MathUtils.random() < 0.35f) {
-            appliedJumpImpulse *= 0.55f;
+    public boolean flap() {
+        if (deathFallActive || controlLockTimer > 0f) return false;
+
+        float direction = reversedFlightTimer > 0f ? -1f : 1f;
+        float appliedJumpImpulse = jumpImpulse * direction;
+        if (MathUtils.isZero(appliedJumpImpulse)) {
+            return false;
         }
+
         velY = appliedJumpImpulse;
+        return true;
     }
 
     // Health method
@@ -179,14 +182,15 @@ public class Player extends GameEntity implements Movable {
         flickerTimer = Math.max(flickerTimer, duration);
     }
 
-    public void applyHeavyDebuff() {
-        heavyDebuffActive = true;
-        heavyDebuffTimer = HEAVY_DEBUFF_DURATION;
+    public void applyReverseFlightDebuff(float duration) {
+        reversedFlightTimer = Math.max(reversedFlightTimer, duration);
     }
 
-    public void applySlipperyDebuff() {
-        slipperyDebuffActive = true;
-        slipperyDebuffTimer = SLIPPERY_DEBUFF_DURATION;
+    public void applyTrashPileDebuff(float duration, float pullStrength) {
+        controlLockTimer = Math.max(controlLockTimer, duration);
+        forcedDropTimer = Math.max(forcedDropTimer, duration);
+        forcedDropStrength = Math.max(forcedDropStrength, pullStrength);
+        velY = Math.min(velY, -jumpImpulse * 0.35f);
     }
 
     public boolean isDeathFallActive() {
