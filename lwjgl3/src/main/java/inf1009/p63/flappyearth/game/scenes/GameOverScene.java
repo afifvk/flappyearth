@@ -42,7 +42,10 @@ public class GameOverScene extends Scene {
     }
 
     @Override
-    public void onEnter() {}
+    public void onEnter() {
+        context.getSoundManager().stopMusic();
+        context.getSoundManager().playGameOver();
+    }
 
     @Override
     public void update(float delta) {
