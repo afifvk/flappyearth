@@ -573,10 +573,14 @@ public class GameScene extends Scene {
         ShapeRenderer shapeRenderer = rendererManager.getShapeRenderer();
         float intensity = activeEffects.getOilBlotIntensity();
         float alpha = 0.22f + (0.33f * intensity);
+        float blotWidth = screenW * 0.60f;
+        float blotHeight = screenH * 0.60f;
+        float blotX = (screenW - blotWidth) * 0.5f;
+        float blotY = (screenH - blotHeight) * 0.5f;
 
         shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
         shapeRenderer.setColor(0.04f, 0.04f, 0.04f, alpha);
-        shapeRenderer.rect(0f, 0f, screenW, screenH);
+        shapeRenderer.rect(blotX, blotY, blotWidth, blotHeight);
         shapeRenderer.end();
     }
 }
