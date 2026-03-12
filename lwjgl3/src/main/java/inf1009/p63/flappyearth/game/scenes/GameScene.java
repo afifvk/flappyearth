@@ -88,10 +88,11 @@ public class GameScene extends Scene {
     private static final float PLASTIC_BOTTLE_DURATION = 5f;
     private static final float OIL_BLOT_DURATION = 5f;
     private static final float FACTORY_SMOKE_DURATION = 5f;
-    private static final float FACTORY_SMOKE_ALPHA = 0.8f;
-    private static final float TRASH_PILE_DURATION = 1.5f;
-    private static final float TRASH_PILE_PULL_STRENGTH = 420f;
-    private static final int OIL_SPLOTCH_COUNT = 7;
+    private static final float FACTORY_SMOKE_ALPHA = 0.9f;
+    private static final float FACTORY_JUMP_INTERVAL_SECONDS = 1f;
+    private static final float TRASH_PILE_SHAKE_DURATION = 5f;
+    private static final float TRASH_PILE_SHAKE_MAGNITUDE = 50f;
+    private static final int OIL_SPLOTCH_COUNT = 10;
     private final float[] oilSplotchXNorm = new float[OIL_SPLOTCH_COUNT];
     private final float[] oilSplotchYNorm = new float[OIL_SPLOTCH_COUNT];
     private final float[] oilSplotchSizeNorm = new float[OIL_SPLOTCH_COUNT];
@@ -164,21 +165,17 @@ public class GameScene extends Scene {
                         showDebuffMessage("Oil Spill hit! Oil on screen!");
                         break;
                     case "FACTORY":
-                        if (activeEffects != null) {
-                            activeEffects.activateSmokeSurge(FACTORY_SMOKE_DURATION, FACTORY_SMOKE_ALPHA);
-                        }
-                        showDebuffMessage("Factory hit! Smoke thickens!");
-                        break;
-                    case "TRASH_PILE":
                         if (player != null) {
-                            player.applyTrashPileDebuff(TRASH_PILE_DURATION, TRASH_PILE_PULL_STRENGTH);
+                            player.applyJumpIntervalDebuff(FACTORY_SMOKE_DURATION, FACTORY_JUMP_INTERVAL_SECONDS);
                         }
+                        showDebuffMessage("It's hard to breathe, jumps slowed");
+                    case "TRASH_PILE":
                         if (activeEffects != null) {
-                            activeEffects.activateScreenShake(TRASH_PILE_DURATION, 18f);
+                            activeEffects.activateScreenShake(TRASH_PILE_SHAKE_DURATION, TRASH_PILE_SHAKE_MAGNITUDE);
                         }
-                        showDebuffMessage("Trash Pile hit! Losing control!");
+                        showDebuffMessage("Trash Pile hit! Massive screen shake!");
                         break;
-                    default:
+                    default:  
                         break;
                 }
             }
@@ -589,8 +586,8 @@ public class GameScene extends Scene {
 
     private void generateOilSplotchPattern() {
         for (int i = 0; i < OIL_SPLOTCH_COUNT; i++) {
-            oilSplotchXNorm[i] = context.getRandomManager().range(0.18f, 0.82f);
-            oilSplotchYNorm[i] = context.getRandomManager().range(0.18f, 0.82f);
+            oilSplotchXNorm[i] = context.getRandomManager().range(0.05f, 0.95f);
+            oilSplotchYNorm[i] = context.getRandomManager().range(0.05f, 0.95f);
             oilSplotchSizeNorm[i] = context.getRandomManager().range(0.08f, 0.13f);
             oilSplotchRotation[i] = context.getRandomManager().range(0f, 360f);
         }

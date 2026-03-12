@@ -40,6 +40,9 @@ public class Player extends GameEntity implements Movable {
     private float controlLockTimer = 0f;
     private float forcedDropTimer = 0f;
     private float forcedDropStrength = 0f;
+    private float jumpIntervalDebuffTimer = 0f;
+    private float jumpIntervalSeconds = 0f;
+    private float jumpIntervalCooldownTimer = 0f;
 
     //Health
     private int maxHealth = 3;
@@ -90,6 +93,16 @@ public class Player extends GameEntity implements Movable {
                 forcedDropStrength = 0f;
             }
         }
+        if (jumpIntervalDebuffTimer > 0f) {
+            jumpIntervalDebuffTimer = Math.max(0f, jumpIntervalDebuffTimer - delta);
+            if (jumpIntervalDebuffTimer == 0f) {
+                jumpIntervalSeconds = 0f;
+                jumpIntervalCooldownTimer = 0f;
+            }
+        }
+        if (jumpIntervalCooldownTimer > 0f) {
+            jumpIntervalCooldownTimer = Math.max(0f, jumpIntervalCooldownTimer - delta);
+        }
         
         // Health shaker
         if (shakeTimer > 0f) {
@@ -135,6 +148,7 @@ public class Player extends GameEntity implements Movable {
 
     public boolean flap() {
         if (deathFallActive || controlLockTimer > 0f) return false;
+        if (jumpIntervalDebuffTimer > 0f && jumpIntervalCooldownTimer > 0f) return false;
 
         float direction = reversedFlightTimer > 0f ? -1f : 1f;
         float appliedJumpImpulse = jumpImpulse * direction;
@@ -143,6 +157,9 @@ public class Player extends GameEntity implements Movable {
         }
 
         velY = appliedJumpImpulse;
+        if (jumpIntervalDebuffTimer > 0f) {
+            jumpIntervalCooldownTimer = jumpIntervalSeconds;
+        }
         return true;
     }
 
@@ -191,6 +208,11 @@ public class Player extends GameEntity implements Movable {
         forcedDropTimer = Math.max(forcedDropTimer, duration);
         forcedDropStrength = Math.max(forcedDropStrength, pullStrength);
         velY = Math.min(velY, -jumpImpulse * 0.35f);
+    }
+
+    public void applyJumpIntervalDebuff(float duration, float intervalSeconds) {
+        jumpIntervalDebuffTimer = Math.max(jumpIntervalDebuffTimer, duration);
+        jumpIntervalSeconds = Math.max(jumpIntervalSeconds, Math.max(0f, intervalSeconds));
     }
 
     public boolean isDeathFallActive() {
