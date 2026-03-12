@@ -75,7 +75,11 @@ public class GameScene extends Scene {
     private boolean smogActive;
     private float smogTimer;
     private static final float SMOG_DURATION = 3f;
+
     private Texture smogTexture;
+    private Texture heartFullTexture;
+    private Texture heartEmptyTexture;
+
     private String debuffMessage = "";
     private float debuffMessageTimer = 0f;
     private static final float DEBUFF_MESSAGE_DURATION = 2.5f;
@@ -90,10 +94,10 @@ public class GameScene extends Scene {
     private boolean showStageOverlay;
 
     public GameScene(SceneManager sceneManager,
-                     GameContextManager context,
-                     GameSession gameSession,
-                     StagePlan stagePlan,
-                     StageConfig stageConfig) {
+            GameContextManager context,
+            GameSession gameSession,
+            StagePlan stagePlan,
+            StageConfig stageConfig) {
         this.sceneManager = sceneManager;
         this.context = context;
         this.gameSession = gameSession;
@@ -155,27 +159,28 @@ public class GameScene extends Scene {
         badHitListener = data -> {
             context.getSoundManager().playHitBad();
 
-            // Bring the player forward and flicker
             Player p = playerManager != null ? playerManager.getPlayer() : null;
             if (p != null) {
                 entityManager.bringToFront(p);
-                p.flicker(0.6f);
+                // This is help to triggers visual shake in player
+                p.takeDamage(1); 
             }
 
-            // Parse event and start pipe crash + spawn debris
+            // Helps to parse event and start pipe crash + spawn debris
             if (data instanceof BadHitEvent) {
                 BadHitEvent ev = (BadHitEvent) data;
                 int hitId = ev.entityId;
                 Obstacle hitObs = null;
                 for (Obstacle o : entityManager.getByType(Obstacle.class)) {
-                    if (o.getId() == hitId) { hitObs = o; break; }
+                    if (o.getId() == hitId) {
+                        hitObs = o;
+                        break;
+                    }
                 }
                 if (hitObs != null) {
-                    // start obstacle crash with some random velocity
                     float vX = context.getRandomManager().range(-120f, 120f);
                     float vY = context.getRandomManager().range(150f, 300f);
                     hitObs.startCrash(vX, vY, 1.2f);
-                    // spawn debris pieces via factory
                     if (entityFactory != null) {
                         entityFactory.spawnDebrisForObstacle(entityManager, hitObs);
                     }
@@ -188,7 +193,6 @@ public class GameScene extends Scene {
             }
         };
         context.getEventManager().subscribe(GameEvents.BAD_HIT, badHitListener);
-        // Play point sound when obstacle is passed
         obstaclePassedListener = data -> context.getSoundManager().playPoint();
         context.getEventManager().subscribe(GameEvents.OBSTACLE_PASSED, obstaclePassedListener);
 
@@ -203,10 +207,10 @@ public class GameScene extends Scene {
         worldCamera.update();
 
         stageController = new StageController(
-            sceneManager,
-            stagePlan,
-            stageConfig,
-            gameSession.getEnvironmentProgress());
+                sceneManager,
+                stagePlan,
+                stageConfig,
+                gameSession.getEnvironmentProgress());
         deathController = new DeathController(sceneManager, gameSession);
         cameraController = new GameCameraController(worldCamera);
         endingSceneController = new EndingSceneController();
@@ -217,7 +221,7 @@ public class GameScene extends Scene {
         endingSceneController.onEnter(stagePlan.isFinalStage(stageConfig.getSceneId()), gameSession.getGameState());
 
         showStageOverlay = !stageConfig.getSceneId().equals(stagePlan.getInitialStageId())
-            && !endingSceneController.isActive();
+                && !endingSceneController.isActive();
         stageOverlayTimer = showStageOverlay ? STAGE_OVERLAY_DURATION_SECONDS : 0f;
 
         GameState gameState = gameSession.getGameState();
@@ -231,15 +235,22 @@ public class GameScene extends Scene {
                 gameState,
                 gameSession.getScoreManager(),
                 gameSession.getEnvironmentProgress(),
-            stagePlan.getCheckpointTargets(),
+                stagePlan.getCheckpointTargets(),
                 stageConfig.getTitle());
         factPopupRenderer = new EcoFactPopupRenderer(context.getEventManager());
         smokeEffect = new SmokeEffect(
-            context.getAssetManager(),
-            stageConfig.getSmokeOverlayAlpha());
+                context.getAssetManager(),
+                stageConfig.getSmokeOverlayAlpha());
         smogActive = false;
         smogTimer = 0f;
+
+        context.getAssetManager().load("heart_full.png", Texture.class);
+        context.getAssetManager().load("heart_empty.png", Texture.class);
+        context.getAssetManager().finishLoading();
+
         smogTexture = context.getAssetManager().get("smog_cloud.png", Texture.class);
+        heartFullTexture = context.getAssetManager().get("heart_full.png", Texture.class);
+        heartEmptyTexture = context.getAssetManager().get("heart_empty.png", Texture.class);
 
         entityFactory = new EntityFactory(context.getRandomManager());
         playerManager.spawnPlayer(80f, screenH / 2f, config);
@@ -251,8 +262,8 @@ public class GameScene extends Scene {
                 entityManager,
                 entityFactory.getObstacleFactory(),
                 entityFactory.getCollectibleFactory(),
-            context.getRandomManager(), gameState, config,
-            endingSceneController.isActive() ? 0f : 3f));
+                context.getRandomManager(), gameState, config,
+                endingSceneController.isActive() ? 0f : 3f));
         gameLoopManager.addStep(new UpdateStep(
                 entityManager, context.getTimeManager(), gameState));
         gameLoopManager.addStep(new MovementStep(
@@ -262,7 +273,7 @@ public class GameScene extends Scene {
                 entityManager, context.getCollisionManager(),
                 context.getEventManager(), gameState, activeEffects));
         gameLoopManager.addStep(new DistanceScoreSystem(
-            gameState, gameSession.getScoreManager()));
+                gameState, gameSession.getScoreManager()));
         gameLoopManager.addStep(new EffectStep(
                 activeEffects,
                 context.getTimeManager()));
@@ -341,7 +352,7 @@ public class GameScene extends Scene {
         rendererManager.getBatch().setProjectionMatrix(cameraController.getCamera().combined);
         rendererManager.getShapeRenderer().setProjectionMatrix(cameraController.getCamera().combined);
 
-        // Apply screen shake if active
+        // screen shake if active
         if (activeEffects != null && activeEffects.isScreenShaking()) {
             float mag = activeEffects.getScreenShakeMagnitude();
             float ox = context.getRandomManager().range(-mag, mag);
@@ -360,6 +371,44 @@ public class GameScene extends Scene {
         hudRenderer.render(rendererManager.getShapeRenderer(), hudBatch, screenW, screenH);
 
         hudBatch.begin();
+
+        if (player != null && heartFullTexture != null && heartEmptyTexture != null) {
+            GameState gameState = gameSession.getGameState();
+
+            int maxHealth = gameState.getMaxHearts();
+            int currentHealth = gameState.getHearts();
+            float shakeTimer = player.getShakeTimer(); 
+
+            float startX = 20f;
+            float startY = screenH - 60f;
+            float spacing = 40f;
+
+            for (int i = 0; i < maxHealth; i++) {
+                float drawX = startX + (i * spacing);
+                float drawY = startY;
+
+                if (shakeTimer > 0f) {
+                    float shakeIntensity = shakeTimer / 0.5f;
+                    if (i == currentHealth) {
+                        float maxShake = 10f;
+                        drawX += context.getRandomManager().range(-maxShake, maxShake) * shakeIntensity;
+                        drawY += context.getRandomManager().range(-maxShake, maxShake) * shakeIntensity;
+                    } else if (i < currentHealth) {
+                        float minorShake = 2f;
+                        drawX += context.getRandomManager().range(-minorShake, minorShake) * shakeIntensity;
+                        drawY += context.getRandomManager().range(-minorShake, minorShake) * shakeIntensity;
+                    }
+                }
+
+                if (i < currentHealth) {
+                    hudBatch.draw(heartFullTexture, drawX, drawY, 32f, 32f);
+                } else {
+                    hudBatch.draw(heartEmptyTexture, drawX, drawY, 32f, 32f);
+                }
+            }
+        }
+
+
         if (debuffMessageTimer > 0f && !debuffMessage.isEmpty()) {
             introLayout.setText(introFont, debuffMessage);
             float msgX = (screenW - introLayout.width) / 2f;
@@ -370,18 +419,14 @@ public class GameScene extends Scene {
             smokeEffect.render(hudBatch, screenW, screenH);
         }
         if (smogActive && smogTexture != null) {
-
-            float alpha = 0.9f; // stronger smog
+            float alpha = 0.9f;
             hudBatch.setColor(1f, 1f, 1f, alpha);
-
-            // Very large smog clouds
             hudBatch.draw(smogTexture, -100f, screenH * 0.65f, 900f, 550f);
             hudBatch.draw(smogTexture, screenW * 0.25f, screenH * 0.45f, 800f, 500f);
             hudBatch.draw(smogTexture, screenW * 0.60f, screenH * 0.60f, 850f, 520f);
             hudBatch.draw(smogTexture, screenW * 0.10f, screenH * 0.20f, 850f, 520f);
             hudBatch.draw(smogTexture, screenW * 0.55f, screenH * 0.15f, 900f, 550f);
             hudBatch.draw(smogTexture, screenW * 0.40f, screenH * 0.75f, 850f, 520f);
-
             hudBatch.setColor(1f, 1f, 1f, 1f);
         }
         factPopupRenderer.render(hudBatch, screenW, screenH);
@@ -455,7 +500,7 @@ public class GameScene extends Scene {
 
         if (endingSceneController.isActive() && endingSceneController.isSpawnWarmup()) {
             String warmupText = "Take control in "
-                + (int) Math.ceil(endingSceneController.getSpawnWarmupTimer()) + "...";
+                    + (int) Math.ceil(endingSceneController.getSpawnWarmupTimer()) + "...";
             introLayout.setText(introFont, warmupText);
             introFont.draw(hudBatch, introLayout,
                     (screenW - introLayout.width) / 2f,
