@@ -70,7 +70,7 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("collectibles/gc_solarpanel.png", Texture.class);
         contextManager.getAssetManager().load("collectibles/gc_sapling.png", Texture.class);
         contextManager.getAssetManager().load("collectibles/greenhouse.png", Texture.class);
-        contextManager.getAssetManager().load("collectibles/windmill.jpg", Texture.class);
+        contextManager.getAssetManager().load("collectibles/windmill.png", Texture.class);
         //New Hearts
         contextManager.getAssetManager().load("backgrounds/heart_full.png", Texture.class);
         contextManager.getAssetManager().load("backgrounds/heart_empty.png", Texture.class);
