@@ -6,7 +6,7 @@ import inf1009.p63.flappyearth.engine.managers.AssetManager;
 
 public class SmokeEffect {
 
-    private static final String SMOKE_ASSET_KEY = "smoke.png";
+    private static final String SMOKE_ASSET_KEY = "backgrounds/smoke.png";
 
     private final AssetManager assetManager;
     private final float baseOverlayAlpha;

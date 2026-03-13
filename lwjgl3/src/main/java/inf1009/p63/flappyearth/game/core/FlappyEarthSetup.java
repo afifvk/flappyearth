@@ -49,30 +49,30 @@ public class FlappyEarthSetup implements GameSetup {
 
         GameSession gameSession = new GameSession(stagePlan.getFinalTargetGoodCollectibles());
 
-        contextManager.getAssetManager().load("pipe.png", Texture.class);
-        contextManager.getAssetManager().load("background.png", Texture.class);
-        contextManager.getAssetManager().load("smoke.png", Texture.class);
-        contextManager.getAssetManager().load("smog_cloud.png", Texture.class);
-        contextManager.getAssetManager().load("flappy00.png", Texture.class);
-        contextManager.getAssetManager().load("flappy01.png", Texture.class);
-        contextManager.getAssetManager().load("flappy02.png", Texture.class);
-        contextManager.getAssetManager().load("flappy03.png", Texture.class);
-        contextManager.getAssetManager().load("flappy04.png", Texture.class);
-        contextManager.getAssetManager().load("flappy05.png", Texture.class);
+        contextManager.getAssetManager().load("backgrounds/pipe.png", Texture.class);
+        contextManager.getAssetManager().load("backgrounds/background.png", Texture.class);
+        contextManager.getAssetManager().load("backgrounds/smoke.png", Texture.class);
+        contextManager.getAssetManager().load("backgrounds/smog_cloud.png", Texture.class);
+        contextManager.getAssetManager().load("bird/flappy00.png", Texture.class);
+        contextManager.getAssetManager().load("bird/flappy01.png", Texture.class);
+        contextManager.getAssetManager().load("bird/flappy02.png", Texture.class);
+        contextManager.getAssetManager().load("bird/flappy03.png", Texture.class);
+        contextManager.getAssetManager().load("bird/flappy04.png", Texture.class);
+        contextManager.getAssetManager().load("bird/flappy05.png", Texture.class);
         contextManager.getAssetManager().load("sound/bird_hit.mp3", Sound.class);
         contextManager.getAssetManager().load("sound/bird_die.mp3", Sound.class);
         contextManager.getAssetManager().load("sound/game_over.mp3", Sound.class);
         contextManager.getAssetManager().load("sound/bird_point.mp3", Sound.class);
-        contextManager.getAssetManager().load("bc_garbage.png", Texture.class);
-        contextManager.getAssetManager().load("bc_oilspill.png", Texture.class);
-        contextManager.getAssetManager().load("bc_factory.png", Texture.class);
-        contextManager.getAssetManager().load("gc_recylingbin.png", Texture.class);
-        contextManager.getAssetManager().load("bc_plasticbottle.png", Texture.class);
-        contextManager.getAssetManager().load("gc_solarpanel.png", Texture.class);
-        contextManager.getAssetManager().load("gc_sapling.png", Texture.class);
+        contextManager.getAssetManager().load("collectibles/bc_garbage.png", Texture.class);
+        contextManager.getAssetManager().load("collectibles/bc_oilspill.png", Texture.class);
+        contextManager.getAssetManager().load("collectibles/bc_factory.png", Texture.class);
+        contextManager.getAssetManager().load("collectibles/gc_recylingbin.png", Texture.class);
+        contextManager.getAssetManager().load("collectibles/bc_plasticbottle.png", Texture.class);
+        contextManager.getAssetManager().load("collectibles/gc_solarpanel.png", Texture.class);
+        contextManager.getAssetManager().load("collectibles/gc_sapling.png", Texture.class);
         //New Hearts
-        contextManager.getAssetManager().load("heart_full.png", Texture.class);
-        contextManager.getAssetManager().load("heart_empty.png", Texture.class);
+        contextManager.getAssetManager().load("backgrounds/heart_full.png", Texture.class);
+        contextManager.getAssetManager().load("backgrounds/heart_empty.png", Texture.class);
         // jump/whoosh sound for flap
         contextManager.getAssetManager().load("sound/bird_whoosh.mp3", Sound.class);
         // UI backgrounds

@@ -2,7 +2,7 @@ package inf1009.p63.flappyearth.game.entities.collectibles;
 
 public class OilSpillCollectible extends BadCollectible {
     public OilSpillCollectible(float x, float y) {
-        super(x, y, 60, 60, "bc_oilspill.png", CollectibleType.OIL_SPILL);
+        super(x, y, 60, 60, "collectibles/bc_oilspill.png", CollectibleType.OIL_SPILL);
     }
     @Override
     public void onCollect() {}

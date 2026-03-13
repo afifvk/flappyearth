@@ -18,8 +18,8 @@ public class Player extends GameEntity implements Movable {
     private boolean passed = false;
 
     private static final String[] BIRD_FRAMES = {
-        "flappy00.png", "flappy01.png", "flappy02.png",
-        "flappy03.png", "flappy04.png", "flappy05.png"
+        "bird/flappy00.png", "bird/flappy01.png", "bird/flappy02.png",
+        "bird/flappy03.png", "bird/flappy04.png", "bird/flappy05.png"
     };
     private static final float FRAME_DURATION = 0.1f;
     private int currentFrame = 0;

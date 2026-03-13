@@ -12,6 +12,9 @@ import inf1009.p63.flappyearth.engine.core.SceneManager;
 
 public class SettingsScene extends Scene {
 
+    private static final float BUTTON_BASE_WIDTH = 320f;
+    private static final float BUTTON_BASE_HEIGHT = 90f;
+
     private final SceneManager       sceneManager;
     private final GameContextManager context;
 
@@ -40,8 +43,8 @@ public class SettingsScene extends Scene {
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
         float scale   = screenH / 1080f;
-        float btnW    = 220f * scale;
-        float btnH    = 70f  * scale;
+        float btnW    = BUTTON_BASE_WIDTH * scale;
+        float btnH    = BUTTON_BASE_HEIGHT * scale;
         float btnX    = (screenW - btnW) / 2f;
         float btnY    = screenH * 0.12f;
 
@@ -68,8 +71,8 @@ public class SettingsScene extends Scene {
         }
 
         float scale = screenH / 1080f;
-        float btnW  = 220f * scale;
-        float btnH  = 70f  * scale;
+        float btnW  = BUTTON_BASE_WIDTH * scale;
+        float btnH  = BUTTON_BASE_HEIGHT * scale;
         float btnX  = (screenW - btnW) / 2f;
         float btnY  = screenH * 0.12f;
 

@@ -51,6 +51,9 @@ import inf1009.p63.flappyearth.game.state.GameState;
 
 public class GameScene extends Scene {
 
+    private static final float BUTTON_BASE_WIDTH = 320f;
+    private static final float BUTTON_BASE_HEIGHT = 90f;
+
     private final SceneManager sceneManager;
     private final GameContextManager context;
     private final GameSession gameSession;
@@ -274,14 +277,14 @@ public class GameScene extends Scene {
         smokeEffect = new SmokeEffect(
                 context.getAssetManager(),
                 stageConfig.getSmokeOverlayAlpha());
-        context.getAssetManager().load("heart_full.png", Texture.class);
-        context.getAssetManager().load("heart_empty.png", Texture.class);
+        context.getAssetManager().load("backgrounds/heart_full.png", Texture.class);
+        context.getAssetManager().load("backgrounds/heart_empty.png", Texture.class);
         context.getAssetManager().load("sound/game_over.mp3", com.badlogic.gdx.audio.Sound.class);
         context.getAssetManager().finishLoading();
 
         context.getSoundManager().setGameOverSound(context.getAssetManager().get("sound/game_over.mp3", com.badlogic.gdx.audio.Sound.class));
-        heartFullTexture  = context.getAssetManager().get("heart_full.png",  Texture.class);
-        heartEmptyTexture = context.getAssetManager().get("heart_empty.png", Texture.class);
+        heartFullTexture  = context.getAssetManager().get("backgrounds/heart_full.png",  Texture.class);
+        heartEmptyTexture = context.getAssetManager().get("backgrounds/heart_empty.png", Texture.class);
 
         // Pause overlay textures
         pauseBgTex      = context.getAssetManager().get("ui/pause_background.png",    Texture.class);
@@ -635,8 +638,8 @@ public class GameScene extends Scene {
         float popupH  = 520f * scale;
         float popupX  = (screenW - popupW) / 2f;
         float popupY  = (screenH - popupH) / 2f;
-        float btnW    = 260f * scale;
-        float btnH    = 70f  * scale;
+        float btnW    = BUTTON_BASE_WIDTH * scale;
+        float btnH    = BUTTON_BASE_HEIGHT * scale;
         float btnX    = popupX + (popupW - btnW) / 2f;
 
         float resumeY  = popupY + popupH * 0.62f;
@@ -680,8 +683,8 @@ public class GameScene extends Scene {
             pauseBatch.draw(pauseBgTex, popupX, popupY, popupW, popupH);
         }
 
-        float btnW   = 260f * scale;
-        float btnH   = 70f  * scale;
+        float btnW   = BUTTON_BASE_WIDTH * scale;
+        float btnH   = BUTTON_BASE_HEIGHT * scale;
         float btnX   = popupX + (popupW - btnW) / 2f;
 
         float resumeY  = popupY + popupH * 0.62f;

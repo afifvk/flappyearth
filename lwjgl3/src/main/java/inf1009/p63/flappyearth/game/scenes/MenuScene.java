@@ -13,6 +13,11 @@ import inf1009.p63.flappyearth.game.state.GameSession;
 
 public class MenuScene extends Scene {
 
+    private static final float BUTTON_BASE_WIDTH = 320f;
+    private static final float BUTTON_BASE_HEIGHT = 90f;
+    private static final float START_Y_RATIO = 0.45f;
+    private static final float BUTTON_VERTICAL_GAP_RATIO = 0.11f;
+
     private final SceneManager       sceneManager;
     private final GameContextManager context;
     private final GameSession        gameSession;
@@ -55,13 +60,13 @@ public class MenuScene extends Scene {
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
         float scale   = screenH / 1080f;
-        float btnW    = 250f * scale;
-        float btnH    = 70f  * scale;
+        float btnW    = BUTTON_BASE_WIDTH * scale;
+        float btnH    = BUTTON_BASE_HEIGHT * scale;
         float btnX    = (screenW - btnW) / 2f;
 
-        float startY    = screenH * 0.55f;
-        float settingsY = screenH * 0.41f;
-        float quitY     = screenH * 0.27f;
+        float startY    = screenH * START_Y_RATIO;
+        float settingsY = startY - (screenH * BUTTON_VERTICAL_GAP_RATIO);
+        float quitY     = settingsY - (screenH * BUTTON_VERTICAL_GAP_RATIO);
 
         if (isButtonClicked(btnX, startY, btnW, btnH, screenH)) {
             gameSession.resetForNewRun();
@@ -91,13 +96,16 @@ public class MenuScene extends Scene {
         }
 
         float scale = screenH / 1080f;
-        float btnW  = 250f * scale;
-        float btnH  = 70f  * scale;
+        float btnW  = BUTTON_BASE_WIDTH * scale;
+        float btnH  = BUTTON_BASE_HEIGHT * scale;
         float btnX  = (screenW - btnW) / 2f;
+        float startY    = screenH * START_Y_RATIO;
+        float settingsY = startY - (screenH * BUTTON_VERTICAL_GAP_RATIO);
+        float quitY     = settingsY - (screenH * BUTTON_VERTICAL_GAP_RATIO);
 
-        drawButton(start1,    start2,    btnX, screenH * 0.55f, btnW, btnH, screenH);
-        drawButton(settings1, settings2, btnX, screenH * 0.41f, btnW, btnH, screenH);
-        drawButton(quit1,     quit2,     btnX, screenH * 0.27f, btnW, btnH, screenH);
+        drawButton(start1,    start2,    btnX, startY,    btnW, btnH, screenH);
+        drawButton(settings1, settings2, btnX, settingsY, btnW, btnH, screenH);
+        drawButton(quit1,     quit2,     btnX, quitY,     btnW, btnH, screenH);
 
         batch.end();
     }
