@@ -36,10 +36,10 @@ public class GameSession {
         environmentProgress.reset();
     }
 
-    public void prepareForStageEntry() {
-        gameState.setAlive(true);
-        gameState.clearSceneRequest();
-        gameState.setInvincible(0f);
-        activeEffects.reset();
-    }
+public void prepareForStageEntry() {
+    gameState.setAlive(true);
+    gameState.clearSceneRequest();
+    gameState.setInvincible(0f);
+    activeEffects.reset();
+}
 }

@@ -467,8 +467,7 @@ public class GameScene extends Scene {
 
         float hudScale = screenH / 1080f;
         introFont.getData().setScale(1.7f * hudScale);
-        DebuffOverlayInfo debuffOverlayInfo = buildDebuffOverlayInfo(player);
-
+List<DebuffOverlayInfo> debuffOverlayInfo = buildDebuffOverlayList(player);
         hudBatch.begin();
 
         if (player != null && heartFullTexture != null && heartEmptyTexture != null) {
@@ -508,10 +507,9 @@ public class GameScene extends Scene {
             }
         }
 
-        if (debuffOverlayInfo != null) {
-            renderDebuffCountdownText(hudBatch, screenW, screenH, hudScale, debuffOverlayInfo);
-        }
-
+                if (!debuffOverlayInfo.isEmpty()) {
+                    renderDebuffCountdownText(hudBatch, screenW, screenH, hudScale, debuffOverlayInfo);
+                }
         factPopupRenderer.render(hudBatch, screenW, screenH);
 
         if (showIntroText && introTimer > 0f) {
@@ -663,11 +661,14 @@ public class GameScene extends Scene {
             paused = false;
         } else if (isPauseButtonClicked(btnX, restartY, btnW, btnH, screenH)) {
             paused = false;
-            sceneManager.switchTo(stageConfig.getSceneId());
-        } else if (isPauseButtonClicked(btnX, quitY, btnW, btnH, screenH)) {
+            gameSession.resetForNewRun();
+            gameSession.prepareForStageEntry();
+            sceneManager.switchTo(stagePlan.getInitialStageId());
+        }else if (isPauseButtonClicked(btnX, quitY, btnW, btnH, screenH)) {
             paused = false;
+            gameSession.resetForNewRun();
             sceneManager.switchTo(GameSceneId.MENU.id());
-        }
+        }       
     }
 
     private void renderPauseOverlay(float screenW, float screenH) {
@@ -795,74 +796,97 @@ public class GameScene extends Scene {
         shapeRenderer.end();
     }
 
-    private DebuffOverlayInfo buildDebuffOverlayInfo(Player player) {
-        List<String> activeDebuffs = new ArrayList<>();
-        float maxTimer = 0f;
+private List<DebuffOverlayInfo> buildDebuffOverlayList(Player player) {
+    List<DebuffOverlayInfo> debuffs = new ArrayList<>();
 
-        if (player != null) {
-            maxTimer = collectActiveDebuff(activeDebuffs, maxTimer,
-                "Reversed Flight", player.getReversedFlightTimer());
-            maxTimer = collectActiveDebuff(activeDebuffs, maxTimer,
-                "Slow Jumps", player.getJumpIntervalDebuffTimer());
-            maxTimer = collectActiveDebuff(activeDebuffs, maxTimer,
-                "Screen Shake", player.getControlLockTimer());
-        }
-
-        if (activeEffects != null) {
-            maxTimer = collectActiveDebuff(activeDebuffs, maxTimer,
-                "Obstructed Vision", activeEffects.getOilBlotTimer());
-            maxTimer = collectActiveDebuff(activeDebuffs, maxTimer,
-                "Screen Shake", activeEffects.getTrashRattleTimer());
-        }
-
-        if (activeDebuffs.isEmpty()) {
-            return null;
-        }
-
-        String debuffList = String.join(", ", activeDebuffs);
-        return new DebuffOverlayInfo(debuffList, maxTimer);
+    if (player != null) {
+        if (player.getReversedFlightTimer() > 0f)
+            debuffs.add(new DebuffOverlayInfo("Reversed Flight",
+                player.getReversedFlightTimer(), PLASTIC_BOTTLE_DURATION));
+        if (player.getJumpIntervalDebuffTimer() > 0f)
+            debuffs.add(new DebuffOverlayInfo("Slow Jumps",
+                player.getJumpIntervalDebuffTimer(), FACTORY_SMOKE_DURATION));
+        if (player.getControlLockTimer() > 0f)
+            debuffs.add(new DebuffOverlayInfo("Control Lock",
+                player.getControlLockTimer(), FACTORY_SMOKE_DURATION));
     }
 
-        private float collectActiveDebuff(List<String> activeDebuffs,
-                          float currentMaxTimer,
-                          String label,
-                          float timerSeconds) {
-        if (timerSeconds <= 0f) {
-            return currentMaxTimer;
-        }
-        if (!activeDebuffs.contains(label)) {
-            activeDebuffs.add(label);
-        }
-        return Math.max(currentMaxTimer, timerSeconds);
+    if (activeEffects != null) {
+        if (activeEffects.getOilBlotTimer() > 0f)
+            debuffs.add(new DebuffOverlayInfo("Obstructed Vision",
+                activeEffects.getOilBlotTimer(), OIL_BLOT_DURATION));
+        if (activeEffects.getTrashRattleTimer() > 0f)
+            debuffs.add(new DebuffOverlayInfo("Screen Shake",
+                activeEffects.getTrashRattleTimer(), TRASH_PILE_SHAKE_DURATION));
     }
 
-    private void renderDebuffCountdownText(SpriteBatch hudBatch,
-                                           float screenW,
-                                           float screenH,
-                                           float hudScale,
-                                           DebuffOverlayInfo info) {
-        int countdown = Math.max(1, Math.min(5, (int) Math.ceil(Math.min(DEBUFF_POPUP_MAX_SECONDS, info.timerSeconds))));
-        String listText = info.listText;
-        String countdownText = Integer.toString(countdown);
-        float textScale = 1.45f * hudScale;
+    return debuffs;
+}
 
-        introFont.getData().setScale(textScale);
-        introLayout.setText(introFont, listText);
-        float listX = (screenW - introLayout.width) / 2f;
-        float listY = screenH * 0.84f;
+private void renderDebuffCountdownText(SpriteBatch hudBatch,
+                                       float screenW,
+                                       float screenH,
+                                       float hudScale,
+                                       List<DebuffOverlayInfo> debuffs) {
+    if (debuffs.isEmpty()) return;
 
-        introFont.setColor(Color.WHITE);
-        introFont.draw(hudBatch, introLayout, listX, listY);
+    float s       = hudScale;
+    float pad     = 16f * s;
+    float pillW   = 300f * s;
+    float pillH   = 64f  * s;
+    float pillGap = 10f  * s;
+    float pillX   = pad;
 
-        introFont.getData().setScale(textScale);
-        introLayout.setText(introFont, countdownText);
-        float countdownX = (screenW - introLayout.width) / 2f;
-        float countdownY = screenH * 0.77f;
+    hudBatch.end();
 
-        introFont.setColor(Color.WHITE);
-        introFont.draw(hudBatch, introLayout, countdownX, countdownY);
-        introFont.getData().setScale(1.7f * hudScale);
+    ShapeRenderer sr = rendererManager.getShapeRenderer();
+    sr.getProjectionMatrix().setToOrtho2D(0, 0, screenW, screenH);
+    Gdx.gl.glEnable(GL20.GL_BLEND);
+    Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
+    sr.begin(ShapeRenderer.ShapeType.Filled);
+    for (int i = 0; i < debuffs.size(); i++) {
+        DebuffOverlayInfo info = debuffs.get(i);
+        float pillY    = pad * 3f + i * (pillH + pillGap);
+        float progress = info.durationSeconds > 0f
+                ? Math.min(1f, info.timerSeconds / info.durationSeconds)
+                : 0f;
+
+        sr.setColor(0f, 0f, 0f, 0.55f);
+        sr.rect(pillX, pillY, pillW, pillH);
+
+        sr.setColor(1f, 0.45f + 0.35f * progress, 0f, 0.85f);
+        sr.rect(pillX, pillY, pillW * progress, pillH * 0.22f);
     }
+    sr.end();
+
+    hudBatch.begin();
+
+    float textScale = 1.5f * s;
+    introFont.getData().setScale(textScale);
+
+    for (int i = 0; i < debuffs.size(); i++) {
+        DebuffOverlayInfo info = debuffs.get(i);
+        float pillY = pad * 3f + i * (pillH + pillGap);
+
+        int countdown = Math.max(1,
+                (int) Math.ceil(Math.min(DEBUFF_POPUP_MAX_SECONDS, info.timerSeconds)));
+        String label = info.label + "  " + countdown + "s";
+
+        introLayout.setText(introFont, label);
+        float textX = pillX + (pillW - introLayout.width) / 2f;
+        float textY = pillY + pillH * 0.75f;
+
+        introFont.setColor(0f, 0f, 0f, 0.8f);
+        introFont.draw(hudBatch, label, textX + 1.5f * s, textY - 1.5f * s);
+        introFont.setColor(1f, 0.9f, 0.5f, 1f);
+        introFont.draw(hudBatch, label, textX, textY);
+    }
+
+    hudBatch.end();
+    introFont.getData().setScale(1.7f * s);
+    hudBatch.begin();
+}
 
     private void enableFontSmoothing(BitmapFont bitmapFont) {
         for (TextureRegion region : bitmapFont.getRegions()) {
@@ -870,13 +894,15 @@ public class GameScene extends Scene {
         }
     }
 
-    private static final class DebuffOverlayInfo {
-        private final String listText;
-        private final float timerSeconds;
+private static final class DebuffOverlayInfo {
+    private final String label;
+    private final float timerSeconds;
+    private final float durationSeconds;
 
-        private DebuffOverlayInfo(String listText, float timerSeconds) {
-            this.listText = listText;
-            this.timerSeconds = timerSeconds;
-        }
+    private DebuffOverlayInfo(String label, float timerSeconds, float durationSeconds) {
+        this.label = label;
+        this.timerSeconds = timerSeconds;
+        this.durationSeconds = durationSeconds;
     }
+}
 }

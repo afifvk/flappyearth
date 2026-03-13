@@ -16,19 +16,18 @@ import java.util.List;
 
 public class HudRenderer {
 
-    private static final float HUD_PADDING = 20f;
-    private static final float HEADER_Y_OFFSET = 20f;
-    private static final float LINE_GAP = 30f;
-    private static final float BAR_WIDTH = 300f;
-    private static final float BAR_HEIGHT = 22f; // Thicker game bar
+    private static final float BAR_WIDTH  = 280f;
+    private static final float BAR_HEIGHT = 18f;
+    private static final float PADDING    = 16f;
 
-    private final BitmapFont    font;
-    private final GlyphLayout   layout;
-    private final ActiveEffects activeEffects;
-    private final GameState     gameState;
-    private final ScoreManager  scoreManager;
+    private final BitmapFont        font;
+    private final BitmapFont        smallFont;
+    private final GlyphLayout       layout;
+    private final ActiveEffects     activeEffects;
+    private final GameState         gameState;
+    private final ScoreManager      scoreManager;
     private final EnvironmentProgress environmentProgress;
-    private final List<Integer> checkpointTargets;
+    private final List<Integer>     checkpointTargets;
     private String stageTitle;
 
     public HudRenderer(ActiveEffects activeEffects,
@@ -37,103 +36,113 @@ public class HudRenderer {
                        EnvironmentProgress environmentProgress,
                        List<Integer> checkpointTargets,
                        String stageTitle) {
-        this.activeEffects = activeEffects;
-        this.gameState     = gameState;
-        this.scoreManager = scoreManager;
-        this.environmentProgress = environmentProgress;
-        this.checkpointTargets = new ArrayList<>(checkpointTargets);
-        this.stageTitle = stageTitle;
-        
+        this.activeEffects        = activeEffects;
+        this.gameState            = gameState;
+        this.scoreManager         = scoreManager;
+        this.environmentProgress  = environmentProgress;
+        this.checkpointTargets    = new ArrayList<>(checkpointTargets);
+        this.stageTitle           = stageTitle;
+
         this.font = new BitmapFont();
-        this.font.getData().setScale(1.6f); 
-        enableFontSmoothing(this.font);
+        this.font.getData().setScale(2.6f);
+        this.font.setUseIntegerPositions(false);
+        enableSmoothing(this.font);
+
+        this.smallFont = new BitmapFont();
+        this.smallFont.getData().setScale(1.8f);
+        this.smallFont.setUseIntegerPositions(false);
+        enableSmoothing(this.smallFont);
+
         this.layout = new GlyphLayout();
     }
 
-    public void setStageTitle(String stageTitle) {
-        this.stageTitle = stageTitle;
-    }
+    public void setStageTitle(String t) { this.stageTitle = t; }
 
-    public void render(ShapeRenderer shapeRenderer,
-                       SpriteBatch batch,
-                       float screenW,
-                       float screenH) {
+    public void render(ShapeRenderer sr, SpriteBatch batch,
+                       float screenW, float screenH) {
 
         float s = screenH / 1080f;
-        float padding   = HUD_PADDING     * s;
-        float yOffset   = HEADER_Y_OFFSET * s;
-        float lineGap   = LINE_GAP        * s;
-        float barWidth  = BAR_WIDTH       * s;
-        float barHeight = BAR_HEIGHT      * s;
-        font.getData().setScale(1.6f * s);
 
-        float topY = screenH - yOffset;
+        font.getData().setScale(2.6f * s);
+        smallFont.getData().setScale(1.8f * s);
 
-        // Position the progress bar topcenter
-        float barX = (screenW - barWidth) / 2f;
-        float barY = topY - barHeight;
+        float pad  = PADDING * s;
+        float barW = BAR_WIDTH * s;
+        float barH = BAR_HEIGHT * s;
 
-        float fillWidth = barWidth * environmentProgress.getProgressRatio();
-        shapeRenderer.begin(ShapeRenderer.ShapeType.Filled);
-        shapeRenderer.setColor(Color.BLACK);
-        shapeRenderer.rect(barX - 4f * s, barY - 4f * s, barWidth + 8f * s, barHeight + 8f * s);
-        shapeRenderer.setColor(0.2f, 0.2f, 0.2f, 1f);
-        shapeRenderer.rect(barX, barY, barWidth, barHeight);
-        float progressRatio = environmentProgress.getProgressRatio();
-        shapeRenderer.setColor(1f - progressRatio, progressRatio + 0.3f, 0.2f, 1f);
-        shapeRenderer.rect(barX, barY, fillWidth, barHeight);
-        int checkpointCount = checkpointTargets.size();
-        for (int i = 0; i < checkpointCount; i++) {
-            int checkpointTarget = checkpointTargets.get(i);
-            float checkpointX = barX + (barWidth * ((i + 1f) / (checkpointCount + 1f)));
+        float barX = (screenW - barW) / 2f;
+        float barY = screenH - pad - barH;
 
-            boolean isPassed = environmentProgress.getGoodCollectiblesCollected() >= checkpointTarget;
+        float fill  = barW * environmentProgress.getProgressRatio();
+        float ratio = environmentProgress.getProgressRatio();
 
-            if (isPassed) {
-                shapeRenderer.setColor(Color.GOLD);
-            } else {
-                shapeRenderer.setColor(Color.WHITE);
-            }
-            shapeRenderer.rect(checkpointX - 2f * s, barY - 6f * s, 4f * s, barHeight + 12f * s);
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+
+        sr.setColor(0f, 0f, 0f, 0.7f);
+        sr.rect(barX - 3f * s, barY - 3f * s, barW + 6f * s, barH + 6f * s);
+
+        sr.setColor(0.15f, 0.15f, 0.15f, 1f);
+        sr.rect(barX, barY, barW, barH);
+
+        sr.setColor(1f - ratio, 0.3f + ratio * 0.7f, 0.1f, 1f);
+        if (fill > 0) sr.rect(barX, barY, fill, barH);
+
+        int cpCount = checkpointTargets.size();
+        for (int i = 0; i < cpCount; i++) {
+            float tickX = barX + barW * ((i + 1f) / (cpCount + 1f));
+            boolean passed = environmentProgress.getGoodCollectiblesCollected()
+                    >= checkpointTargets.get(i);
+            sr.setColor(passed ? Color.GOLD : Color.WHITE);
+            sr.rect(tickX - 2f * s, barY - 5f * s, 4f * s, barH + 10f * s);
         }
-        shapeRenderer.end();
+
+        sr.end();
 
         batch.begin();
-        layout.setText(font, stageTitle);
+
+        layout.setText(smallFont, stageTitle);
         float titleX = (screenW - layout.width) / 2f;
-        float titleY = barY - 15f * s;
-        drawTextWithShadow(batch, stageTitle, titleX, titleY, s);
-        String distanceText = "SCORE: " + scoreManager.getCurrentScore();
-        layout.setText(font, distanceText);
-        float distanceX = screenW - padding - layout.width;
-        drawTextWithShadow(batch, distanceText, distanceX, topY, s);
-        float statusY = topY - 80f * s;
+        float titleY = barY - 6f * s;
+        drawShadowed(batch, smallFont, stageTitle, titleX, titleY, s);
+
+        String scoreText = "SCORE: " + scoreManager.getCurrentScore();
+        layout.setText(font, scoreText);
+        float scoreX = screenW - pad - layout.width;
+        float scoreY = screenH - pad;
+        drawShadowed(batch, font, scoreText, scoreX, scoreY, s);
+
+        float statusY = screenH - 100f * s;
         if (activeEffects.isShieldActive()) {
-            drawTextWithShadow(batch, "SHIELD: " + String.format("%.1f", activeEffects.getShieldTimer()) + "s",
-                      padding, statusY, s);
-            statusY -= lineGap;
+            drawShadowed(batch, smallFont,
+                    "SHIELD  " + String.format("%.1fs", activeEffects.getShieldTimer()),
+                    pad, statusY, s);
+            statusY -= 32f * s;
         }
         if (activeEffects.isSlowTimeActive()) {
-            drawTextWithShadow(batch, "SLOW: " + String.format("%.1f", activeEffects.getSlowTimeTimer()) + "s",
-                      padding, statusY, s);
+            drawShadowed(batch, smallFont,
+                    "SLOW  " + String.format("%.1fs", activeEffects.getSlowTimeTimer()),
+                    pad, statusY, s);
         }
 
         batch.end();
     }
-    private void drawTextWithShadow(SpriteBatch batch, String text, float x, float y, float s) {
-        font.setColor(Color.BLACK);
-        font.draw(batch, text, x + 2f * s, y - 2f * s);
-        font.setColor(Color.WHITE);
-        font.draw(batch, text, x, y);
+
+    private void drawShadowed(SpriteBatch b, BitmapFont f,
+                               String text, float x, float y, float s) {
+        f.setColor(0f, 0f, 0f, 0.75f);
+        f.draw(b, text, x + 2f * s, y - 2f * s);
+        f.setColor(Color.WHITE);
+        f.draw(b, text, x, y);
     }
 
     public void dispose() {
-        if (font != null) font.dispose();
+        if (font      != null) font.dispose();
+        if (smallFont != null) smallFont.dispose();
     }
 
-    private void enableFontSmoothing(BitmapFont bitmapFont) {
-        for (TextureRegion region : bitmapFont.getRegions()) {
-            region.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
+    private void enableSmoothing(BitmapFont f) {
+        for (TextureRegion r : f.getRegions()) {
+            r.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
         }
     }
 }
