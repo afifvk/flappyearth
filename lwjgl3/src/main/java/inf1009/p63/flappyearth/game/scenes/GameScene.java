@@ -1,6 +1,7 @@
 package inf1009.p63.flappyearth.game.scenes;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -82,6 +83,15 @@ public class GameScene extends Scene {
     private Texture heartFullTexture;
     private Texture heartEmptyTexture;
 
+    // ── pause overlay ────────────────────────────────────────────────────────
+    private boolean          paused         = false;
+    private SpriteBatch      pauseBatch;
+    private OrthographicCamera pauseCamera;
+    private Texture          pauseBgTex;
+    private Texture          pauseResume1,  pauseResume2;
+    private Texture          pauseRestart1, pauseRestart2;
+    private Texture          pauseQuit1,    pauseQuit2;
+
     private String debuffMessage = "";
     private float debuffMessageTimer = 0f;
     private static final float DEBUFF_MESSAGE_DURATION = 2.5f;
@@ -129,6 +139,9 @@ public class GameScene extends Scene {
         this.introFont = new BitmapFont();
         this.introFont.getData().setScale(1.7f);
         this.introLayout = new GlyphLayout();
+
+        this.pauseBatch  = new SpriteBatch();
+        this.pauseCamera = new OrthographicCamera();
     }
 
     @Override
@@ -267,8 +280,18 @@ public class GameScene extends Scene {
         context.getAssetManager().finishLoading();
 
         context.getSoundManager().setGameOverSound(context.getAssetManager().get("sound/game_over.mp3", com.badlogic.gdx.audio.Sound.class));
-        heartFullTexture = context.getAssetManager().get("heart_full.png", Texture.class);
+        heartFullTexture  = context.getAssetManager().get("heart_full.png",  Texture.class);
         heartEmptyTexture = context.getAssetManager().get("heart_empty.png", Texture.class);
+
+        // Pause overlay textures
+        pauseBgTex      = context.getAssetManager().get("ui/pause_background.png",    Texture.class);
+        pauseResume1    = context.getAssetManager().get("buttons/A_Resume1.png",      Texture.class);
+        pauseResume2    = context.getAssetManager().get("buttons/A_Resume2.png",      Texture.class);
+        pauseRestart1   = context.getAssetManager().get("buttons/A_Restart1.png",     Texture.class);
+        pauseRestart2   = context.getAssetManager().get("buttons/A_Restart2.png",     Texture.class);
+        pauseQuit1      = context.getAssetManager().get("buttons/A_Quit1.png",        Texture.class);
+        pauseQuit2      = context.getAssetManager().get("buttons/A_Quit2.png",        Texture.class);
+        paused          = false;
 
         entityFactory = new EntityFactory(context.getRandomManager());
         playerManager.spawnPlayer(80f, dimensions.getWorldHeight() / 2f, config);
@@ -317,6 +340,17 @@ public class GameScene extends Scene {
 
         GameState gameState = gameSession.getGameState();
         Player player = (Player) entityManager.getFirstByTag(Tags.PLAYER);
+
+        // Toggle pause with ESC (only when actively playing)
+        if (!gameState.isDeathSequenceActive() && !endingSceneController.isActive()
+                && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+            paused = !paused;
+        }
+
+        if (paused) {
+            handlePauseInput();
+            return;
+        }
 
         if (endingSceneController.update(
                 delta,
@@ -541,6 +575,10 @@ public class GameScene extends Scene {
         }
 
         hudBatch.end();
+
+        if (paused) {
+            renderPauseOverlay(screenW, screenH);
+        }
     }
 
     @Override
@@ -577,11 +615,104 @@ public class GameScene extends Scene {
         if (introFont != null) {
             introFont.dispose();
         }
+        if (pauseBatch != null) {
+            pauseBatch.dispose();
+        }
     }
 
     private void showDebuffMessage(String message) {
         debuffMessage = message;
         debuffMessageTimer = DEBUFF_MESSAGE_DURATION;
+    }
+
+    // ── pause helpers ──────────────────────────────────────────────────────
+
+    private void handlePauseInput() {
+        float screenW = Gdx.graphics.getWidth();
+        float screenH = Gdx.graphics.getHeight();
+        float scale   = screenH / 1080f;
+        float popupW  = 400f * scale;
+        float popupH  = 520f * scale;
+        float popupX  = (screenW - popupW) / 2f;
+        float popupY  = (screenH - popupH) / 2f;
+        float btnW    = 260f * scale;
+        float btnH    = 70f  * scale;
+        float btnX    = popupX + (popupW - btnW) / 2f;
+
+        float resumeY  = popupY + popupH * 0.62f;
+        float restartY = popupY + popupH * 0.38f;
+        float quitY    = popupY + popupH * 0.14f;
+
+        if (isPauseButtonClicked(btnX, resumeY, btnW, btnH, screenH)) {
+            paused = false;
+        } else if (isPauseButtonClicked(btnX, restartY, btnW, btnH, screenH)) {
+            paused = false;
+            sceneManager.switchTo(stageConfig.getSceneId());
+        } else if (isPauseButtonClicked(btnX, quitY, btnW, btnH, screenH)) {
+            paused = false;
+            sceneManager.switchTo(GameSceneId.MENU.id());
+        }
+    }
+
+    private void renderPauseOverlay(float screenW, float screenH) {
+        // Dim the game behind the popup
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        ShapeRenderer sr = rendererManager.getShapeRenderer();
+        sr.getProjectionMatrix().setToOrtho2D(0, 0, screenW, screenH);
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+        sr.setColor(0f, 0f, 0f, 0.6f);
+        sr.rect(0, 0, screenW, screenH);
+        sr.end();
+
+        // Draw popup + buttons
+        pauseCamera.setToOrtho(false, screenW, screenH);
+        pauseBatch.setProjectionMatrix(pauseCamera.combined);
+        pauseBatch.begin();
+
+        float scale  = screenH / 1080f;
+        float popupW = 400f * scale;
+        float popupH = 520f * scale;
+        float popupX = (screenW - popupW) / 2f;
+        float popupY = (screenH - popupH) / 2f;
+
+        if (pauseBgTex != null) {
+            pauseBatch.draw(pauseBgTex, popupX, popupY, popupW, popupH);
+        }
+
+        float btnW   = 260f * scale;
+        float btnH   = 70f  * scale;
+        float btnX   = popupX + (popupW - btnW) / 2f;
+
+        float resumeY  = popupY + popupH * 0.62f;
+        float restartY = popupY + popupH * 0.38f;
+        float quitY    = popupY + popupH * 0.14f;
+
+        drawPauseButton(pauseResume1,  pauseResume2,  btnX, resumeY,  btnW, btnH, screenH);
+        drawPauseButton(pauseRestart1, pauseRestart2, btnX, restartY, btnW, btnH, screenH);
+        drawPauseButton(pauseQuit1,    pauseQuit2,    btnX, quitY,    btnW, btnH, screenH);
+
+        pauseBatch.end();
+    }
+
+    private void drawPauseButton(Texture normal, Texture pressed,
+                                 float bx, float by, float bw, float bh, float screenH) {
+        boolean hovered   = isPauseHovered(bx, by, bw, bh, screenH);
+        boolean isPressed = hovered && Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+        Texture tex = isPressed ? pressed : normal;
+        if (tex != null) pauseBatch.draw(tex, bx, by, bw, bh);
+    }
+
+    /** LibGDX Y-origin for getY() is at the top; flip to bottom-origin for hit testing. */
+    private boolean isPauseHovered(float bx, float by, float bw, float bh, float screenH) {
+        float mx = Gdx.input.getX();
+        float my = screenH - Gdx.input.getY();
+        return mx >= bx && mx <= bx + bw && my >= by && my <= by + bh;
+    }
+
+    private boolean isPauseButtonClicked(float bx, float by, float bw, float bh, float screenH) {
+        return isPauseHovered(bx, by, bw, bh, screenH)
+                && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
     }
 
     private void generateOilSplotchPattern() {

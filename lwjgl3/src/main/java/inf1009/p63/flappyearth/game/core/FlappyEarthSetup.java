@@ -17,6 +17,7 @@ import inf1009.p63.flappyearth.game.scenes.GameOverScene;
 import inf1009.p63.flappyearth.game.scenes.GameScene;
 import inf1009.p63.flappyearth.game.scenes.GameSceneId;
 import inf1009.p63.flappyearth.game.scenes.MenuScene;
+import inf1009.p63.flappyearth.game.scenes.SettingsScene;
 import inf1009.p63.flappyearth.game.scenes.StageConfig;
 import inf1009.p63.flappyearth.game.scenes.StagePlan;
 import inf1009.p63.flappyearth.game.state.GameSession;
@@ -74,6 +75,25 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("heart_empty.png", Texture.class);
         // jump/whoosh sound for flap
         contextManager.getAssetManager().load("sound/bird_whoosh.mp3", Sound.class);
+        // UI backgrounds
+        contextManager.getAssetManager().load("ui/menu_background.png",     Texture.class);
+        contextManager.getAssetManager().load("ui/settings_background.png", Texture.class);
+        contextManager.getAssetManager().load("ui/pause_background.png",    Texture.class);
+        // Menu buttons
+        contextManager.getAssetManager().load("buttons/A_Start1.png",    Texture.class);
+        contextManager.getAssetManager().load("buttons/A_Start2.png",    Texture.class);
+        contextManager.getAssetManager().load("buttons/A_Settings1.png", Texture.class);
+        contextManager.getAssetManager().load("buttons/A_Settings2.png", Texture.class);
+        contextManager.getAssetManager().load("buttons/A_Quit1.png",     Texture.class);
+        contextManager.getAssetManager().load("buttons/A_Quit2.png",     Texture.class);
+        // Settings buttons
+        contextManager.getAssetManager().load("buttons/A_Back1.png",    Texture.class);
+        contextManager.getAssetManager().load("buttons/A_Back2.png",    Texture.class);
+        // Pause buttons
+        contextManager.getAssetManager().load("buttons/A_Resume1.png",  Texture.class);
+        contextManager.getAssetManager().load("buttons/A_Resume2.png",  Texture.class);
+        contextManager.getAssetManager().load("buttons/A_Restart1.png", Texture.class);
+        contextManager.getAssetManager().load("buttons/A_Restart2.png", Texture.class);
         contextManager.getAssetManager().finishLoading();
 
         // Wire sound assets into sound manager
@@ -87,6 +107,7 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getSoundManager().setFlapSound(whoosh);
 
         sceneManager.registerScene(GameSceneId.MENU.id(), new MenuScene(sceneManager, contextManager, gameSession, stagePlan));
+        sceneManager.registerScene(GameSceneId.SETTINGS.id(), new SettingsScene(sceneManager, contextManager));
 
         for (StageConfig stage : stagePlan.getStages()) {
             sceneManager.registerScene(stage.getSceneId(),

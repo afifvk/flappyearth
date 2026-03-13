@@ -9,45 +9,30 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import inf1009.p63.flappyearth.engine.core.GameContextManager;
 import inf1009.p63.flappyearth.engine.core.Scene;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
-import inf1009.p63.flappyearth.game.state.GameSession;
 
-public class MenuScene extends Scene {
+public class SettingsScene extends Scene {
 
     private final SceneManager       sceneManager;
     private final GameContextManager context;
-    private final GameSession        gameSession;
-    private final StagePlan          stagePlan;
 
     private final SpriteBatch        batch;
     private final OrthographicCamera camera;
 
     private Texture bgTexture;
-    private Texture start1, start2;
-    private Texture settings1, settings2;
-    private Texture quit1, quit2;
+    private Texture back1, back2;
 
-    public MenuScene(SceneManager sceneManager,
-                     GameContextManager context,
-                     GameSession gameSession,
-                     StagePlan stagePlan) {
+    public SettingsScene(SceneManager sceneManager, GameContextManager context) {
         this.sceneManager = sceneManager;
         this.context      = context;
-        this.gameSession  = gameSession;
-        this.stagePlan    = stagePlan;
-
-        this.batch  = new SpriteBatch();
-        this.camera = new OrthographicCamera();
+        this.batch        = new SpriteBatch();
+        this.camera       = new OrthographicCamera();
     }
 
     @Override
     public void onEnter() {
-        bgTexture = context.getAssetManager().get("ui/menu_background.png",  Texture.class);
-        start1    = context.getAssetManager().get("buttons/A_Start1.png",    Texture.class);
-        start2    = context.getAssetManager().get("buttons/A_Start2.png",    Texture.class);
-        settings1 = context.getAssetManager().get("buttons/A_Settings1.png", Texture.class);
-        settings2 = context.getAssetManager().get("buttons/A_Settings2.png", Texture.class);
-        quit1     = context.getAssetManager().get("buttons/A_Quit1.png",     Texture.class);
-        quit2     = context.getAssetManager().get("buttons/A_Quit2.png",     Texture.class);
+        bgTexture = context.getAssetManager().get("ui/settings_background.png", Texture.class);
+        back1     = context.getAssetManager().get("buttons/A_Back1.png",        Texture.class);
+        back2     = context.getAssetManager().get("buttons/A_Back2.png",        Texture.class);
     }
 
     @Override
@@ -55,21 +40,13 @@ public class MenuScene extends Scene {
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
         float scale   = screenH / 1080f;
-        float btnW    = 250f * scale;
+        float btnW    = 220f * scale;
         float btnH    = 70f  * scale;
         float btnX    = (screenW - btnW) / 2f;
+        float btnY    = screenH * 0.12f;
 
-        float startY    = screenH * 0.55f;
-        float settingsY = screenH * 0.41f;
-        float quitY     = screenH * 0.27f;
-
-        if (isButtonClicked(btnX, startY, btnW, btnH, screenH)) {
-            gameSession.resetForNewRun();
-            sceneManager.switchTo(stagePlan.getInitialStageId());
-        } else if (isButtonClicked(btnX, settingsY, btnW, btnH, screenH)) {
-            sceneManager.switchTo(GameSceneId.SETTINGS.id());
-        } else if (isButtonClicked(btnX, quitY, btnW, btnH, screenH)) {
-            Gdx.app.exit();
+        if (isButtonClicked(btnX, btnY, btnW, btnH, screenH)) {
+            sceneManager.switchTo(GameSceneId.MENU.id());
         }
     }
 
@@ -91,13 +68,15 @@ public class MenuScene extends Scene {
         }
 
         float scale = screenH / 1080f;
-        float btnW  = 250f * scale;
+        float btnW  = 220f * scale;
         float btnH  = 70f  * scale;
         float btnX  = (screenW - btnW) / 2f;
+        float btnY  = screenH * 0.12f;
 
-        drawButton(start1,    start2,    btnX, screenH * 0.55f, btnW, btnH, screenH);
-        drawButton(settings1, settings2, btnX, screenH * 0.41f, btnW, btnH, screenH);
-        drawButton(quit1,     quit2,     btnX, screenH * 0.27f, btnW, btnH, screenH);
+        boolean hovered   = isHovered(btnX, btnY, btnW, btnH, screenH);
+        boolean isPressed = hovered && Gdx.input.isButtonPressed(Input.Buttons.LEFT);
+        Texture tex = isPressed ? back2 : back1;
+        if (tex != null) batch.draw(tex, btnX, btnY, btnW, btnH);
 
         batch.end();
     }
@@ -111,14 +90,6 @@ public class MenuScene extends Scene {
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────
-
-    private void drawButton(Texture normal, Texture pressed,
-                            float bx, float by, float bw, float bh, float screenH) {
-        boolean hovered   = isHovered(bx, by, bw, bh, screenH);
-        boolean isPressed = hovered && Gdx.input.isButtonPressed(Input.Buttons.LEFT);
-        Texture tex = isPressed ? pressed : normal;
-        if (tex != null) batch.draw(tex, bx, by, bw, bh);
-    }
 
     /** LibGDX Y-origin for getY() is at the top; flip to bottom-origin for hit testing. */
     private boolean isHovered(float bx, float by, float bw, float bh, float screenH) {
