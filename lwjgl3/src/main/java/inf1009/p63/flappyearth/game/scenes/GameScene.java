@@ -57,6 +57,9 @@ public class GameScene extends Scene {
 
     private static final float BUTTON_BASE_WIDTH = 320f;
     private static final float BUTTON_BASE_HEIGHT = 90f;
+    private static final String STAGE_ONE_BACKGROUND_KEY = "backgrounds/stage1_background.png";
+    private static final String STAGE_TWO_BACKGROUND_KEY = "backgrounds/stage2_background.png";
+    private static final String STAGE_THREE_BACKGROUND_KEY = "backgrounds/stage3_background.png";
 
     private final SceneManager sceneManager;
     private final GameContextManager context;
@@ -89,6 +92,7 @@ public class GameScene extends Scene {
     private ActiveEffects activeEffects;
     private Texture heartFullTexture;
     private Texture heartEmptyTexture;
+    private Texture stageBackgroundTexture;
 
     // ── pause overlay ────────────────────────────────────────────────────────
     private boolean          paused         = false;
@@ -293,6 +297,10 @@ public class GameScene extends Scene {
         context.getSoundManager().setGameOverSound(context.getAssetManager().get("sound/game_over.mp3", com.badlogic.gdx.audio.Sound.class));
         heartFullTexture  = context.getAssetManager().get("backgrounds/heart_full.png",  Texture.class);
         heartEmptyTexture = context.getAssetManager().get("backgrounds/heart_empty.png", Texture.class);
+        String stageBackgroundKey = resolveStageBackgroundKey(stageConfig.getSceneId());
+        stageBackgroundTexture = context.getAssetManager().isLoaded(stageBackgroundKey)
+            ? context.getAssetManager().get(stageBackgroundKey, Texture.class)
+            : null;
 
         // Pause overlay textures
         pauseBgTex      = context.getAssetManager().get("ui/pause_background.png",    Texture.class);
@@ -414,15 +422,23 @@ public class GameScene extends Scene {
             rendererManager.getShapeRenderer().setProjectionMatrix(cameraController.getCamera().combined);
         }
 
+        float worldW = dimensions.getWorldWidth();
+        float worldH = dimensions.getWorldHeight();
+        float cameraLeft = cameraController.getCamera().position.x - (worldW / 2f);
+        float cameraBottom = cameraController.getCamera().position.y - (worldH / 2f);
+
+        if (stageBackgroundTexture != null) {
+            SpriteBatch worldBatch = rendererManager.getBatch();
+            worldBatch.begin();
+            worldBatch.draw(stageBackgroundTexture, cameraLeft, cameraBottom, worldW, worldH);
+            worldBatch.end();
+        }
+
         rendererManager.render(entityManager.getRenderables());
 
         // Draw atmospheric overlays in world space so they affect only gameplay, not HUD.
         SpriteBatch worldBatch = rendererManager.getBatch();
         worldBatch.begin();
-        float worldW = dimensions.getWorldWidth();
-        float worldH = dimensions.getWorldHeight();
-        float cameraLeft = cameraController.getCamera().position.x - (worldW / 2f);
-        float cameraBottom = cameraController.getCamera().position.y - (worldH / 2f);
         if (smokeEffect != null) {
             float smokeAlpha = activeEffects != null
                     ? activeEffects.getSmokeOverlayAlpha(smokeEffect.getBaseOverlayAlpha())
@@ -714,6 +730,17 @@ public class GameScene extends Scene {
         return isPauseHovered(bx, by, bw, bh, screenH)
                 && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
     }
+
+    private String resolveStageBackgroundKey(String sceneId) {
+        if (GameSceneId.STAGE_ONE.id().equals(sceneId)) {
+            return STAGE_ONE_BACKGROUND_KEY;
+        }
+        if (GameSceneId.STAGE_TWO.id().equals(sceneId)) {
+            return STAGE_TWO_BACKGROUND_KEY;
+        }
+        return STAGE_THREE_BACKGROUND_KEY;
+    }
+
     private void generateOilSplotchPattern() {
         for (int i = 0; i < OIL_SPLOTCH_COUNT; i++) {
             oilSplotchXNorm[i] = context.getRandomManager().range(0.05f, 0.95f);
