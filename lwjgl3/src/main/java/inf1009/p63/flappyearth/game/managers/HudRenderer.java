@@ -1,9 +1,11 @@
 package inf1009.p63.flappyearth.game.managers;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Texture.TextureFilter;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import inf1009.p63.flappyearth.game.state.ActiveEffects;
 import inf1009.p63.flappyearth.game.state.EnvironmentProgress;
@@ -44,6 +46,7 @@ public class HudRenderer {
         
         this.font = new BitmapFont();
         this.font.getData().setScale(1.6f); 
+        enableFontSmoothing(this.font);
         this.layout = new GlyphLayout();
     }
 
@@ -79,9 +82,10 @@ public class HudRenderer {
         float progressRatio = environmentProgress.getProgressRatio();
         shapeRenderer.setColor(1f - progressRatio, progressRatio + 0.3f, 0.2f, 1f);
         shapeRenderer.rect(barX, barY, fillWidth, barHeight);
-        for (Integer checkpointTarget : checkpointTargets) {
-            float targetRatio = checkpointTarget / (float) environmentProgress.getMaxGoodCollectibles();
-            float checkpointX = barX + (barWidth * targetRatio);
+        int checkpointCount = checkpointTargets.size();
+        for (int i = 0; i < checkpointCount; i++) {
+            int checkpointTarget = checkpointTargets.get(i);
+            float checkpointX = barX + (barWidth * ((i + 1f) / (checkpointCount + 1f)));
 
             boolean isPassed = environmentProgress.getGoodCollectiblesCollected() >= checkpointTarget;
 
@@ -93,6 +97,7 @@ public class HudRenderer {
             shapeRenderer.rect(checkpointX - 2f * s, barY - 6f * s, 4f * s, barHeight + 12f * s);
         }
         shapeRenderer.end();
+
         batch.begin();
         layout.setText(font, stageTitle);
         float titleX = (screenW - layout.width) / 2f;
@@ -124,5 +129,11 @@ public class HudRenderer {
 
     public void dispose() {
         if (font != null) font.dispose();
+    }
+
+    private void enableFontSmoothing(BitmapFont bitmapFont) {
+        for (TextureRegion region : bitmapFont.getRegions()) {
+            region.getTexture().setFilter(TextureFilter.Linear, TextureFilter.Linear);
+        }
     }
 }

@@ -37,10 +37,13 @@ public class Player extends GameEntity implements Movable {
     private float flickerTimer = 0f;
     private static final float FLICKER_FREQUENCY = 20f; // flashes per second
     private float reversedFlightTimer = 0f;
+    private float reversedFlightDuration = 0f;
     private float controlLockTimer = 0f;
+    private float controlLockDuration = 0f;
     private float forcedDropTimer = 0f;
     private float forcedDropStrength = 0f;
     private float jumpIntervalDebuffTimer = 0f;
+    private float jumpIntervalDebuffDuration = 0f;
     private float jumpIntervalSeconds = 0f;
     private float jumpIntervalCooldownTimer = 0f;
 
@@ -83,9 +86,15 @@ public class Player extends GameEntity implements Movable {
         }
         if (reversedFlightTimer > 0f) {
             reversedFlightTimer = Math.max(0f, reversedFlightTimer - delta);
+            if (reversedFlightTimer == 0f) {
+                reversedFlightDuration = 0f;
+            }
         }
         if (controlLockTimer > 0f) {
             controlLockTimer = Math.max(0f, controlLockTimer - delta);
+            if (controlLockTimer == 0f) {
+                controlLockDuration = 0f;
+            }
         }
         if (forcedDropTimer > 0f) {
             forcedDropTimer = Math.max(0f, forcedDropTimer - delta);
@@ -96,6 +105,7 @@ public class Player extends GameEntity implements Movable {
         if (jumpIntervalDebuffTimer > 0f) {
             jumpIntervalDebuffTimer = Math.max(0f, jumpIntervalDebuffTimer - delta);
             if (jumpIntervalDebuffTimer == 0f) {
+                jumpIntervalDebuffDuration = 0f;
                 jumpIntervalSeconds = 0f;
                 jumpIntervalCooldownTimer = 0f;
             }
@@ -201,10 +211,12 @@ public class Player extends GameEntity implements Movable {
 
     public void applyReverseFlightDebuff(float duration) {
         reversedFlightTimer = Math.max(reversedFlightTimer, duration);
+        reversedFlightDuration = Math.max(reversedFlightDuration, duration);
     }
 
     public void applyTrashPileDebuff(float duration, float pullStrength) {
         controlLockTimer = Math.max(controlLockTimer, duration);
+        controlLockDuration = Math.max(controlLockDuration, duration);
         forcedDropTimer = Math.max(forcedDropTimer, duration);
         forcedDropStrength = Math.max(forcedDropStrength, pullStrength);
         velY = Math.min(velY, -jumpImpulse * 0.35f);
@@ -212,6 +224,7 @@ public class Player extends GameEntity implements Movable {
 
     public void applyJumpIntervalDebuff(float duration, float intervalSeconds) {
         jumpIntervalDebuffTimer = Math.max(jumpIntervalDebuffTimer, duration);
+        jumpIntervalDebuffDuration = Math.max(jumpIntervalDebuffDuration, duration);
         jumpIntervalSeconds = Math.max(jumpIntervalSeconds, Math.max(0f, intervalSeconds));
     }
 
@@ -219,6 +232,37 @@ public class Player extends GameEntity implements Movable {
         return deathFallActive;
     }
 
+    public float getReversedFlightTimer() {
+        return reversedFlightTimer;
+    }
+
+    public float getReversedFlightProgress() {
+        return getProgressRatio(reversedFlightTimer, reversedFlightDuration);
+    }
+
+    public float getControlLockTimer() {
+        return controlLockTimer;
+    }
+
+    public float getControlLockProgress() {
+        return getProgressRatio(controlLockTimer, controlLockDuration);
+    }
+
+    public float getJumpIntervalDebuffTimer() {
+        return jumpIntervalDebuffTimer;
+    }
+
+    public float getJumpIntervalDebuffProgress() {
+        return getProgressRatio(jumpIntervalDebuffTimer, jumpIntervalDebuffDuration);
+    }
+
     public boolean hasPassed()       { return passed; }
     public void    setPassed(boolean passed) { this.passed = passed; }
+
+    private float getProgressRatio(float timer, float duration) {
+        if (timer <= 0f || duration <= 0f) {
+            return 0f;
+        }
+        return Math.max(0f, Math.min(1f, timer / duration));
+    }
 }

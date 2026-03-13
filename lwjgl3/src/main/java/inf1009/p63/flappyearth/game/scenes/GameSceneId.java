@@ -6,7 +6,6 @@ public enum GameSceneId {
     STAGE_ONE,
     STAGE_TWO,
     STAGE_THREE,
-    STAGE_FOUR,
     GAME_OVER;
 
     public String id() {

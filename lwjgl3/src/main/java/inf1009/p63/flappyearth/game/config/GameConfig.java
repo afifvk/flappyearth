@@ -29,4 +29,15 @@ public class GameConfig {
         return new GameConfig(
                 "Default", -562.5f, 330f, 156f, 3.6f, 0.4f, 180f);
     }
+
+    public GameConfig withPlayerSpeedMultiplier(float speedMultiplier) {
+        return new GameConfig(
+                levelName,
+                gravity,
+                jumpImpulse,
+                playerSpeed * speedMultiplier,
+                obstacleSpawnInterval,
+                collectibleSpawnChance,
+                gapSize);
+    }
 }

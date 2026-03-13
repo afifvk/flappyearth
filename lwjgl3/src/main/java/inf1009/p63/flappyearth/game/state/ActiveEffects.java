@@ -8,6 +8,8 @@ public class ActiveEffects {
     private float screenShakeMagnitude = 0f;
     private float oilBlotTimer = 0f;
     private float oilBlotDuration = 0f;
+    private float trashRattleTimer = 0f;
+    private float trashRattleDuration = 0f;
     private float smokeSurgeTimer = 0f;
     private float smokeSurgeMinimumAlpha = 0f;
 
@@ -24,6 +26,12 @@ public class ActiveEffects {
             oilBlotTimer = Math.max(0f, oilBlotTimer - delta);
             if (oilBlotTimer == 0f) {
                 oilBlotDuration = 0f;
+            }
+        }
+        if (trashRattleTimer > 0f) {
+            trashRattleTimer = Math.max(0f, trashRattleTimer - delta);
+            if (trashRattleTimer == 0f) {
+                trashRattleDuration = 0f;
             }
         }
         if (smokeSurgeTimer > 0f) {
@@ -57,11 +65,34 @@ public class ActiveEffects {
 
     public boolean isOilBlotActive() { return oilBlotTimer > 0f; }
 
+    public float getOilBlotTimer() { return oilBlotTimer; }
+
     public float getOilBlotIntensity() {
         if (oilBlotTimer <= 0f || oilBlotDuration <= 0f) {
             return 0f;
         }
         return oilBlotTimer / oilBlotDuration;
+    }
+
+    public void activateTrashRattle(float duration, float magnitude) {
+        activateScreenShake(duration, magnitude);
+        trashRattleTimer = Math.max(trashRattleTimer, duration);
+        trashRattleDuration = Math.max(trashRattleDuration, duration);
+    }
+
+    public boolean isTrashRattleActive() {
+        return trashRattleTimer > 0f;
+    }
+
+    public float getTrashRattleTimer() {
+        return trashRattleTimer;
+    }
+
+    public float getTrashRattleProgress() {
+        if (trashRattleTimer <= 0f || trashRattleDuration <= 0f) {
+            return 0f;
+        }
+        return trashRattleTimer / trashRattleDuration;
     }
 
     public void activateSmokeSurge(float duration, float minimumAlpha) {
@@ -80,6 +111,8 @@ public class ActiveEffects {
         screenShakeMagnitude = 0f;
         oilBlotTimer = 0f;
         oilBlotDuration = 0f;
+        trashRattleTimer = 0f;
+        trashRattleDuration = 0f;
         smokeSurgeTimer = 0f;
         smokeSurgeMinimumAlpha = 0f;
     }

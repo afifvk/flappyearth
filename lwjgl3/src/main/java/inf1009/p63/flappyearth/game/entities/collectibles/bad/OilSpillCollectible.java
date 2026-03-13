@@ -1,4 +1,4 @@
-package inf1009.p63.flappyearth.game.entities.collectibles;
+package inf1009.p63.flappyearth.game.entities.collectibles.bad;
 
 public class OilSpillCollectible extends BadCollectible {
     public OilSpillCollectible(float x, float y) {
@@ -7,3 +7,4 @@ public class OilSpillCollectible extends BadCollectible {
     @Override
     public void onCollect() {}
 }
+

@@ -55,6 +55,7 @@ public class CollisionSystem implements StepManager {
             for (Obstacle obs : obstacles) {
                 // Pipe hits use the bird center to keep collisions forgiving.
                 if (collisionManager.containsPoint(obs, playerCenterX, playerCenterY)) {
+                    markObstacleColumnAsScored(obstacles, obs);
                     state.loseHeart();
                     state.setInvincible(INVINCIBILITY_DURATION);
                     eventManager.publish(GameEvents.BAD_HIT,
@@ -94,6 +95,15 @@ public class CollisionSystem implements StepManager {
                     return;
                 }
                 entityManager.queueRemove(col);
+            }
+        }
+    }
+
+    private void markObstacleColumnAsScored(List<Obstacle> obstacles, Obstacle hitObstacle) {
+        float hitColumnX = hitObstacle.getX();
+        for (Obstacle obstacle : obstacles) {
+            if (Math.abs(obstacle.getX() - hitColumnX) < 0.001f) {
+                obstacle.setPassed(true);
             }
         }
     }

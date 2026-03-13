@@ -9,6 +9,7 @@ public class StageConfig {
     private final float clearG;
     private final float clearB;
     private final float smokeOverlayAlpha;
+    private final float playerSpeedMultiplier;
 
     public StageConfig(String sceneId,
                        String title,
@@ -16,7 +17,8 @@ public class StageConfig {
                        float clearR,
                        float clearG,
                        float clearB,
-                       float smokeOverlayAlpha) {
+                       float smokeOverlayAlpha,
+                       float playerSpeedMultiplier) {
         this.sceneId = sceneId;
         this.title = title;
         this.subtitle = subtitle;
@@ -24,6 +26,7 @@ public class StageConfig {
         this.clearG = clearG;
         this.clearB = clearB;
         this.smokeOverlayAlpha = Math.max(0f, Math.min(1f, smokeOverlayAlpha));
+        this.playerSpeedMultiplier = Math.max(0f, playerSpeedMultiplier);
     }
 
     public String getSceneId() {
@@ -52,5 +55,9 @@ public class StageConfig {
 
     public float getSmokeOverlayAlpha() {
         return smokeOverlayAlpha;
+    }
+
+    public float getPlayerSpeedMultiplier() {
+        return playerSpeedMultiplier;
     }
 }

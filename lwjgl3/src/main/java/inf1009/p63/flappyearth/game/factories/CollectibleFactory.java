@@ -3,14 +3,15 @@ package inf1009.p63.flappyearth.game.factories;
 import inf1009.p63.flappyearth.engine.managers.EntityManager;
 import inf1009.p63.flappyearth.engine.managers.RandomManager;
 import inf1009.p63.flappyearth.game.entities.Collectible;
-import inf1009.p63.flappyearth.game.entities.collectibles.RecyclingCollectible;
-import inf1009.p63.flappyearth.game.entities.collectibles.ReusableBottleCollectible;
-import inf1009.p63.flappyearth.game.entities.collectibles.SolarPanelCollectible;
-import inf1009.p63.flappyearth.game.entities.collectibles.TreeSaplingCollectible;
-import inf1009.p63.flappyearth.game.entities.collectibles.SmogCollectible;
-import inf1009.p63.flappyearth.game.entities.collectibles.PlasticBottleCollectible;
-import inf1009.p63.flappyearth.game.entities.collectibles.PlasticWasteCollectible;
-import inf1009.p63.flappyearth.game.entities.collectibles.OilSpillCollectible;
+import inf1009.p63.flappyearth.game.entities.collectibles.good.RecyclingCollectible;
+import inf1009.p63.flappyearth.game.entities.collectibles.good.SolarPanelCollectible;
+import inf1009.p63.flappyearth.game.entities.collectibles.good.TreeSaplingCollectible;
+import inf1009.p63.flappyearth.game.entities.collectibles.good.GreenhouseCollectible;
+import inf1009.p63.flappyearth.game.entities.collectibles.good.WindmillCollectible;
+import inf1009.p63.flappyearth.game.entities.collectibles.bad.FactoryCollectible;
+import inf1009.p63.flappyearth.game.entities.collectibles.bad.PlasticBottleCollectible;
+import inf1009.p63.flappyearth.game.entities.collectibles.bad.PlasticWasteCollectible;
+import inf1009.p63.flappyearth.game.entities.collectibles.bad.OilSpillCollectible;
 
 public class CollectibleFactory {
 
@@ -23,13 +24,14 @@ public class CollectibleFactory {
 
     public void spawnGood(EntityManager entityManager, RandomManager random,
                           float x, float y) {
-        int pick = random.range(0, 3);
+        int pick = random.range(0, 4);
         Collectible good;
         switch (pick) {
             case 0: good = new RecyclingCollectible(x, y); break;
             case 1: good = new SolarPanelCollectible(x, y); break;
             case 2: good = new TreeSaplingCollectible(x, y); break;
-            default: good = new ReusableBottleCollectible(x, y);
+            case 3: good = new GreenhouseCollectible(x, y); break;
+            default: good = new WindmillCollectible(x, y);
         }
         entityManager.queueAdd(good);
     }
@@ -41,7 +43,7 @@ public class CollectibleFactory {
         switch (pick) {
             case 0: bad = new PlasticBottleCollectible(x, y); break;
             case 1: bad = new OilSpillCollectible(x, y); break;
-            case 2: bad = new SmogCollectible(x, y); break;
+            case 2: bad = new FactoryCollectible(x, y); break;
             default: bad = new PlasticWasteCollectible(x, y);
         }
         entityManager.queueAdd(bad);
@@ -53,11 +55,13 @@ public class CollectibleFactory {
             case 0:  return new RecyclingCollectible(x, y);
             case 1:  return new SolarPanelCollectible(x, y);
             case 2:  return new TreeSaplingCollectible(x, y);
-            case 3:  return new ReusableBottleCollectible(x, y);
-            case 4:  return new PlasticBottleCollectible(x, y);
-            case 5:  return new OilSpillCollectible(x, y);
-            case 6:  return new SmogCollectible(x, y);
+            case 3:  return new GreenhouseCollectible(x, y);
+            case 4:  return new WindmillCollectible(x, y);
+            case 5:  return new PlasticBottleCollectible(x, y);
+            case 6:  return new OilSpillCollectible(x, y);
+            case 7:  return new FactoryCollectible(x, y);
             default: return new PlasticWasteCollectible(x, y);
         }
     }
 }
+

@@ -40,10 +40,9 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getInputOutputManager().registerInputDevice(new TouchInputDevice());
 
         StagePlan stagePlan = new StagePlan(Arrays.asList(
-                new StageConfig(GameSceneId.STAGE_ONE.id(), "Stage 1: Impact Zone", "Collect 5 good items", 0.20f, 0.45f, 0.95f, 0.70f),
-                new StageConfig(GameSceneId.STAGE_TWO.id(), "Stage 2: Recovery Line", "Collect 5 good items", 0.98f, 0.94f, 0.62f, 0.35f),
-                new StageConfig(GameSceneId.STAGE_THREE.id(), "Stage 3: Turning Point", "Reach 15 to finish", 0.98f, 0.76f, 0.48f, 0f),
-                new StageConfig(GameSceneId.STAGE_FOUR.id(), "Stage 4: New Earth", "Peaceful skies", 0.46f, 0.72f, 0.50f, 0f)
+            new StageConfig(GameSceneId.STAGE_ONE.id(), "Stage 1: Impact Zone", "Collect 1 good item", 0.20f, 0.45f, 0.95f, 0.70f, 1f),
+            new StageConfig(GameSceneId.STAGE_TWO.id(), "Stage 2: Recovery Line", "Collect 1 more item", 0.98f, 0.94f, 0.62f, 0.35f, 1.15f),
+            new StageConfig(GameSceneId.STAGE_THREE.id(), "Stage 3: New Earth", "Final stage", 0.46f, 0.72f, 0.50f, 0f, 1.30f)
         ));
         GameplayDimensions dimensions = GameplayDimensions.fromDisplaySettings(displaySettings);
 
@@ -70,6 +69,8 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("collectibles/bc_plasticbottle.png", Texture.class);
         contextManager.getAssetManager().load("collectibles/gc_solarpanel.png", Texture.class);
         contextManager.getAssetManager().load("collectibles/gc_sapling.png", Texture.class);
+        contextManager.getAssetManager().load("collectibles/greenhouse.png", Texture.class);
+        contextManager.getAssetManager().load("collectibles/windmill.jpg", Texture.class);
         //New Hearts
         contextManager.getAssetManager().load("backgrounds/heart_full.png", Texture.class);
         contextManager.getAssetManager().load("backgrounds/heart_empty.png", Texture.class);

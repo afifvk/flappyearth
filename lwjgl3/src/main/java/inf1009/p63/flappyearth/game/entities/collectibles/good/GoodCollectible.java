@@ -1,4 +1,4 @@
-package inf1009.p63.flappyearth.game.entities.collectibles;
+package inf1009.p63.flappyearth.game.entities.collectibles.good;
 
 import inf1009.p63.flappyearth.game.config.Tags;
 import inf1009.p63.flappyearth.game.entities.Collectible;
@@ -10,3 +10,4 @@ abstract class GoodCollectible extends Collectible {
         setColor(1f, 1f, 0f);
     }
 }
+
