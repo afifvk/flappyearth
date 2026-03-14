@@ -57,6 +57,7 @@ public class GameScene extends Scene {
 
     private static final float BUTTON_BASE_WIDTH = 320f;
     private static final float BUTTON_BASE_HEIGHT = 90f;
+    private static final float ENDGAME_QUIT_Y_RATIO = 0.20f;
     private static final String STAGE_ONE_BACKGROUND_KEY = "backgrounds/stage1_background.png";
     private static final String STAGE_TWO_BACKGROUND_KEY = "backgrounds/stage2_background.png";
     private static final String STAGE_THREE_BACKGROUND_KEY = "backgrounds/stage3_background.png";
@@ -93,6 +94,7 @@ public class GameScene extends Scene {
     private Texture heartFullTexture;
     private Texture heartEmptyTexture;
     private Texture stageBackgroundTexture;
+    private Texture endGameBackgroundTexture;
 
     // ── pause overlay ────────────────────────────────────────────────────────
     private boolean          paused         = false;
@@ -304,6 +306,7 @@ public class GameScene extends Scene {
 
         // Pause overlay textures
         pauseBgTex      = context.getAssetManager().get("ui/pause_background.png",    Texture.class);
+        endGameBackgroundTexture = context.getAssetManager().get("ui/endgame_background.png", Texture.class);
         pauseResume1    = context.getAssetManager().get("buttons/A_Resume1.png",      Texture.class);
         pauseResume2    = context.getAssetManager().get("buttons/A_Resume2.png",      Texture.class);
         pauseRestart1   = context.getAssetManager().get("buttons/A_Restart1.png",     Texture.class);
@@ -348,6 +351,8 @@ public class GameScene extends Scene {
         if (stageOverlayTimer > 0f) {
             stageOverlayTimer = Math.max(0f, stageOverlayTimer - delta);
         }
+        float screenW = Gdx.graphics.getWidth();
+        float screenH = Gdx.graphics.getHeight();
         GameState gameState = gameSession.getGameState();
         Player player = (Player) entityManager.getFirstByTag(Tags.PLAYER);
 
@@ -359,6 +364,16 @@ public class GameScene extends Scene {
 
         if (paused) {
             handlePauseInput();
+            return;
+        }
+
+        if (endingSceneController.isActive() && endingSceneController.isAwaitingContinue()
+                && endGameBackgroundTexture != null) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
+                    || isEndingQuitButtonClicked(screenW, screenH)) {
+                gameSession.resetForNewRun();
+                sceneManager.switchTo(GameSceneId.MENU.id());
+            }
             return;
         }
 
@@ -556,7 +571,17 @@ List<DebuffOverlayInfo> debuffOverlayInfo = buildDebuffOverlayList(player);
             introFont.draw(hudBatch, introLayout, subtitleX, subtitleY);
         }
 
-        if (endingSceneController.isActive() && endingSceneController.isAwaitingContinue()) {
+        if (endingSceneController.isActive() && endingSceneController.isAwaitingContinue()
+                && endGameBackgroundTexture != null) {
+            hudBatch.draw(endGameBackgroundTexture, 0f, 0f, screenW, screenH);
+
+            float btnW = BUTTON_BASE_WIDTH * hudScale;
+            float btnH = BUTTON_BASE_HEIGHT * hudScale;
+            float btnX = (screenW - btnW) / 2f;
+            float btnY = screenH * ENDGAME_QUIT_Y_RATIO;
+
+            drawOverlayButton(hudBatch, pauseQuit1, pauseQuit2, btnX, btnY, btnW, btnH, screenH);
+        } else if (endingSceneController.isActive() && endingSceneController.isAwaitingContinue()) {
             String lineOne = "You have saved the world.";
             String lineTwo = "Let us all do our part to keep Earth clean.";
             String lineThree = "Press SPACE to continue playing";
@@ -705,19 +730,19 @@ List<DebuffOverlayInfo> debuffOverlayInfo = buildDebuffOverlayList(player);
         float restartY = popupY + popupH * 0.38f;
         float quitY    = popupY + popupH * 0.14f;
 
-        drawPauseButton(pauseResume1,  pauseResume2,  btnX, resumeY,  btnW, btnH, screenH);
-        drawPauseButton(pauseRestart1, pauseRestart2, btnX, restartY, btnW, btnH, screenH);
-        drawPauseButton(pauseQuit1,    pauseQuit2,    btnX, quitY,    btnW, btnH, screenH);
+        drawOverlayButton(pauseBatch, pauseResume1,  pauseResume2,  btnX, resumeY,  btnW, btnH, screenH);
+        drawOverlayButton(pauseBatch, pauseRestart1, pauseRestart2, btnX, restartY, btnW, btnH, screenH);
+        drawOverlayButton(pauseBatch, pauseQuit1,    pauseQuit2,    btnX, quitY,    btnW, btnH, screenH);
 
         pauseBatch.end();
     }
 
-    private void drawPauseButton(Texture normal, Texture pressed,
-                                 float bx, float by, float bw, float bh, float screenH) {
+    private void drawOverlayButton(SpriteBatch batch, Texture normal, Texture pressed,
+                                   float bx, float by, float bw, float bh, float screenH) {
         boolean hovered   = isPauseHovered(bx, by, bw, bh, screenH);
         boolean isPressed = hovered && Gdx.input.isButtonPressed(Input.Buttons.LEFT);
         Texture tex = isPressed ? pressed : normal;
-        if (tex != null) pauseBatch.draw(tex, bx, by, bw, bh);
+        if (tex != null) batch.draw(tex, bx, by, bw, bh);
     }
 
     /** LibGDX Y-origin for getY() is at the top; flip to bottom-origin for hit testing. */
@@ -730,6 +755,15 @@ List<DebuffOverlayInfo> debuffOverlayInfo = buildDebuffOverlayList(player);
     private boolean isPauseButtonClicked(float bx, float by, float bw, float bh, float screenH) {
         return isPauseHovered(bx, by, bw, bh, screenH)
                 && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
+    }
+
+    private boolean isEndingQuitButtonClicked(float screenW, float screenH) {
+        float scale = screenH / 1080f;
+        float btnW = BUTTON_BASE_WIDTH * scale;
+        float btnH = BUTTON_BASE_HEIGHT * scale;
+        float btnX = (screenW - btnW) / 2f;
+        float btnY = screenH * ENDGAME_QUIT_Y_RATIO;
+        return isPauseButtonClicked(btnX, btnY, btnW, btnH, screenH);
     }
 
     private String resolveStageBackgroundKey(String sceneId) {

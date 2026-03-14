@@ -80,6 +80,7 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("sound/bird_whoosh.mp3", Sound.class);
         // UI backgrounds
         contextManager.getAssetManager().load("ui/menu_background.png",     Texture.class);
+            contextManager.getAssetManager().load("ui/endgame_background.png",  Texture.class);
         contextManager.getAssetManager().load("ui/settings_background.png", Texture.class);
         contextManager.getAssetManager().load("ui/pause_background.png",    Texture.class);
         // Menu buttons
