@@ -82,6 +82,7 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("ui/menu_background.png",     Texture.class);
         contextManager.getAssetManager().load("ui/endgame_background.png",  Texture.class);
         contextManager.getAssetManager().load("ui/gamefailed_background.png", Texture.class);
+        contextManager.getAssetManager().load("ui/instructions_background.png", Texture.class);
         contextManager.getAssetManager().load("ui/settings_background.png", Texture.class);
         contextManager.getAssetManager().load("ui/pause_background.png",    Texture.class);
         // Menu buttons
@@ -94,6 +95,8 @@ public class FlappyEarthSetup implements GameSetup {
         // Settings buttons
         contextManager.getAssetManager().load("buttons/A_Back1.png",    Texture.class);
         contextManager.getAssetManager().load("buttons/A_Back2.png",    Texture.class);
+        contextManager.getAssetManager().load("buttons/A_Helps1.png",   Texture.class);
+        contextManager.getAssetManager().load("buttons/A_Helps2.png",   Texture.class);
         // Pause buttons
         contextManager.getAssetManager().load("buttons/A_Resume1.png",  Texture.class);
         contextManager.getAssetManager().load("buttons/A_Resume2.png",  Texture.class);

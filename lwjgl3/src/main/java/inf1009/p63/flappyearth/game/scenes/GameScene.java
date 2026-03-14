@@ -102,8 +102,11 @@ public class GameScene extends Scene {
     private OrthographicCamera pauseCamera;
     private Texture          pauseBgTex;
     private Texture          pauseResume1,  pauseResume2;
+    private Texture          pauseHelp1,    pauseHelp2;
     private Texture          pauseRestart1, pauseRestart2;
     private Texture          pauseQuit1,    pauseQuit2;
+    private Texture          instructionsTexture;
+    private boolean          showingInstructionsOverlay = false;
 
     private String debuffMessage = "";
     private float debuffMessageTimer = 0f;
@@ -306,14 +309,18 @@ public class GameScene extends Scene {
 
         // Pause overlay textures
         pauseBgTex      = context.getAssetManager().get("ui/pause_background.png",    Texture.class);
+        instructionsTexture = context.getAssetManager().get("ui/instructions_background.png", Texture.class);
         endGameBackgroundTexture = context.getAssetManager().get("ui/endgame_background.png", Texture.class);
         pauseResume1    = context.getAssetManager().get("buttons/A_Resume1.png",      Texture.class);
         pauseResume2    = context.getAssetManager().get("buttons/A_Resume2.png",      Texture.class);
+        pauseHelp1      = context.getAssetManager().get("buttons/A_Helps1.png",       Texture.class);
+        pauseHelp2      = context.getAssetManager().get("buttons/A_Helps2.png",       Texture.class);
         pauseRestart1   = context.getAssetManager().get("buttons/A_Restart1.png",     Texture.class);
         pauseRestart2   = context.getAssetManager().get("buttons/A_Restart2.png",     Texture.class);
         pauseQuit1      = context.getAssetManager().get("buttons/A_Quit1.png",        Texture.class);
         pauseQuit2      = context.getAssetManager().get("buttons/A_Quit2.png",        Texture.class);
         paused          = false;
+        showingInstructionsOverlay = false;
 
         entityFactory = new EntityFactory(context.getRandomManager());
         playerManager.spawnPlayer(80f, dimensions.getWorldHeight() / 2f, config);
@@ -356,9 +363,19 @@ public class GameScene extends Scene {
         GameState gameState = gameSession.getGameState();
         Player player = (Player) entityManager.getFirstByTag(Tags.PLAYER);
 
-        // Toggle pause with ESC (only when actively playing)
+        if (showingInstructionsOverlay) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
+                    || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+                showingInstructionsOverlay = false;
+                paused = true;
+            }
+            return;
+        }
+
+        // Toggle pause with P (or ESC) only when actively playing.
         if (!gameState.isDeathSequenceActive() && !endingSceneController.isActive()
-                && Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+                && (Gdx.input.isKeyJustPressed(Input.Keys.P)
+                || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))) {
             paused = !paused;
         }
 
@@ -613,9 +630,19 @@ List<DebuffOverlayInfo> debuffOverlayInfo = buildDebuffOverlayList(player);
                     screenH * 0.44f);
         }
 
+        if (!paused && !showingInstructionsOverlay && !endingSceneController.isActive()) {
+            String pauseHint = "Press P to Pause";
+            introLayout.setText(introFont, pauseHint);
+            float hintX = screenW - introLayout.width - (20f * hudScale);
+            float hintY = 34f * hudScale;
+            introFont.draw(hudBatch, introLayout, hintX, hintY);
+        }
+
         hudBatch.end();
 
-        if (paused) {
+        if (showingInstructionsOverlay) {
+            renderInstructionsOverlay(screenW, screenH);
+        } else if (paused) {
             renderPauseOverlay(screenW, screenH);
         }
     }
@@ -670,20 +697,24 @@ List<DebuffOverlayInfo> debuffOverlayInfo = buildDebuffOverlayList(player);
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
         float scale   = screenH / 1080f;
-        float popupW  = 400f * scale;
-        float popupH  = 520f * scale;
+        float popupW  = 500f * scale;
+        float popupH  = 620f * scale;
         float popupX  = (screenW - popupW) / 2f;
         float popupY  = (screenH - popupH) / 2f;
         float btnW    = BUTTON_BASE_WIDTH * scale;
         float btnH    = BUTTON_BASE_HEIGHT * scale;
         float btnX    = popupX + (popupW - btnW) / 2f;
 
-        float resumeY  = popupY + popupH * 0.62f;
-        float restartY = popupY + popupH * 0.38f;
-        float quitY    = popupY + popupH * 0.14f;
+        float resumeY  = popupY + popupH * 0.61f;
+        float helpY    = popupY + popupH * 0.45f;
+        float restartY = popupY + popupH * 0.29f;
+        float quitY    = popupY + popupH * 0.13f;
 
         if (isPauseButtonClicked(btnX, resumeY, btnW, btnH, screenH)) {
             paused = false;
+        } else if (isPauseButtonClicked(btnX, helpY, btnW, btnH, screenH)) {
+            paused = false;
+            showingInstructionsOverlay = true;
         } else if (isPauseButtonClicked(btnX, restartY, btnW, btnH, screenH)) {
             paused = false;
             gameSession.resetForNewRun();
@@ -713,8 +744,8 @@ List<DebuffOverlayInfo> debuffOverlayInfo = buildDebuffOverlayList(player);
         pauseBatch.begin();
 
         float scale  = screenH / 1080f;
-        float popupW = 400f * scale;
-        float popupH = 520f * scale;
+        float popupW = 500f * scale;
+        float popupH = 620f * scale;
         float popupX = (screenW - popupW) / 2f;
         float popupY = (screenH - popupH) / 2f;
 
@@ -726,13 +757,47 @@ List<DebuffOverlayInfo> debuffOverlayInfo = buildDebuffOverlayList(player);
         float btnH   = BUTTON_BASE_HEIGHT * scale;
         float btnX   = popupX + (popupW - btnW) / 2f;
 
-        float resumeY  = popupY + popupH * 0.62f;
-        float restartY = popupY + popupH * 0.38f;
-        float quitY    = popupY + popupH * 0.14f;
+        float resumeY  = popupY + popupH * 0.61f;
+        float helpY    = popupY + popupH * 0.45f;
+        float restartY = popupY + popupH * 0.29f;
+        float quitY    = popupY + popupH * 0.13f;
 
         drawOverlayButton(pauseBatch, pauseResume1,  pauseResume2,  btnX, resumeY,  btnW, btnH, screenH);
+        drawOverlayButton(pauseBatch, pauseHelp1,    pauseHelp2,    btnX, helpY,    btnW, btnH, screenH);
         drawOverlayButton(pauseBatch, pauseRestart1, pauseRestart2, btnX, restartY, btnW, btnH, screenH);
         drawOverlayButton(pauseBatch, pauseQuit1,    pauseQuit2,    btnX, quitY,    btnW, btnH, screenH);
+
+        pauseBatch.end();
+    }
+
+    private void renderInstructionsOverlay(float screenW, float screenH) {
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        ShapeRenderer sr = rendererManager.getShapeRenderer();
+        sr.getProjectionMatrix().setToOrtho2D(0, 0, screenW, screenH);
+        sr.begin(ShapeRenderer.ShapeType.Filled);
+        sr.setColor(0f, 0f, 0f, 0.45f);
+        sr.rect(0, 0, screenW, screenH);
+        sr.end();
+
+        pauseCamera.setToOrtho(false, screenW, screenH);
+        pauseBatch.setProjectionMatrix(pauseCamera.combined);
+        pauseBatch.begin();
+
+        if (instructionsTexture != null) {
+            float panelW = screenW * 0.88f;
+            float panelH = screenH * 0.86f;
+            float panelX = (screenW - panelW) * 0.5f;
+            float panelY = (screenH - panelH) * 0.5f;
+            pauseBatch.draw(instructionsTexture, panelX, panelY, panelW, panelH);
+        }
+
+        float hudScale = screenH / 1080f;
+        String prompt = "Press SPACE to continue";
+        introLayout.setText(introFont, prompt);
+        float x = (screenW - introLayout.width) * 0.5f;
+        float y = 54f * hudScale;
+        introFont.draw(pauseBatch, introLayout, x, y);
 
         pauseBatch.end();
     }

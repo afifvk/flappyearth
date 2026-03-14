@@ -27,9 +27,11 @@ public class MenuScene extends Scene {
     private final OrthographicCamera camera;
 
     private Texture bgTexture;
+    private Texture instructionsTexture;
     private Texture start1, start2;
     private Texture settings1, settings2;
     private Texture quit1, quit2;
+    private boolean showingInstructions;
 
     public MenuScene(SceneManager sceneManager,
                      GameContextManager context,
@@ -47,16 +49,29 @@ public class MenuScene extends Scene {
     @Override
     public void onEnter() {
         bgTexture = context.getAssetManager().get("ui/menu_background.png",  Texture.class);
+        instructionsTexture = context.getAssetManager().get("ui/instructions_background.png", Texture.class);
         start1    = context.getAssetManager().get("buttons/A_Start1.png",    Texture.class);
         start2    = context.getAssetManager().get("buttons/A_Start2.png",    Texture.class);
         settings1 = context.getAssetManager().get("buttons/A_Settings1.png", Texture.class);
         settings2 = context.getAssetManager().get("buttons/A_Settings2.png", Texture.class);
         quit1     = context.getAssetManager().get("buttons/A_Quit1.png",     Texture.class);
         quit2     = context.getAssetManager().get("buttons/A_Quit2.png",     Texture.class);
+        showingInstructions = false;
     }
 
     @Override
     public void update(float delta) {
+        if (showingInstructions) {
+            if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+                showingInstructions = false;
+                gameSession.resetForNewRun();
+                sceneManager.switchTo(stagePlan.getInitialStageId());
+            } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+                showingInstructions = false;
+            }
+            return;
+        }
+
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
         float scale   = screenH / 1080f;
@@ -69,8 +84,7 @@ public class MenuScene extends Scene {
         float quitY     = settingsY - (screenH * BUTTON_VERTICAL_GAP_RATIO);
 
         if (isButtonClicked(btnX, startY, btnW, btnH, screenH)) {
-            gameSession.resetForNewRun();
-            sceneManager.switchTo(stagePlan.getInitialStageId());
+            showingInstructions = true;
         } else if (isButtonClicked(btnX, settingsY, btnW, btnH, screenH)) {
             sceneManager.switchTo(GameSceneId.SETTINGS.id());
         } else if (isButtonClicked(btnX, quitY, btnW, btnH, screenH)) {
@@ -91,7 +105,14 @@ public class MenuScene extends Scene {
 
         batch.begin();
 
-        if (bgTexture != null) {
+        if (showingInstructions) {
+            if (instructionsTexture != null) {
+                batch.draw(instructionsTexture, 0, 0, screenW, screenH);
+            }
+
+            batch.end();
+            return;
+        } else if (bgTexture != null) {
             batch.draw(bgTexture, 0, 0, screenW, screenH);
         }
 

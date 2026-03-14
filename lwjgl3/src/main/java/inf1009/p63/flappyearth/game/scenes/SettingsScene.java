@@ -94,7 +94,7 @@ public class SettingsScene extends Scene {
 
     // ── helpers ──────────────────────────────────────────────────────────────
 
-    /** LibGDX Y-origin for getY() is at the top; flip to bottom-origin for hit testing. */
+    
     private boolean isHovered(float bx, float by, float bw, float bh, float screenH) {
         float mx = Gdx.input.getX();
         float my = screenH - Gdx.input.getY();
