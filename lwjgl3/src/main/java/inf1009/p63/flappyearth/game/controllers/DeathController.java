@@ -69,6 +69,7 @@ public class DeathController {
 
         GameOverScene gameOverScene = (GameOverScene) sceneManager.getScene(GameSceneId.GAME_OVER.id());
         gameOverScene.setScore(gameSession.getScoreManager().getCurrentScore());
+        gameOverScene.setVictoryEnding(false);
         sceneManager.switchTo(GameSceneId.GAME_OVER.id());
         return true;
     }

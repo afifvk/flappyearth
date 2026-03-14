@@ -7,7 +7,7 @@ import inf1009.p63.flappyearth.game.entities.collectibles.good.RecyclingCollecti
 import inf1009.p63.flappyearth.game.entities.collectibles.good.SolarPanelCollectible;
 import inf1009.p63.flappyearth.game.entities.collectibles.good.TreeSaplingCollectible;
 import inf1009.p63.flappyearth.game.entities.collectibles.good.GreenhouseCollectible;
-import inf1009.p63.flappyearth.game.entities.collectibles.good.WindmillCollectible;
+import inf1009.p63.flappyearth.game.entities.collectibles.good.WindTurbineCollectible;
 import inf1009.p63.flappyearth.game.entities.collectibles.bad.FactoryCollectible;
 import inf1009.p63.flappyearth.game.entities.collectibles.bad.PlasticBottleCollectible;
 import inf1009.p63.flappyearth.game.entities.collectibles.bad.PlasticWasteCollectible;
@@ -31,7 +31,7 @@ public class CollectibleFactory {
             case 1: good = new SolarPanelCollectible(x, y); break;
             case 2: good = new TreeSaplingCollectible(x, y); break;
             case 3: good = new GreenhouseCollectible(x, y); break;
-            default: good = new WindmillCollectible(x, y);
+            default: good = new WindTurbineCollectible(x, y);
         }
         entityManager.queueAdd(good);
     }
@@ -56,7 +56,7 @@ public class CollectibleFactory {
             case 1:  return new SolarPanelCollectible(x, y);
             case 2:  return new TreeSaplingCollectible(x, y);
             case 3:  return new GreenhouseCollectible(x, y);
-            case 4:  return new WindmillCollectible(x, y);
+            case 4:  return new WindTurbineCollectible(x, y);
             case 5:  return new PlasticBottleCollectible(x, y);
             case 6:  return new OilSpillCollectible(x, y);
             case 7:  return new FactoryCollectible(x, y);

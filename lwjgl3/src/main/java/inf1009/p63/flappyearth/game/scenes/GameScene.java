@@ -26,6 +26,7 @@ import inf1009.p63.flappyearth.engine.managers.EventManager;
 import inf1009.p63.flappyearth.engine.managers.RendererManager;
 import inf1009.p63.flappyearth.game.config.GameConfig;
 import inf1009.p63.flappyearth.game.config.GameplayDimensions;
+import inf1009.p63.flappyearth.game.config.AssetKeys;
 import inf1009.p63.flappyearth.game.config.Tags;
 import inf1009.p63.flappyearth.game.controllers.DeathController;
 import inf1009.p63.flappyearth.game.controllers.EndingSceneController;
@@ -57,7 +58,6 @@ public class GameScene extends Scene {
 
     private static final float BUTTON_BASE_WIDTH = 320f;
     private static final float BUTTON_BASE_HEIGHT = 90f;
-    private static final float ENDGAME_QUIT_Y_RATIO = 0.20f;
     private static final String STAGE_ONE_BACKGROUND_KEY = "backgrounds/stage1_background.png";
     private static final String STAGE_TWO_BACKGROUND_KEY = "backgrounds/stage2_background.png";
     private static final String STAGE_THREE_BACKGROUND_KEY = "backgrounds/stage3_background.png";
@@ -94,7 +94,6 @@ public class GameScene extends Scene {
     private Texture heartFullTexture;
     private Texture heartEmptyTexture;
     private Texture stageBackgroundTexture;
-    private Texture endGameBackgroundTexture;
 
     // ── pause overlay ────────────────────────────────────────────────────────
     private boolean          paused         = false;
@@ -119,6 +118,7 @@ public class GameScene extends Scene {
     private static final float TRASH_PILE_SHAKE_DURATION = 5f;
     private static final float TRASH_PILE_SHAKE_MAGNITUDE = 50f;
     private static final float DEBUFF_POPUP_MAX_SECONDS = 5f;
+    private static final float DEBUFF_PILLS_TOP_GAP = 116f;
     private static final int OIL_SPLOTCH_COUNT = 10;
     private final float[] oilSplotchXNorm = new float[OIL_SPLOTCH_COUNT];
     private final float[] oilSplotchYNorm = new float[OIL_SPLOTCH_COUNT];
@@ -309,8 +309,7 @@ public class GameScene extends Scene {
 
         // Pause overlay textures
         pauseBgTex      = context.getAssetManager().get("ui/pause_background.png",    Texture.class);
-        instructionsTexture = context.getAssetManager().get("ui/instructions_background.png", Texture.class);
-        endGameBackgroundTexture = context.getAssetManager().get("ui/endgame_background.png", Texture.class);
+        instructionsTexture = context.getAssetManager().get(AssetKeys.INSTRUCTIONS_BG, Texture.class);
         pauseResume1    = context.getAssetManager().get("buttons/A_Resume1.png",      Texture.class);
         pauseResume2    = context.getAssetManager().get("buttons/A_Resume2.png",      Texture.class);
         pauseHelp1      = context.getAssetManager().get("buttons/A_Helps1.png",       Texture.class);
@@ -381,16 +380,6 @@ public class GameScene extends Scene {
 
         if (paused) {
             handlePauseInput();
-            return;
-        }
-
-        if (endingSceneController.isActive() && endingSceneController.isAwaitingContinue()
-                && endGameBackgroundTexture != null) {
-            if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
-                    || isEndingQuitButtonClicked(screenW, screenH)) {
-                gameSession.resetForNewRun();
-                sceneManager.switchTo(GameSceneId.MENU.id());
-            }
             return;
         }
 
@@ -588,21 +577,11 @@ List<DebuffOverlayInfo> debuffOverlayInfo = buildDebuffOverlayList(player);
             introFont.draw(hudBatch, introLayout, subtitleX, subtitleY);
         }
 
-        if (endingSceneController.isActive() && endingSceneController.isAwaitingContinue()
-                && endGameBackgroundTexture != null) {
-            hudBatch.draw(endGameBackgroundTexture, 0f, 0f, screenW, screenH);
-
-            float btnW = BUTTON_BASE_WIDTH * hudScale;
-            float btnH = BUTTON_BASE_HEIGHT * hudScale;
-            float btnX = (screenW - btnW) / 2f;
-            float btnY = screenH * ENDGAME_QUIT_Y_RATIO;
-
-            drawOverlayButton(hudBatch, pauseQuit1, pauseQuit2, btnX, btnY, btnW, btnH, screenH);
-        } else if (endingSceneController.isActive() && endingSceneController.isAwaitingContinue()) {
+        if (endingSceneController.isActive() && endingSceneController.isAwaitingContinue()) {
             String lineOne = "You have saved the world.";
             String lineTwo = "Let us all do our part to keep Earth clean.";
             String lineThree = "Press SPACE to continue playing";
-            String lineFour = "or ESC to quit to main menu";
+            String lineFour = "or ESC to go to game over";
 
             introLayout.setText(introFont, lineOne);
             float y1 = screenH * 0.62f;
@@ -822,15 +801,6 @@ List<DebuffOverlayInfo> debuffOverlayInfo = buildDebuffOverlayList(player);
                 && Gdx.input.isButtonJustPressed(Input.Buttons.LEFT);
     }
 
-    private boolean isEndingQuitButtonClicked(float screenW, float screenH) {
-        float scale = screenH / 1080f;
-        float btnW = BUTTON_BASE_WIDTH * scale;
-        float btnH = BUTTON_BASE_HEIGHT * scale;
-        float btnX = (screenW - btnW) / 2f;
-        float btnY = screenH * ENDGAME_QUIT_Y_RATIO;
-        return isPauseButtonClicked(btnX, btnY, btnW, btnH, screenH);
-    }
-
     private String resolveStageBackgroundKey(String sceneId) {
         if (GameSceneId.STAGE_ONE.id().equals(sceneId)) {
             return STAGE_ONE_BACKGROUND_KEY;
@@ -934,7 +904,10 @@ private void renderDebuffCountdownText(SpriteBatch hudBatch,
     float pillW   = 300f * s;
     float pillH   = 64f  * s;
     float pillGap = 10f  * s;
-    float pillX   = pad;
+    float pillX   = (screenW - pillW) * 0.5f;
+
+    float barY = screenH - pad - (18f * s);
+    float firstPillY = barY - (DEBUFF_PILLS_TOP_GAP * s);
 
     hudBatch.end();
 
@@ -946,7 +919,7 @@ private void renderDebuffCountdownText(SpriteBatch hudBatch,
     sr.begin(ShapeRenderer.ShapeType.Filled);
     for (int i = 0; i < debuffs.size(); i++) {
         DebuffOverlayInfo info = debuffs.get(i);
-        float pillY    = pad * 3f + i * (pillH + pillGap);
+        float pillY    = firstPillY - i * (pillH + pillGap);
         float progress = info.durationSeconds > 0f
                 ? Math.min(1f, info.timerSeconds / info.durationSeconds)
                 : 0f;
@@ -966,7 +939,7 @@ private void renderDebuffCountdownText(SpriteBatch hudBatch,
 
     for (int i = 0; i < debuffs.size(); i++) {
         DebuffOverlayInfo info = debuffs.get(i);
-        float pillY = pad * 3f + i * (pillH + pillGap);
+        float pillY = firstPillY - i * (pillH + pillGap);
 
         int countdown = Math.max(1,
                 (int) Math.ceil(Math.min(DEBUFF_POPUP_MAX_SECONDS, info.timerSeconds)));
@@ -981,6 +954,7 @@ private void renderDebuffCountdownText(SpriteBatch hudBatch,
         introFont.setColor(1f, 0.9f, 0.5f, 1f);
         introFont.draw(hudBatch, label, textX, textY);
     }
+    introFont.setColor(Color.WHITE);
 
     hudBatch.end();
     introFont.getData().setScale(1.7f * s);

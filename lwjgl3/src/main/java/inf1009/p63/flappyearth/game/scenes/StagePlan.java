@@ -72,21 +72,22 @@ public class StagePlan {
     }
 
     public int getTargetForStage(String sceneId) {
-        int checkpointCount = Math.max(1, stages.size() - 1);
-        int checkpointIndex = Math.min(getStageIndex(sceneId), checkpointCount - 1);
-        return (checkpointIndex + 1) * CHECKPOINT_STEP;
+        int transitionCount = Math.max(1, stages.size() - 1);
+        int stageIndex = getStageIndex(sceneId);
+        int targetStep = Math.min(stageIndex + 1, transitionCount);
+        return targetStep * CHECKPOINT_STEP;
     }
 
     public int getFinalTargetGoodCollectibles() {
-        int checkpointCount = Math.max(1, stages.size() - 1);
-        return checkpointCount * CHECKPOINT_STEP;
+        int transitionCount = Math.max(1, stages.size() - 1);
+        return transitionCount * CHECKPOINT_STEP;
     }
 
     public List<Integer> getCheckpointTargets() {
         List<Integer> checkpointTargets = new ArrayList<>();
-        int checkpointCount = Math.max(1, stages.size() - 1);
-        for (int i = 0; i < checkpointCount; i++) {
-            checkpointTargets.add((i + 1) * CHECKPOINT_STEP);
+        int transitionCount = Math.max(1, stages.size() - 1);
+        for (int i = 1; i < transitionCount; i++) {
+            checkpointTargets.add(i * CHECKPOINT_STEP);
         }
         return checkpointTargets;
     }

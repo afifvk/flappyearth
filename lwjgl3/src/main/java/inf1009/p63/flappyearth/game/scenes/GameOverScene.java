@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import inf1009.p63.flappyearth.engine.core.GameContextManager;
 import inf1009.p63.flappyearth.engine.core.Scene;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
+import inf1009.p63.flappyearth.game.config.AssetKeys;
 import inf1009.p63.flappyearth.game.state.GameSession;
 
 public class GameOverScene extends Scene {
@@ -23,6 +24,7 @@ public class GameOverScene extends Scene {
     private final GameSession gameSession;
     private final StagePlan stagePlan;
     private int finalScore;
+    private boolean victoryEnding;
 
     private final SpriteBatch batch;
     private final OrthographicCamera camera;
@@ -42,6 +44,7 @@ public class GameOverScene extends Scene {
         this.gameSession = gameSession;
         this.stagePlan = stagePlan;
         this.finalScore = 0;
+        this.victoryEnding = false;
 
         this.batch = new SpriteBatch();
         this.camera = new OrthographicCamera();
@@ -51,12 +54,18 @@ public class GameOverScene extends Scene {
         this.finalScore = score;
     }
 
+    public void setVictoryEnding(boolean victoryEnding) {
+        this.victoryEnding = victoryEnding;
+    }
+
     @Override
     public void onEnter() {
         context.getSoundManager().stopMusic();
         context.getSoundManager().playGameOver();
 
-        backgroundTexture = context.getAssetManager().get("ui/gamefailed_background.png", Texture.class);
+        backgroundTexture = context.getAssetManager().get(
+            victoryEnding ? AssetKeys.ENDGAME_BG : AssetKeys.GAMEFAILED_BG,
+            Texture.class);
         restart1 = context.getAssetManager().get("buttons/A_Restart1.png", Texture.class);
         restart2 = context.getAssetManager().get("buttons/A_Restart2.png", Texture.class);
         quit1 = context.getAssetManager().get("buttons/A_Quit1.png", Texture.class);
@@ -113,7 +122,9 @@ public class GameOverScene extends Scene {
     }
 
     @Override
-    public void onExit() {}
+    public void onExit() {
+        victoryEnding = false;
+    }
 
     @Override
     public void disposeResources() {

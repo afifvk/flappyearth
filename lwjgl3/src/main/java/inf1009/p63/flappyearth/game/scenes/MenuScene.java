@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import inf1009.p63.flappyearth.engine.core.GameContextManager;
 import inf1009.p63.flappyearth.engine.core.Scene;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
+import inf1009.p63.flappyearth.game.config.AssetKeys;
 import inf1009.p63.flappyearth.game.state.GameSession;
 
 public class MenuScene extends Scene {
@@ -49,7 +50,7 @@ public class MenuScene extends Scene {
     @Override
     public void onEnter() {
         bgTexture = context.getAssetManager().get("ui/menu_background.png",  Texture.class);
-        instructionsTexture = context.getAssetManager().get("ui/instructions_background.png", Texture.class);
+        instructionsTexture = context.getAssetManager().get(AssetKeys.INSTRUCTIONS_BG, Texture.class);
         start1    = context.getAssetManager().get("buttons/A_Start1.png",    Texture.class);
         start2    = context.getAssetManager().get("buttons/A_Start2.png",    Texture.class);
         settings1 = context.getAssetManager().get("buttons/A_Settings1.png", Texture.class);

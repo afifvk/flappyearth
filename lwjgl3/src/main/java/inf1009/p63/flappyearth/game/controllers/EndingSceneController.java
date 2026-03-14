@@ -7,6 +7,7 @@ import inf1009.p63.flappyearth.game.config.GameplayDimensions;
 import inf1009.p63.flappyearth.engine.managers.InputOutputManager;
 import inf1009.p63.flappyearth.game.entities.Player;
 import inf1009.p63.flappyearth.game.input.GameInputAction;
+import inf1009.p63.flappyearth.game.scenes.GameOverScene;
 import inf1009.p63.flappyearth.game.scenes.GameSceneId;
 import inf1009.p63.flappyearth.game.state.GameState;
 
@@ -41,7 +42,9 @@ public class EndingSceneController {
         if (!active) return false;
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-            sceneManager.switchTo(GameSceneId.MENU.id());
+            GameOverScene gameOverScene = (GameOverScene) sceneManager.getScene(GameSceneId.GAME_OVER.id());
+            gameOverScene.setVictoryEnding(true);
+            sceneManager.switchTo(GameSceneId.GAME_OVER.id());
             return true;
         }
 

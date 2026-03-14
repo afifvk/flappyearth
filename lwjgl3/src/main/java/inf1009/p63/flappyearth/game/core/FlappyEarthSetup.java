@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.Texture;
 import inf1009.p63.flappyearth.engine.core.GameContextManager;
 import inf1009.p63.flappyearth.engine.core.GameSetup;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
+import inf1009.p63.flappyearth.game.config.AssetKeys;
 import inf1009.p63.flappyearth.game.config.DisplaySettings;
 import inf1009.p63.flappyearth.game.config.DisplaySettingsFactory;
 import inf1009.p63.flappyearth.game.config.GameplayDimensions;
@@ -71,8 +72,8 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("collectibles/bc_plasticbottle.png", Texture.class);
         contextManager.getAssetManager().load("collectibles/gc_solarpanel.png", Texture.class);
         contextManager.getAssetManager().load("collectibles/gc_sapling.png", Texture.class);
-        contextManager.getAssetManager().load("collectibles/greenhouse.png", Texture.class);
-        contextManager.getAssetManager().load("collectibles/windmill.png", Texture.class);
+        contextManager.getAssetManager().load("collectibles/gc_greenhouse.png", Texture.class);
+        contextManager.getAssetManager().load("collectibles/gc_windturbine.png", Texture.class);
         //New Hearts
         contextManager.getAssetManager().load("backgrounds/heart_full.png", Texture.class);
         contextManager.getAssetManager().load("backgrounds/heart_empty.png", Texture.class);
@@ -80,9 +81,9 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("sound/bird_whoosh.mp3", Sound.class);
         // UI backgrounds
         contextManager.getAssetManager().load("ui/menu_background.png",     Texture.class);
-        contextManager.getAssetManager().load("ui/endgame_background.png",  Texture.class);
+        contextManager.getAssetManager().load(AssetKeys.ENDGAME_BG, Texture.class);
         contextManager.getAssetManager().load("ui/gamefailed_background.png", Texture.class);
-        contextManager.getAssetManager().load("ui/instructions_background.png", Texture.class);
+        contextManager.getAssetManager().load(AssetKeys.INSTRUCTIONS_BG, Texture.class);
         contextManager.getAssetManager().load("ui/settings_background.png", Texture.class);
         contextManager.getAssetManager().load("ui/pause_background.png",    Texture.class);
         // Menu buttons

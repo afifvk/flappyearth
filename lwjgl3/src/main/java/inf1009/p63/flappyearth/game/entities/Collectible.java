@@ -7,7 +7,7 @@ public abstract class Collectible extends GameEntity {
         SOLAR_PANEL,
         TREE_SAPLING,
         GREENHOUSE,
-        WINDMILL,
+        WIND_TURBINE,
         CAR_EXHAUST,
         FACTORY,
         OIL_SPILL,
