@@ -41,9 +41,10 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getInputOutputManager().registerInputDevice(new TouchInputDevice());
 
         StagePlan stagePlan = new StagePlan(Arrays.asList(
-            new StageConfig(GameSceneId.STAGE_ONE.id(), "Stage 1: Impact Zone", "Collect 1 good item", 0.20f, 0.45f, 0.95f, 0.70f, 1f),
-            new StageConfig(GameSceneId.STAGE_TWO.id(), "Stage 2: Recovery Line", "Collect 1 more item", 0.98f, 0.94f, 0.62f, 0.50f, 1.15f),
-            new StageConfig(GameSceneId.STAGE_THREE.id(), "Stage 3: New Earth", "Final stage", 0.46f, 0.72f, 0.50f, 0f, 1.30f)
+            new StageConfig(GameSceneId.STAGE_ONE.id(), "A Broken World", "Collect 1 good item", 0.20f, 0.45f, 0.95f, 0.70f, 1f),
+            new StageConfig(GameSceneId.STAGE_TWO.id(), "Glimmer of Hope", "Collect 1 more item", 0.98f, 0.94f, 0.62f, 0.50f, 1.15f),
+            new StageConfig(GameSceneId.STAGE_THREE.id(), "Nature's Fruition", "Collect 1 more item", 0.70f, 0.86f, 0.58f, 0.25f, 1.22f),
+            new StageConfig(GameSceneId.STAGE_FOUR.id(), "A Blooming Renaissance", "Final stage", 0.46f, 0.72f, 0.50f, 0f, 1.30f)
         ));
         GameplayDimensions dimensions = GameplayDimensions.fromDisplaySettings(displaySettings);
 
@@ -53,6 +54,7 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("backgrounds/stage1_background.png", Texture.class);
         contextManager.getAssetManager().load("backgrounds/stage2_background.png", Texture.class);
         contextManager.getAssetManager().load("backgrounds/stage3_background.png", Texture.class);
+        contextManager.getAssetManager().load("backgrounds/stage4_background.png", Texture.class);
         contextManager.getAssetManager().load("backgrounds/smoke.png", Texture.class);
         contextManager.getAssetManager().load("backgrounds/smog_cloud.png", Texture.class);
         contextManager.getAssetManager().load("bird/flappy00.png", Texture.class);

@@ -102,7 +102,7 @@ public class HudRenderer {
 
         layout.setText(smallFont, stageTitle);
         float titleX = (screenW - layout.width) / 2f;
-        float titleY = barY - 6f * s;
+        float titleY = barY - 24f * s;
         drawShadowed(batch, smallFont, stageTitle, titleX, titleY, s);
 
         String scoreText = "SCORE: " + scoreManager.getCurrentScore();

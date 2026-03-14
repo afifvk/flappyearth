@@ -61,6 +61,7 @@ public class GameScene extends Scene {
     private static final String STAGE_ONE_BACKGROUND_KEY = "backgrounds/stage1_background.png";
     private static final String STAGE_TWO_BACKGROUND_KEY = "backgrounds/stage2_background.png";
     private static final String STAGE_THREE_BACKGROUND_KEY = "backgrounds/stage3_background.png";
+    private static final String STAGE_FOUR_BACKGROUND_KEY = "backgrounds/stage4_background.png";
 
     private final SceneManager sceneManager;
     private final GameContextManager context;
@@ -114,11 +115,12 @@ public class GameScene extends Scene {
     private static final float OIL_BLOT_DURATION = 5f;
     private static final float FACTORY_SMOKE_DURATION = 5f;
     private static final float FACTORY_SMOKE_ALPHA = 0.9f;
-    private static final float FACTORY_JUMP_INTERVAL_SECONDS = 1f;
+    private static final float FACTORY_JUMP_INTERVAL_SECONDS = 0.5f;
     private static final float TRASH_PILE_SHAKE_DURATION = 5f;
     private static final float TRASH_PILE_SHAKE_MAGNITUDE = 50f;
     private static final float DEBUFF_POPUP_MAX_SECONDS = 5f;
-    private static final float DEBUFF_PILLS_TOP_GAP = 116f;
+    private static final float HUD_STAGE_TITLE_OFFSET = 24f;
+    private static final float HUD_STAGE_TO_DEBUFF_GAP = 52f;
     private static final int OIL_SPLOTCH_COUNT = 10;
     private final float[] oilSplotchXNorm = new float[OIL_SPLOTCH_COUNT];
     private final float[] oilSplotchYNorm = new float[OIL_SPLOTCH_COUNT];
@@ -771,13 +773,6 @@ List<DebuffOverlayInfo> debuffOverlayInfo = buildDebuffOverlayList(player);
             pauseBatch.draw(instructionsTexture, panelX, panelY, panelW, panelH);
         }
 
-        float hudScale = screenH / 1080f;
-        String prompt = "Press SPACE to continue";
-        introLayout.setText(introFont, prompt);
-        float x = (screenW - introLayout.width) * 0.5f;
-        float y = 54f * hudScale;
-        introFont.draw(pauseBatch, introLayout, x, y);
-
         pauseBatch.end();
     }
 
@@ -808,7 +803,13 @@ List<DebuffOverlayInfo> debuffOverlayInfo = buildDebuffOverlayList(player);
         if (GameSceneId.STAGE_TWO.id().equals(sceneId)) {
             return STAGE_TWO_BACKGROUND_KEY;
         }
-        return STAGE_THREE_BACKGROUND_KEY;
+        if (GameSceneId.STAGE_THREE.id().equals(sceneId)) {
+            return STAGE_THREE_BACKGROUND_KEY;
+        }
+        if (GameSceneId.STAGE_FOUR.id().equals(sceneId)) {
+            return STAGE_FOUR_BACKGROUND_KEY;
+        }
+        return STAGE_ONE_BACKGROUND_KEY;
     }
 
     private void generateOilSplotchPattern() {
@@ -907,7 +908,8 @@ private void renderDebuffCountdownText(SpriteBatch hudBatch,
     float pillX   = (screenW - pillW) * 0.5f;
 
     float barY = screenH - pad - (18f * s);
-    float firstPillY = barY - (DEBUFF_PILLS_TOP_GAP * s);
+    float stageTitleY = barY - (HUD_STAGE_TITLE_OFFSET * s);
+    float firstPillY = stageTitleY - (HUD_STAGE_TO_DEBUFF_GAP * s) - pillH;
 
     hudBatch.end();
 
