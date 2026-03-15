@@ -53,5 +53,8 @@ public class GameContextManager {
     public float getMasterVolume()                    { return gameSettings.getMasterVolume(); }
     public void increaseMasterVolume(float amount)    { gameSettings.increaseVolume(amount); }
     public void decreaseMasterVolume(float amount)    { gameSettings.decreaseVolume(amount); }
+    public void setMasterVolume(float value)          { gameSettings.setMasterVolume(value); }
+    public boolean isMuted()                          { return gameSettings.isMuted(); }
+    public void setMuted(boolean muted)               { gameSettings.setMuted(muted); }
     public GameSettings getGameSettings()             { return gameSettings; }
 }

@@ -25,18 +25,19 @@ public class SoundManager {
     private ActiveTrack activeTrack = ActiveTrack.NONE;
 
     private float masterVolume = 1.0f;
+    private boolean muted = false;
 
     public SoundManager() {}
 
-    public void playFlap()            { if (flapSound != null)        flapSound.play(0.8f * masterVolume); }
-    public void playCollectGood()     { if (collectGoodSound != null) collectGoodSound.play(1f * masterVolume); }
-    public void playHitBad()          { if (hitBadSound != null)      hitBadSound.play(1f * masterVolume); }
-    public void playPoint()           { if (pointSound != null)       pointSound.play(1f * masterVolume); }
-    public void playDie()             { if (dieSound != null)         dieSound.play(1f * masterVolume); }
-    public void playGameOver()        { if (gameOverSound != null)    gameOverSound.play(1f * masterVolume); }
-    public void playCollectBad()      { if (collectBadSound != null)  collectBadSound.play(1f * masterVolume); }
-    public void playStageTransition() { if (stageTransitionSound != null) stageTransitionSound.play(1f * masterVolume); }
-    public void playButtonClick()     { if (buttonClickSound != null) buttonClickSound.play(1f * masterVolume); }
+    public void playFlap()            { if (flapSound != null)        flapSound.play(0.8f * getEffectiveVolume()); }
+    public void playCollectGood()     { if (collectGoodSound != null) collectGoodSound.play(1f * getEffectiveVolume()); }
+    public void playHitBad()          { if (hitBadSound != null)      hitBadSound.play(1f * getEffectiveVolume()); }
+    public void playPoint()           { if (pointSound != null)       pointSound.play(1f * getEffectiveVolume()); }
+    public void playDie()             { if (dieSound != null)         dieSound.play(1f * getEffectiveVolume()); }
+    public void playGameOver()        { if (gameOverSound != null)    gameOverSound.play(1f * getEffectiveVolume()); }
+    public void playCollectBad()      { if (collectBadSound != null)  collectBadSound.play(1f * getEffectiveVolume()); }
+    public void playStageTransition() { if (stageTransitionSound != null) stageTransitionSound.play(1f * getEffectiveVolume()); }
+    public void playButtonClick()     { if (buttonClickSound != null) buttonClickSound.play(1f * getEffectiveVolume()); }
 
     // ── music control ────────────────────────────────────────────────────────
 
@@ -51,7 +52,7 @@ public class SoundManager {
         activeTrack = ActiveTrack.BACKGROUND;
         if (backgroundMusic != null) {
             backgroundMusic.setLooping(true);
-            backgroundMusic.setVolume(masterVolume);
+            backgroundMusic.setVolume(getEffectiveVolume());
             backgroundMusic.play();
         }
     }
@@ -61,7 +62,7 @@ public class SoundManager {
         activeTrack = ActiveTrack.MENU;
         if (menuMusic != null) {
             menuMusic.setLooping(true);
-            menuMusic.setVolume(masterVolume);
+            menuMusic.setVolume(getEffectiveVolume());
             menuMusic.play();
         }
     }
@@ -71,7 +72,7 @@ public class SoundManager {
         activeTrack = ActiveTrack.VICTORY;
         if (victoryMusic != null) {
             victoryMusic.setLooping(true);
-            victoryMusic.setVolume(masterVolume);
+            victoryMusic.setVolume(getEffectiveVolume());
             victoryMusic.play();
         }
     }
@@ -120,25 +121,38 @@ public class SoundManager {
 
     public void setBackgroundMusic(Music music) {
         this.backgroundMusic = music;
-        if (this.backgroundMusic != null) this.backgroundMusic.setVolume(masterVolume);
+        if (this.backgroundMusic != null) this.backgroundMusic.setVolume(getEffectiveVolume());
     }
     public void setMenuMusic(Music music) {
         this.menuMusic = music;
-        if (this.menuMusic != null) this.menuMusic.setVolume(masterVolume);
+        if (this.menuMusic != null) this.menuMusic.setVolume(getEffectiveVolume());
     }
     public void setVictoryMusic(Music music) {
         this.victoryMusic = music;
-        if (this.victoryMusic != null) this.victoryMusic.setVolume(masterVolume);
+        if (this.victoryMusic != null) this.victoryMusic.setVolume(getEffectiveVolume());
     }
 
     public void setMasterVolume(float masterVolume) {
         this.masterVolume = Math.max(0f, Math.min(1f, masterVolume));
-        if (backgroundMusic != null) backgroundMusic.setVolume(this.masterVolume);
-        if (menuMusic != null)       menuMusic.setVolume(this.masterVolume);
-        if (victoryMusic != null)    victoryMusic.setVolume(this.masterVolume);
+        if (backgroundMusic != null) backgroundMusic.setVolume(getEffectiveVolume());
+        if (menuMusic != null)       menuMusic.setVolume(getEffectiveVolume());
+        if (victoryMusic != null)    victoryMusic.setVolume(getEffectiveVolume());
     }
 
+    public void setMuted(boolean muted) {
+        this.muted = muted;
+        if (backgroundMusic != null) backgroundMusic.setVolume(getEffectiveVolume());
+        if (menuMusic != null)       menuMusic.setVolume(getEffectiveVolume());
+        if (victoryMusic != null)    victoryMusic.setVolume(getEffectiveVolume());
+    }
+
+    public boolean isMuted() { return muted; }
+
     public float getMasterVolume() { return masterVolume; }
+
+    private float getEffectiveVolume() {
+        return muted ? 0f : masterVolume;
+    }
 
     public void dispose() {
         if (flapSound != null)           flapSound.dispose();

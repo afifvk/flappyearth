@@ -120,6 +120,7 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("buttons/volume_down2.png", Texture.class);
         contextManager.getAssetManager().load("buttons/volume_up1.png", Texture.class);
         contextManager.getAssetManager().load("buttons/volume_up2.png", Texture.class);
+        contextManager.getAssetManager().load("buttons/mute.png", Texture.class);
         
         // Pause buttons
         contextManager.getAssetManager().load("buttons/A_Resume1.png", Texture.class);

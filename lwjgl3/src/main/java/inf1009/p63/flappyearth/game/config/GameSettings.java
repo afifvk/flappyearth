@@ -9,6 +9,7 @@ public class GameSettings {
 
     private float brightness = 1.0f;
     private float masterVolume = 1.0f;
+    private boolean muted = false;
 
     public float getBrightness() {
         return brightness;
@@ -40,6 +41,14 @@ public class GameSettings {
 
     public void decreaseVolume(float amount) {
         setMasterVolume(masterVolume - amount);
+    }
+
+    public boolean isMuted() {
+        return muted;
+    }
+
+    public void setMuted(boolean muted) {
+        this.muted = muted;
     }
 
     private float clamp(float value, float min, float max) {
