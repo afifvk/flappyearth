@@ -97,12 +97,9 @@ public class GameScene extends Scene {
     private Texture heartFullTexture;
     private Texture heartEmptyTexture;
 
-    // ── background ───────────────────────────────────────────────────────────
-    private Texture stageBackgroundTexture;
-    // true when WE loaded it directly (not via AssetManager) — must dispose manually
-    private boolean stageBackgroundOwned = false;
 
-    // ── pause overlay ────────────────────────────────────────────────────────
+    private Texture stageBackgroundTexture;
+    private boolean stageBackgroundOwned = false;
     private boolean           paused         = false;
     private SpriteBatch       pauseBatch;
     private OrthographicCamera pauseCamera;
@@ -174,24 +171,17 @@ public class GameScene extends Scene {
         this.brightnessOverlayRenderer = new BrightnessOverlayRenderer();
     }
 
-    // ── background loader ────────────────────────────────────────────────────
-    // Priority 1 : AssetManager (already queued & loaded)
-    // Priority 2 : Direct Gdx.files.internal() — works even if never queued
-    // Priority 3 : Hard fallback to stage1
     private Texture loadStageBackground(String key) {
-        // 1. Already managed by AssetManager
         if (context.getAssetManager().isLoaded(key)) {
             stageBackgroundOwned = false;
             Gdx.app.log("GameScene", "BG from AssetManager: " + key);
             return context.getAssetManager().get(key, Texture.class);
         }
-        // 2. Load directly from file (fixes stage2/3/4 when never queued)
         if (Gdx.files.internal(key).exists()) {
             stageBackgroundOwned = true;
             Gdx.app.log("GameScene", "BG loaded directly from file: " + key);
             return new Texture(Gdx.files.internal(key));
         }
-        // 3. Fallback
         Gdx.app.error("GameScene", "BG not found: " + key + " — falling back to stage1");
         if (context.getAssetManager().isLoaded(STAGE_ONE_BACKGROUND_KEY)) {
             stageBackgroundOwned = false;
@@ -217,7 +207,6 @@ public class GameScene extends Scene {
         if (factPopupRenderer != null) factPopupRenderer.dispose();
         if (entityManager != null)   entityManager.clear();
 
-        // Dispose previous background if we owned it
         disposeOwnedBackground();
 
         oilSplotchPatternReady = false;
@@ -329,14 +318,8 @@ public class GameScene extends Scene {
         heartFullTexture  = context.getAssetManager().get("backgrounds/heart_full.png",  Texture.class);
         heartEmptyTexture = context.getAssetManager().get("backgrounds/heart_empty.png", Texture.class);
 
-        // ── BACKGROUND FIX ───────────────────────────────────────────────────
-        // Old code: set null when not loaded → nothing drawn for stage 2/3/4
-        // New code: fall back to direct file load so every stage always renders
         String bgKey = resolveStageBackgroundKey(stageConfig.getSceneId());
         stageBackgroundTexture = loadStageBackground(bgKey);
-        // ─────────────────────────────────────────────────────────────────────
-
-        // Pause overlay textures
         pauseBgTex          = context.getAssetManager().get("ui/pause_background.png",  Texture.class);
         instructionsTexture = context.getAssetManager().get(AssetKeys.INSTRUCTIONS_BG,  Texture.class);
         pauseResume1        = context.getAssetManager().get("buttons/A_Resume1.png",     Texture.class);
@@ -376,8 +359,6 @@ public class GameScene extends Scene {
         float     screenH   = Gdx.graphics.getHeight();
         GameState gameState = gameSession.getGameState();
         Player    player    = (Player) entityManager.getFirstByTag(Tags.PLAYER);
-
-        // Dismiss instructions overlay
         if (showingInstructionsOverlay) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
                     || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
@@ -386,19 +367,15 @@ public class GameScene extends Scene {
             }
             return;
         }
-
-        // Toggle pause with P or ESC while actively playing
         if (!gameState.isDeathSequenceActive() && !endingSceneController.isActive()
                 && (Gdx.input.isKeyJustPressed(Input.Keys.P)
                  || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE))) {
             paused = !paused;
-            // ── MUSIC PAUSE FIX ─────────────────────────────────────────────
             if (paused) {
                 context.getSoundManager().pauseMusic();
             } else {
                 context.getSoundManager().resumeMusic();
             }
-            // ─────────────────────────────────────────────────────────────────
         }
 
         if (paused) {
@@ -620,8 +597,6 @@ public class GameScene extends Scene {
         debuffMessageTimer = DEBUFF_MESSAGE_DURATION;
     }
 
-    // ── pause helpers ────────────────────────────────────────────────────────
-
     private void handlePauseInput() {
         float screenW = Gdx.graphics.getWidth();
         float screenH = Gdx.graphics.getHeight();
@@ -641,20 +616,19 @@ public class GameScene extends Scene {
 
         if (isPauseButtonClicked(btnX, resumeY, btnW, btnH, screenH)) {
             paused = false;
-            context.getSoundManager().resumeMusic();       // resume music on Resume
+            context.getSoundManager().resumeMusic();       
         } else if (isPauseButtonClicked(btnX, helpY, btnW, btnH, screenH)) {
             paused = false;
             showingInstructionsOverlay = true;
-            // music stays paused while instructions are open
         } else if (isPauseButtonClicked(btnX, restartY, btnW, btnH, screenH)) {
             paused = false;
-            context.getSoundManager().resumeMusic();       // resume before restart
+            context.getSoundManager().resumeMusic();       
             gameSession.resetForNewRun();
             gameSession.prepareForStageEntry();
             sceneManager.switchTo(stagePlan.getInitialStageId());
         } else if (isPauseButtonClicked(btnX, quitY, btnW, btnH, screenH)) {
             paused = false;
-            context.getSoundManager().resumeMusic();       // let menu start fresh
+            context.getSoundManager().resumeMusic();       
             gameSession.resetForNewRun();
             sceneManager.switchTo(GameSceneId.MENU.id());
         }
