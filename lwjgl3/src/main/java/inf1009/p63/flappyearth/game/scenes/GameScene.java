@@ -46,6 +46,7 @@ import inf1009.p63.flappyearth.game.loop.InputStep;
 import inf1009.p63.flappyearth.game.loop.MovementStep;
 import inf1009.p63.flappyearth.game.loop.SpawnSystem;
 import inf1009.p63.flappyearth.game.loop.UpdateStep;
+import inf1009.p63.flappyearth.game.managers.BrightnessOverlayRenderer;
 import inf1009.p63.flappyearth.game.managers.EcoFactPopupRenderer;
 import inf1009.p63.flappyearth.game.managers.HudRenderer;
 import inf1009.p63.flappyearth.game.managers.PlayerManager;
@@ -131,6 +132,7 @@ public class GameScene extends Scene {
 
     private final BitmapFont introFont;
     private final GlyphLayout introLayout;
+    private final BrightnessOverlayRenderer brightnessOverlayRenderer;
     private static final float INTRO_DURATION_SECONDS = 3.0f;
     private static final float STAGE_OVERLAY_DURATION_SECONDS = 1.5f;
     private float introTimer;
@@ -163,6 +165,7 @@ public class GameScene extends Scene {
 
         this.pauseBatch  = new SpriteBatch();
         this.pauseCamera = new OrthographicCamera();
+        this.brightnessOverlayRenderer = new BrightnessOverlayRenderer();
     }
 
     @Override
@@ -626,6 +629,8 @@ List<DebuffOverlayInfo> debuffOverlayInfo = buildDebuffOverlayList(player);
         } else if (paused) {
             renderPauseOverlay(screenW, screenH);
         }
+
+        renderBrightnessOverlay(screenW, screenH);
     }
 
     @Override
@@ -665,6 +670,7 @@ List<DebuffOverlayInfo> debuffOverlayInfo = buildDebuffOverlayList(player);
         if (pauseBatch != null) {
             pauseBatch.dispose();
         }
+        brightnessOverlayRenderer.dispose();
     }
 
     private void showDebuffMessage(String message) {
@@ -773,6 +779,14 @@ List<DebuffOverlayInfo> debuffOverlayInfo = buildDebuffOverlayList(player);
             pauseBatch.draw(instructionsTexture, panelX, panelY, panelW, panelH);
         }
 
+        pauseBatch.end();
+    }
+
+    private void renderBrightnessOverlay(float screenW, float screenH) {
+        pauseCamera.setToOrtho(false, screenW, screenH);
+        pauseBatch.setProjectionMatrix(pauseCamera.combined);
+        pauseBatch.begin();
+        brightnessOverlayRenderer.render(pauseBatch, context.getGameSettings());
         pauseBatch.end();
     }
 

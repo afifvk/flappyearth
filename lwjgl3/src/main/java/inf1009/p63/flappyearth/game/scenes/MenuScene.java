@@ -10,6 +10,7 @@ import inf1009.p63.flappyearth.engine.core.GameContextManager;
 import inf1009.p63.flappyearth.engine.core.Scene;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
 import inf1009.p63.flappyearth.game.config.AssetKeys;
+import inf1009.p63.flappyearth.game.managers.BrightnessOverlayRenderer;
 import inf1009.p63.flappyearth.game.state.GameSession;
 
 public class MenuScene extends Scene {
@@ -26,6 +27,7 @@ public class MenuScene extends Scene {
 
     private final SpriteBatch        batch;
     private final OrthographicCamera camera;
+    private final BrightnessOverlayRenderer brightnessOverlayRenderer;
 
     private Texture bgTexture;
     private Texture instructionsTexture;
@@ -45,6 +47,7 @@ public class MenuScene extends Scene {
 
         this.batch  = new SpriteBatch();
         this.camera = new OrthographicCamera();
+        this.brightnessOverlayRenderer = new BrightnessOverlayRenderer();
     }
 
     @Override
@@ -112,6 +115,9 @@ public class MenuScene extends Scene {
             }
 
             batch.end();
+            batch.begin();
+            brightnessOverlayRenderer.render(batch, context.getGameSettings());
+            batch.end();
             return;
         } else if (bgTexture != null) {
             batch.draw(bgTexture, 0, 0, screenW, screenH);
@@ -130,6 +136,10 @@ public class MenuScene extends Scene {
         drawButton(quit1,     quit2,     btnX, quitY,     btnW, btnH, screenH);
 
         batch.end();
+
+        batch.begin();
+        brightnessOverlayRenderer.render(batch, context.getGameSettings());
+        batch.end();
     }
 
     @Override
@@ -138,6 +148,7 @@ public class MenuScene extends Scene {
     @Override
     public void disposeResources() {
         if (batch != null) batch.dispose();
+        brightnessOverlayRenderer.dispose();
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────

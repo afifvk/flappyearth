@@ -8,9 +8,11 @@ import inf1009.p63.flappyearth.engine.managers.MovementManager;
 import inf1009.p63.flappyearth.engine.managers.RandomManager;
 import inf1009.p63.flappyearth.engine.managers.SoundManager;
 import inf1009.p63.flappyearth.engine.managers.TimeManager;
+import inf1009.p63.flappyearth.game.config.GameSettings;
 
 public class GameContextManager {
 
+    private final GameSettings gameSettings = new GameSettings();
     private AssetManager assetManager;
     private InputOutputManager inputOutputManager;
     private MovementManager movementManager;
@@ -45,4 +47,5 @@ public class GameContextManager {
     public EventManager getEventManager()             { return eventManager; }
     public TimeManager getTimeManager()               { return timeManager; }
     public RandomManager getRandomManager()           { return randomManager; }
+    public GameSettings getGameSettings()             { return gameSettings; }
 }

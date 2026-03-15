@@ -10,6 +10,7 @@ import inf1009.p63.flappyearth.engine.core.GameContextManager;
 import inf1009.p63.flappyearth.engine.core.Scene;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
 import inf1009.p63.flappyearth.game.config.AssetKeys;
+import inf1009.p63.flappyearth.game.managers.BrightnessOverlayRenderer;
 import inf1009.p63.flappyearth.game.state.GameSession;
 
 public class GameOverScene extends Scene {
@@ -28,6 +29,7 @@ public class GameOverScene extends Scene {
 
     private final SpriteBatch batch;
     private final OrthographicCamera camera;
+    private final BrightnessOverlayRenderer brightnessOverlayRenderer;
 
     private Texture backgroundTexture;
     private Texture restart1;
@@ -48,6 +50,7 @@ public class GameOverScene extends Scene {
 
         this.batch = new SpriteBatch();
         this.camera = new OrthographicCamera();
+        this.brightnessOverlayRenderer = new BrightnessOverlayRenderer();
     }
 
     public void setScore(int score) {
@@ -119,6 +122,10 @@ public class GameOverScene extends Scene {
         drawButton(quit1, quit2, buttonX, screenH * QUIT_Y_RATIO, buttonW, buttonH, screenH);
 
         batch.end();
+
+        batch.begin();
+        brightnessOverlayRenderer.render(batch, context.getGameSettings());
+        batch.end();
     }
 
     @Override
@@ -129,6 +136,7 @@ public class GameOverScene extends Scene {
     @Override
     public void disposeResources() {
         if (batch       != null) batch.dispose();
+        brightnessOverlayRenderer.dispose();
     }
 
     private void drawButton(Texture normal, Texture pressed,
