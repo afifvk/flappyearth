@@ -1,6 +1,7 @@
 package inf1009.p63.flappyearth.game.controllers;
 
 import inf1009.p63.flappyearth.engine.core.SceneManager;
+import inf1009.p63.flappyearth.engine.managers.SoundManager;
 import inf1009.p63.flappyearth.game.entities.Player;
 import inf1009.p63.flappyearth.game.scenes.GameOverScene;
 import inf1009.p63.flappyearth.game.scenes.GameSceneId;
@@ -13,18 +14,24 @@ public class DeathController {
 
     private final SceneManager sceneManager;
     private final GameSession gameSession;
+    private final SoundManager soundManager;
 
     private boolean gameOverDelayActive;
     private float gameOverDelayTimer;
+    private boolean deathSoundPlayed;
 
-    public DeathController(SceneManager sceneManager, GameSession gameSession) {
+    public DeathController(SceneManager sceneManager,
+                           GameSession gameSession,
+                           SoundManager soundManager) {
         this.sceneManager = sceneManager;
         this.gameSession = gameSession;
+        this.soundManager = soundManager;
     }
 
     public void onEnter() {
         gameOverDelayActive = false;
         gameOverDelayTimer = 0f;
+        deathSoundPlayed = false;
     }
 
     public void update(float delta,
@@ -35,6 +42,11 @@ public class DeathController {
 
         if (gameState.isDeathSequenceActive()) {
             if (player == null) return;
+
+            if (!deathSoundPlayed) {
+                soundManager.playDie();
+                deathSoundPlayed = true;
+            }
 
             if (!player.isDeathFallActive()) {
                 startDeathSequence(player, gameState.getDeathFallSpeedMultiplier(), cameraController);

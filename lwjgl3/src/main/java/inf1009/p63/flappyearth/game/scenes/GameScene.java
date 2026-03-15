@@ -216,6 +216,7 @@ public class GameScene extends Scene {
 
         badCollectedListener = data -> {
             if (data instanceof BadCollectedEvent) {
+                context.getSoundManager().playCollectBad();
                 BadCollectedEvent event  = (BadCollectedEvent) data;
                 Player            player = playerManager != null ? playerManager.getPlayer() : null;
                 switch (event.collectibleType) {
@@ -280,7 +281,7 @@ public class GameScene extends Scene {
         worldCamera.update();
 
         stageController     = new StageController(sceneManager, stagePlan, stageConfig, gameSession.getEnvironmentProgress(), context.getSoundManager());
-        deathController     = new DeathController(sceneManager, gameSession);
+        deathController     = new DeathController(sceneManager, gameSession, context.getSoundManager());
         cameraController    = new GameCameraController(worldCamera, dimensions);
         endingSceneController = new EndingSceneController(dimensions);
 
@@ -310,11 +311,8 @@ public class GameScene extends Scene {
 
         context.getAssetManager().load("backgrounds/heart_full.png",  Texture.class);
         context.getAssetManager().load("backgrounds/heart_empty.png", Texture.class);
-        context.getAssetManager().load("sound/game_over.mp3", com.badlogic.gdx.audio.Sound.class);
         context.getAssetManager().finishLoading();
 
-        context.getSoundManager().setGameOverSound(
-                context.getAssetManager().get("sound/game_over.mp3", com.badlogic.gdx.audio.Sound.class));
         heartFullTexture  = context.getAssetManager().get("backgrounds/heart_full.png",  Texture.class);
         heartEmptyTexture = context.getAssetManager().get("backgrounds/heart_empty.png", Texture.class);
 
@@ -615,18 +613,22 @@ public class GameScene extends Scene {
         float quitY    = popupY + popupH * 0.13f;
 
         if (isPauseButtonClicked(btnX, resumeY, btnW, btnH, screenH)) {
+            context.getSoundManager().playButtonClick();
             paused = false;
             context.getSoundManager().resumeMusic();       
         } else if (isPauseButtonClicked(btnX, helpY, btnW, btnH, screenH)) {
+            context.getSoundManager().playButtonClick();
             paused = false;
             showingInstructionsOverlay = true;
         } else if (isPauseButtonClicked(btnX, restartY, btnW, btnH, screenH)) {
+            context.getSoundManager().playButtonClick();
             paused = false;
             context.getSoundManager().resumeMusic();       
             gameSession.resetForNewRun();
             gameSession.prepareForStageEntry();
             sceneManager.switchTo(stagePlan.getInitialStageId());
         } else if (isPauseButtonClicked(btnX, quitY, btnW, btnH, screenH)) {
+            context.getSoundManager().playButtonClick();
             paused = false;
             context.getSoundManager().resumeMusic();       
             gameSession.resetForNewRun();

@@ -88,16 +88,21 @@ public class SettingsScene extends Scene {
         GameSettings settings = context.getGameSettings();
 
         if (isButtonClicked(leftX, controlYOne, controlSize, controlSize, screenH)) {
+            context.getSoundManager().playButtonClick();
             settings.decreaseBrightness(SETTING_STEP);
         } else if (isButtonClicked(rightX, controlYOne, controlSize, controlSize, screenH)) {
+            context.getSoundManager().playButtonClick();
             settings.increaseBrightness(SETTING_STEP);
         } else if (isButtonClicked(leftX, controlYTwo, controlSize, controlSize, screenH)) {
+            context.getSoundManager().playButtonClick();
             settings.decreaseVolume(SETTING_STEP);
             context.getSoundManager().setMasterVolume(settings.getMasterVolume());
         } else if (isButtonClicked(rightX, controlYTwo, controlSize, controlSize, screenH)) {
+            context.getSoundManager().playButtonClick();
             settings.increaseVolume(SETTING_STEP);
             context.getSoundManager().setMasterVolume(settings.getMasterVolume());
         } else if (isButtonClicked(btnX, btnY, btnW, btnH, screenH)) {
+            context.getSoundManager().playButtonClick();
             sceneManager.switchTo(GameSceneId.MENU.id());
         }
     }

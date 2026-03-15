@@ -71,7 +71,7 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("sound/bird_point.mp3", Sound.class);
         contextManager.getAssetManager().load("sound/bird_whoosh.mp3", Sound.class);
 
-        contextManager.getAssetManager().load("sound/menu_music.mp3", Music.class);
+        contextManager.getAssetManager().load("sound/sunrise-menu.mp3", Music.class);
         contextManager.getAssetManager().load("sound/victory_music.mp3", Music.class);
         contextManager.getAssetManager().load("sound/game_music.mp3", Music.class); 
         contextManager.getAssetManager().load("sound/button_click.mp3", Sound.class); 
@@ -131,15 +131,17 @@ public class FlappyEarthSetup implements GameSetup {
 
         Sound hit = contextManager.getAssetManager().get("sound/bird_hit.mp3", Sound.class);
         Sound die = contextManager.getAssetManager().get("sound/bird_die.mp3", Sound.class);
+        Sound gameOver = contextManager.getAssetManager().get("sound/game_over.mp3", Sound.class);
         Sound point = contextManager.getAssetManager().get("sound/bird_point.mp3", Sound.class);
         Sound whoosh = contextManager.getAssetManager().get("sound/bird_whoosh.mp3", Sound.class);
 
         contextManager.getSoundManager().setHitBadSound(hit);
-        contextManager.getSoundManager().setGameOverSound(die);
+        contextManager.getSoundManager().setDieSound(die);
+        contextManager.getSoundManager().setGameOverSound(gameOver);
         contextManager.getSoundManager().setPointSound(point);
         contextManager.getSoundManager().setFlapSound(whoosh);
 
-        contextManager.getSoundManager().setMenuMusic(contextManager.getAssetManager().get("sound/menu_music.mp3", Music.class));
+        contextManager.getSoundManager().setMenuMusic(contextManager.getAssetManager().get("sound/sunrise-menu.mp3", Music.class));
         contextManager.getSoundManager().setVictoryMusic(contextManager.getAssetManager().get("sound/victory_music.mp3", Music.class));
         contextManager.getSoundManager().setBackgroundMusic(contextManager.getAssetManager().get("sound/game_music.mp3", Music.class));
 

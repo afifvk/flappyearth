@@ -83,6 +83,7 @@ public class GameOverScene extends Scene {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
                 || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)
                 || isRestartButtonClicked(screenW, screenH)) {
+            context.getSoundManager().playButtonClick();
             gameSession.resetForNewRun();
             gameSession.prepareForStageEntry();
             sceneManager.switchTo(stagePlan.getInitialStageId());
@@ -91,6 +92,7 @@ public class GameOverScene extends Scene {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
                 || isQuitButtonClicked(screenW, screenH)) {
+            context.getSoundManager().playButtonClick();
             gameSession.resetForNewRun();
             sceneManager.switchTo(GameSceneId.MENU.id());
         }

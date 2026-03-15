@@ -71,6 +71,7 @@ public class MenuScene extends Scene {
         if (showingInstructions) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
                 context.getSoundManager().playButtonClick();
+                context.getSoundManager().startMusic();
                 showingInstructions = false;
                 gameSession.resetForNewRun();
                 sceneManager.switchTo(stagePlan.getInitialStageId());

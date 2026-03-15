@@ -9,6 +9,7 @@ public class SoundManager {
     private Sound collectGoodSound;
     private Sound hitBadSound;
     private Sound pointSound;
+    private Sound dieSound;
     private Sound gameOverSound;
     private Music backgroundMusic;
 
@@ -31,6 +32,7 @@ public class SoundManager {
     public void playCollectGood()     { if (collectGoodSound != null) collectGoodSound.play(1f * masterVolume); }
     public void playHitBad()          { if (hitBadSound != null)      hitBadSound.play(1f * masterVolume); }
     public void playPoint()           { if (pointSound != null)       pointSound.play(1f * masterVolume); }
+    public void playDie()             { if (dieSound != null)         dieSound.play(1f * masterVolume); }
     public void playGameOver()        { if (gameOverSound != null)    gameOverSound.play(1f * masterVolume); }
     public void playCollectBad()      { if (collectBadSound != null)  collectBadSound.play(1f * masterVolume); }
     public void playStageTransition() { if (stageTransitionSound != null) stageTransitionSound.play(1f * masterVolume); }
@@ -110,6 +112,7 @@ public class SoundManager {
     public void setCollectGoodSound(Sound sound)     { this.collectGoodSound = sound; }
     public void setHitBadSound(Sound sound)          { this.hitBadSound = sound; }
     public void setPointSound(Sound sound)           { this.pointSound = sound; }
+    public void setDieSound(Sound sound)             { this.dieSound = sound; }
     public void setGameOverSound(Sound sound)        { this.gameOverSound = sound; }
     public void setCollectBadSound(Sound sound)      { this.collectBadSound = sound; }
     public void setStageTransitionSound(Sound sound) { this.stageTransitionSound = sound; }
@@ -142,6 +145,7 @@ public class SoundManager {
         if (collectGoodSound != null)    collectGoodSound.dispose();
         if (hitBadSound != null)         hitBadSound.dispose();
         if (pointSound != null)          pointSound.dispose();
+        if (dieSound != null)            dieSound.dispose();
         if (gameOverSound != null)       gameOverSound.dispose();
         if (backgroundMusic != null)     backgroundMusic.dispose();
         if (collectBadSound != null)     collectBadSound.dispose();
