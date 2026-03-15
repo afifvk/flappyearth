@@ -2,9 +2,11 @@ package inf1009.p63.flappyearth.game.controllers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+
 import inf1009.p63.flappyearth.engine.core.SceneManager;
-import inf1009.p63.flappyearth.game.config.GameplayDimensions;
 import inf1009.p63.flappyearth.engine.managers.InputOutputManager;
+import inf1009.p63.flappyearth.engine.managers.SoundManager;
+import inf1009.p63.flappyearth.game.config.GameplayDimensions;
 import inf1009.p63.flappyearth.game.entities.Player;
 import inf1009.p63.flappyearth.game.input.GameInputAction;
 import inf1009.p63.flappyearth.game.scenes.GameOverScene;
@@ -19,6 +21,7 @@ public class EndingSceneController {
     private boolean spawnWarmup;
     private float spawnWarmupTimer;
     private final GameplayDimensions dimensions;
+    private boolean musicPlayed;
 
     public EndingSceneController(GameplayDimensions dimensions) {
         this.dimensions = dimensions;
@@ -29,6 +32,7 @@ public class EndingSceneController {
         awaitingContinue = active;
         spawnWarmup = false;
         spawnWarmupTimer = 0f;
+        musicPlayed = false;
 
         gameState.setControlsEnabled(!active);
         gameState.setSpawningEnabled(!active);
@@ -38,8 +42,14 @@ public class EndingSceneController {
                           Player player,
                           InputOutputManager inputOutputManager,
                           SceneManager sceneManager,
-                          GameState gameState) {
+                          GameState gameState,
+                          SoundManager soundManager) {
         if (!active) return false;
+
+        if (awaitingContinue && !musicPlayed && soundManager != null) {
+            soundManager.startVictoryMusic();
+            musicPlayed = true;
+        }
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             GameOverScene gameOverScene = (GameOverScene) sceneManager.getScene(GameSceneId.GAME_OVER.id());
@@ -57,6 +67,10 @@ public class EndingSceneController {
             spawnWarmup = true;
             spawnWarmupTimer = ENDING_SPAWN_DELAY_SECONDS;
             gameState.setControlsEnabled(false);
+            
+            if (soundManager != null) {
+                soundManager.startMusic();
+            }
         }
 
         if (spawnWarmup) {
@@ -71,25 +85,11 @@ public class EndingSceneController {
         return false;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public boolean isAwaitingContinue() {
-        return awaitingContinue;
-    }
-
-    public boolean isSpawnWarmup() {
-        return spawnWarmup;
-    }
-
-    public float getSpawnWarmupTimer() {
-        return spawnWarmupTimer;
-    }
-
-    public boolean isSafeEndingWindow() {
-        return active && (awaitingContinue || spawnWarmup);
-    }
+    public boolean isActive() { return active; }
+    public boolean isAwaitingContinue() { return awaitingContinue; }
+    public boolean isSpawnWarmup() { return spawnWarmup; }
+    public float getSpawnWarmupTimer() { return spawnWarmupTimer; }
+    public boolean isSafeEndingWindow() { return active && (awaitingContinue || spawnWarmup); }
 
     private void autoPilot(Player player) {
         float targetY = dimensions.getWorldHeight() * dimensions.getEndingTargetHeightRatio();
