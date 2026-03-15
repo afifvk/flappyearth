@@ -6,7 +6,7 @@ import inf1009.p63.flappyearth.game.entities.obstacles.Pipe;
 
 public class ObstacleFactory {
 
-    private static final float OBSTACLE_WIDTH = 37.5f;
+    private static final float OBSTACLE_WIDTH = 50.0f;
 
     public ObstacleFactory() {
     }
