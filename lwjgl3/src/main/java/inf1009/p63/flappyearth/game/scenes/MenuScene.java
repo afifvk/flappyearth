@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
 import inf1009.p63.flappyearth.engine.core.GameContextManager;
 import inf1009.p63.flappyearth.engine.core.Scene;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
@@ -61,16 +62,20 @@ public class MenuScene extends Scene {
         quit1     = context.getAssetManager().get("buttons/A_Quit1.png",     Texture.class);
         quit2     = context.getAssetManager().get("buttons/A_Quit2.png",     Texture.class);
         showingInstructions = false;
+        
+        context.getSoundManager().startMenuMusic();
     }
 
     @Override
     public void update(float delta) {
         if (showingInstructions) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+                context.getSoundManager().playButtonClick();
                 showingInstructions = false;
                 gameSession.resetForNewRun();
                 sceneManager.switchTo(stagePlan.getInitialStageId());
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
+                context.getSoundManager().playButtonClick();
                 showingInstructions = false;
             }
             return;
@@ -88,10 +93,13 @@ public class MenuScene extends Scene {
         float quitY     = settingsY - (screenH * BUTTON_VERTICAL_GAP_RATIO);
 
         if (isButtonClicked(btnX, startY, btnW, btnH, screenH)) {
+            context.getSoundManager().playButtonClick();
             showingInstructions = true;
         } else if (isButtonClicked(btnX, settingsY, btnW, btnH, screenH)) {
+            context.getSoundManager().playButtonClick();
             sceneManager.switchTo(GameSceneId.SETTINGS.id());
         } else if (isButtonClicked(btnX, quitY, btnW, btnH, screenH)) {
+            context.getSoundManager().playButtonClick();
             Gdx.app.exit();
         }
     }
@@ -151,8 +159,6 @@ public class MenuScene extends Scene {
         brightnessOverlayRenderer.dispose();
     }
 
-    // ── helpers ──────────────────────────────────────────────────────────────
-
     private void drawButton(Texture normal, Texture pressed,
                             float bx, float by, float bw, float bh, float screenH) {
         boolean hovered   = isHovered(bx, by, bw, bh, screenH);
@@ -161,7 +167,6 @@ public class MenuScene extends Scene {
         if (tex != null) batch.draw(tex, bx, by, bw, bh);
     }
 
-    /** LibGDX Y-origin for getY() is at the top; flip to bottom-origin for hit testing. */
     private boolean isHovered(float bx, float by, float bw, float bh, float screenH) {
         float mx = Gdx.input.getX();
         float my = screenH - Gdx.input.getY();
