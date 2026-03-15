@@ -35,7 +35,7 @@ public class Player extends GameEntity implements Movable {
     private static final float TILT_VELOCITY_FACTOR = 0.12f;
 
     private float flickerTimer = 0f;
-    private static final float FLICKER_FREQUENCY = 20f; // flashes per second
+    private static final float FLICKER_FREQUENCY = 20f; 
     private float reversedFlightTimer = 0f;
     private float reversedFlightDuration = 0f;
     private float controlLockTimer = 0f;
@@ -47,13 +47,12 @@ public class Player extends GameEntity implements Movable {
     private float jumpIntervalSeconds = 0f;
     private float jumpIntervalCooldownTimer = 0f;
 
-    //Health
     private int maxHealth = 3;
     private int currentHealth = 3;
     private float shakeTimer = 0f;
 
     public Player(float x, float y, float velX, float gravity, float jumpImpulse) {
-        super(x, y, 60, 45, BIRD_FRAMES[0], Tags.PLAYER);
+        super(x, y, 80, 60, BIRD_FRAMES[0], Tags.PLAYER); 
         this.velX        = velX;
         this.velY        = 0f;
         this.gravity     = gravity;
@@ -86,21 +85,15 @@ public class Player extends GameEntity implements Movable {
         }
         if (reversedFlightTimer > 0f) {
             reversedFlightTimer = Math.max(0f, reversedFlightTimer - delta);
-            if (reversedFlightTimer == 0f) {
-                reversedFlightDuration = 0f;
-            }
+            if (reversedFlightTimer == 0f) reversedFlightDuration = 0f;
         }
         if (controlLockTimer > 0f) {
             controlLockTimer = Math.max(0f, controlLockTimer - delta);
-            if (controlLockTimer == 0f) {
-                controlLockDuration = 0f;
-            }
+            if (controlLockTimer == 0f) controlLockDuration = 0f;
         }
         if (forcedDropTimer > 0f) {
             forcedDropTimer = Math.max(0f, forcedDropTimer - delta);
-            if (forcedDropTimer == 0f) {
-                forcedDropStrength = 0f;
-            }
+            if (forcedDropTimer == 0f) forcedDropStrength = 0f;
         }
         if (jumpIntervalDebuffTimer > 0f) {
             jumpIntervalDebuffTimer = Math.max(0f, jumpIntervalDebuffTimer - delta);
@@ -113,8 +106,6 @@ public class Player extends GameEntity implements Movable {
         if (jumpIntervalCooldownTimer > 0f) {
             jumpIntervalCooldownTimer = Math.max(0f, jumpIntervalCooldownTimer - delta);
         }
-        
-        // Health shaker
         if (shakeTimer > 0f) {
             shakeTimer = Math.max(0f, shakeTimer - delta);
         }
@@ -126,9 +117,7 @@ public class Player extends GameEntity implements Movable {
         float r = 1f, g = 1f, bl = 1f;
         if (flickerTimer > 0f) {
             float phase = (float) Math.floor(flickerTimer * FLICKER_FREQUENCY);
-            if (((int) phase) % 2 == 0) {
-                r = g = bl = 0.25f;
-            }
+            if (((int) phase) % 2 == 0) r = g = bl = 0.25f;
         }
         return new RenderData(BIRD_FRAMES[currentFrame], b.x, b.y, b.width, b.height,
                 r, g, bl, false, rotationDegrees);
@@ -141,7 +130,6 @@ public class Player extends GameEntity implements Movable {
             b.y -= (DEATH_FALL_SPEED * deathFallSpeedMultiplier) * delta;
             return;
         }
-
         Rectangle b = getBounds();
         b.x += velX * delta;
         b.y += velY * delta;
@@ -162,9 +150,7 @@ public class Player extends GameEntity implements Movable {
 
         float direction = reversedFlightTimer > 0f ? -1f : 1f;
         float appliedJumpImpulse = jumpImpulse * direction;
-        if (MathUtils.isZero(appliedJumpImpulse)) {
-            return false;
-        }
+        if (MathUtils.isZero(appliedJumpImpulse)) return false;
 
         velY = appliedJumpImpulse;
         if (jumpIntervalDebuffTimer > 0f) {
@@ -173,13 +159,11 @@ public class Player extends GameEntity implements Movable {
         return true;
     }
 
-    // Health method
     public void takeDamage(int damage) {
-        if (deathFallActive || flickerTimer > 0f) return; // To Prevent double damage while invulnerable/dead
-        
+        if (deathFallActive || flickerTimer > 0f) return; 
         currentHealth -= damage;
-        shakeTimer = 0.5f; // Shake time
-        flicker(1f);       // Flash the bird for 1 sec
+        shakeTimer = 0.5f; 
+        flicker(1f);       
 
         if (currentHealth <= 0) {
             currentHealth = 0;
@@ -197,7 +181,6 @@ public class Player extends GameEntity implements Movable {
     public int getMaxHealth() { return maxHealth; }
     public float getShakeTimer() { return shakeTimer; }
 
-
     public void startDeathFall(float speedMultiplier) {
         deathFallActive = true;
         deathFallSpeedMultiplier = speedMultiplier;
@@ -205,9 +188,7 @@ public class Player extends GameEntity implements Movable {
         velY = 0f;
     }
 
-    public void flicker(float duration) {
-        flickerTimer = Math.max(flickerTimer, duration);
-    }
+    public void flicker(float duration) { flickerTimer = Math.max(flickerTimer, duration); }
 
     public void applyReverseFlightDebuff(float duration) {
         reversedFlightTimer = Math.max(reversedFlightTimer, duration);
@@ -227,42 +208,26 @@ public class Player extends GameEntity implements Movable {
         jumpIntervalDebuffDuration = Math.max(jumpIntervalDebuffDuration, duration);
         jumpIntervalSeconds = Math.max(jumpIntervalSeconds, Math.max(0f, intervalSeconds));
     }
-
-    public boolean isDeathFallActive() {
-        return deathFallActive;
+    
+    public void applyHeavyDebuff() {
+        applyTrashPileDebuff(2.0f, 150f); 
     }
 
-    public float getReversedFlightTimer() {
-        return reversedFlightTimer;
+    public void applySlipperyDebuff() {
     }
 
-    public float getReversedFlightProgress() {
-        return getProgressRatio(reversedFlightTimer, reversedFlightDuration);
-    }
-
-    public float getControlLockTimer() {
-        return controlLockTimer;
-    }
-
-    public float getControlLockProgress() {
-        return getProgressRatio(controlLockTimer, controlLockDuration);
-    }
-
-    public float getJumpIntervalDebuffTimer() {
-        return jumpIntervalDebuffTimer;
-    }
-
-    public float getJumpIntervalDebuffProgress() {
-        return getProgressRatio(jumpIntervalDebuffTimer, jumpIntervalDebuffDuration);
-    }
-
+    public boolean isDeathFallActive() { return deathFallActive; }
+    public float getReversedFlightTimer() { return reversedFlightTimer; }
+    public float getReversedFlightProgress() { return getProgressRatio(reversedFlightTimer, reversedFlightDuration); }
+    public float getControlLockTimer() { return controlLockTimer; }
+    public float getControlLockProgress() { return getProgressRatio(controlLockTimer, controlLockDuration); }
+    public float getJumpIntervalDebuffTimer() { return jumpIntervalDebuffTimer; }
+    public float getJumpIntervalDebuffProgress() { return getProgressRatio(jumpIntervalDebuffTimer, jumpIntervalDebuffDuration); }
     public boolean hasPassed()       { return passed; }
     public void    setPassed(boolean passed) { this.passed = passed; }
 
     private float getProgressRatio(float timer, float duration) {
-        if (timer <= 0f || duration <= 0f) {
-            return 0f;
-        }
+        if (timer <= 0f || duration <= 0f) return 0f;
         return Math.max(0f, Math.min(1f, timer / duration));
     }
 }
