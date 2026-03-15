@@ -202,6 +202,7 @@ public class GameScene extends Scene {
     @Override
     public void onEnter() {
         gameSession.prepareForStageEntry();
+        context.getSoundManager().startMusic();
 
         if (hudRenderer != null)     hudRenderer.dispose();
         if (factPopupRenderer != null) factPopupRenderer.dispose();
