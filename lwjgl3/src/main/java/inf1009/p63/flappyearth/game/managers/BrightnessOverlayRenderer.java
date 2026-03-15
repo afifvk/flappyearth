@@ -5,7 +5,6 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import inf1009.p63.flappyearth.game.config.GameSettings;
 
 public class BrightnessOverlayRenderer {
 
@@ -19,8 +18,7 @@ public class BrightnessOverlayRenderer {
         pixmap.dispose();
     }
 
-    public void render(SpriteBatch batch, GameSettings settings) {
-        float brightness = settings.getBrightness();
+    public void render(SpriteBatch batch, float brightness) {
         if (brightness == 1.0f) {
             return;
         }

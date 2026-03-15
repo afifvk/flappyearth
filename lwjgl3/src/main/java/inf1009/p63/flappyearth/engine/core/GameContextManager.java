@@ -47,5 +47,11 @@ public class GameContextManager {
     public EventManager getEventManager()             { return eventManager; }
     public TimeManager getTimeManager()               { return timeManager; }
     public RandomManager getRandomManager()           { return randomManager; }
+    public float getBrightness()                      { return gameSettings.getBrightness(); }
+    public void increaseBrightness(float amount)      { gameSettings.increaseBrightness(amount); }
+    public void decreaseBrightness(float amount)      { gameSettings.decreaseBrightness(amount); }
+    public float getMasterVolume()                    { return gameSettings.getMasterVolume(); }
+    public void increaseMasterVolume(float amount)    { gameSettings.increaseVolume(amount); }
+    public void decreaseMasterVolume(float amount)    { gameSettings.decreaseVolume(amount); }
     public GameSettings getGameSettings()             { return gameSettings; }
 }

@@ -125,7 +125,7 @@ public class MenuScene extends Scene {
 
             batch.end();
             batch.begin();
-            brightnessOverlayRenderer.render(batch, context.getGameSettings());
+            brightnessOverlayRenderer.render(batch, context.getBrightness());
             batch.end();
             return;
         } else if (bgTexture != null) {
@@ -147,7 +147,7 @@ public class MenuScene extends Scene {
         batch.end();
 
         batch.begin();
-        brightnessOverlayRenderer.render(batch, context.getGameSettings());
+        brightnessOverlayRenderer.render(batch, context.getBrightness());
         batch.end();
     }
 

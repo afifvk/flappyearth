@@ -10,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import inf1009.p63.flappyearth.engine.core.GameContextManager;
 import inf1009.p63.flappyearth.engine.core.Scene;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
-import inf1009.p63.flappyearth.game.config.GameSettings;
 import inf1009.p63.flappyearth.game.managers.BrightnessOverlayRenderer;
 
 public class SettingsScene extends Scene {
@@ -85,22 +84,20 @@ public class SettingsScene extends Scene {
         float btnH    = BUTTON_BASE_HEIGHT * scale;
         float btnX    = (screenW - btnW) / 2f;
         float btnY    = screenH * 0.12f;
-        GameSettings settings = context.getGameSettings();
-
         if (isButtonClicked(leftX, controlYOne, controlSize, controlSize, screenH)) {
             context.getSoundManager().playButtonClick();
-            settings.decreaseBrightness(SETTING_STEP);
+            context.decreaseBrightness(SETTING_STEP);
         } else if (isButtonClicked(rightX, controlYOne, controlSize, controlSize, screenH)) {
             context.getSoundManager().playButtonClick();
-            settings.increaseBrightness(SETTING_STEP);
+            context.increaseBrightness(SETTING_STEP);
         } else if (isButtonClicked(leftX, controlYTwo, controlSize, controlSize, screenH)) {
             context.getSoundManager().playButtonClick();
-            settings.decreaseVolume(SETTING_STEP);
-            context.getSoundManager().setMasterVolume(settings.getMasterVolume());
+            context.decreaseMasterVolume(SETTING_STEP);
+            context.getSoundManager().setMasterVolume(context.getMasterVolume());
         } else if (isButtonClicked(rightX, controlYTwo, controlSize, controlSize, screenH)) {
             context.getSoundManager().playButtonClick();
-            settings.increaseVolume(SETTING_STEP);
-            context.getSoundManager().setMasterVolume(settings.getMasterVolume());
+            context.increaseMasterVolume(SETTING_STEP);
+            context.getSoundManager().setMasterVolume(context.getMasterVolume());
         } else if (isButtonClicked(btnX, btnY, btnW, btnH, screenH)) {
             context.getSoundManager().playButtonClick();
             sceneManager.switchTo(GameSceneId.MENU.id());
@@ -157,7 +154,7 @@ public class SettingsScene extends Scene {
         batch.end();
 
         batch.begin();
-        brightnessOverlayRenderer.render(batch, context.getGameSettings());
+        brightnessOverlayRenderer.render(batch, context.getBrightness());
         batch.end();
     }
 
@@ -185,12 +182,12 @@ public class SettingsScene extends Scene {
     private float getBrightnessProgress() {
         float min = 0.4f;
         float max = 1.6f;
-        float value = context.getGameSettings().getBrightness();
+        float value = context.getBrightness();
         return (value - min) / (max - min);
     }
 
     private float getVolumeProgress() {
-        return context.getGameSettings().getMasterVolume();
+        return context.getMasterVolume();
     }
 
     private void drawProgressBar(float x, float y, float width, float height, float progress) {

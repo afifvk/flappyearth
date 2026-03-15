@@ -126,7 +126,7 @@ public class GameOverScene extends Scene {
         batch.end();
 
         batch.begin();
-        brightnessOverlayRenderer.render(batch, context.getGameSettings());
+        brightnessOverlayRenderer.render(batch, context.getBrightness());
         batch.end();
     }
 

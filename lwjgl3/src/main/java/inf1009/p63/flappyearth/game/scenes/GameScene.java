@@ -698,7 +698,7 @@ public class GameScene extends Scene {
         pauseCamera.setToOrtho(false, screenW, screenH);
         pauseBatch.setProjectionMatrix(pauseCamera.combined);
         pauseBatch.begin();
-        brightnessOverlayRenderer.render(pauseBatch, context.getGameSettings());
+        brightnessOverlayRenderer.render(pauseBatch, context.getBrightness());
         pauseBatch.end();
     }
 
