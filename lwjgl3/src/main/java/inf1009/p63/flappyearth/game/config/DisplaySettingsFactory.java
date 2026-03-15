@@ -40,8 +40,8 @@ public final class DisplaySettingsFactory {
 	private static final int DEFAULT_TEAM_WINDOW_HEIGHT = 720;
 
 	// Baseline reference used to keep world scale and gameplay feel consistent across window sizes.
-	private static final int DEFAULT_REFERENCE_WORLD_WIDTH = 1920;
-	private static final int DEFAULT_REFERENCE_WORLD_HEIGHT = 1080;
+	private static final int DEFAULT_REFERENCE_WORLD_WIDTH = 2240;
+	private static final int DEFAULT_REFERENCE_WORLD_HEIGHT = 1260;
 
 	private DisplaySettingsFactory() {
 	}

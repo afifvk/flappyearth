@@ -52,7 +52,7 @@ public class Player extends GameEntity implements Movable {
     private float shakeTimer = 0f;
 
     public Player(float x, float y, float velX, float gravity, float jumpImpulse) {
-        super(x, y, 80, 60, BIRD_FRAMES[0], Tags.PLAYER); 
+        super(x, y, 68, 52, BIRD_FRAMES[0], Tags.PLAYER);
         this.velX        = velX;
         this.velY        = 0f;
         this.gravity     = gravity;
