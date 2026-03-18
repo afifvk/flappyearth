@@ -2,8 +2,6 @@ package inf1009.p63.flappyearth.game.state;
 
 public class ActiveEffects {
 
-    private float shieldTimer   = 0f;
-    private float slowTimeTimer = 0f;
     private float screenShakeTimer = 0f;
     private float screenShakeMagnitude = 0f;
     private float oilBlotTimer = 0f;
@@ -14,8 +12,6 @@ public class ActiveEffects {
     private float smokeSurgeMinimumAlpha = 0f;
 
     public void update(float delta) {
-        if (shieldTimer   > 0) shieldTimer   = Math.max(0, shieldTimer   - delta);
-        if (slowTimeTimer > 0) slowTimeTimer = Math.max(0, slowTimeTimer - delta);
         if (screenShakeTimer > 0) {
             screenShakeTimer = Math.max(0, screenShakeTimer - delta);
             if (screenShakeTimer == 0f) {
@@ -41,14 +37,6 @@ public class ActiveEffects {
             }
         }
     }
-
-    public boolean isShieldActive()          { return shieldTimer > 0; }
-    public float   getShieldTimer()          { return shieldTimer; }
-    public void    activateShield(float d)   { shieldTimer = d; }
-
-    public boolean isSlowTimeActive()        { return slowTimeTimer > 0; }
-    public float   getSlowTimeTimer()        { return slowTimeTimer; }
-    public void    activateSlowTime(float d) { slowTimeTimer = d; }
 
     public void activateScreenShake(float duration, float magnitude) {
         screenShakeTimer = Math.max(screenShakeTimer, duration);
@@ -105,8 +93,6 @@ public class ActiveEffects {
     }
 
     public void reset() {
-        shieldTimer   = 0f;
-        slowTimeTimer = 0f;
         screenShakeTimer = 0f;
         screenShakeMagnitude = 0f;
         oilBlotTimer = 0f;

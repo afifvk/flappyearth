@@ -5,7 +5,7 @@ import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import inf1009.p63.flappyearth.engine.core.GameMaster;
 import inf1009.p63.flappyearth.game.config.DisplaySettings;
 import inf1009.p63.flappyearth.game.config.DisplaySettingsFactory;
-import inf1009.p63.flappyearth.game.core.FlappyEarthSetup;
+import inf1009.p63.flappyearth.game.setup.FlappyEarthSetup;
 
 public class Lwjgl3Launcher {
     public static void main(String[] args) {

@@ -1,16 +1,17 @@
 package inf1009.p63.flappyearth.game.scenes;
 
 import com.badlogic.gdx.Gdx;
+import inf1009.p63.flappyearth.game.config.AudioKeys;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import inf1009.p63.flappyearth.engine.core.GameContextManager;
+import inf1009.p63.flappyearth.engine.core.EngineContext;
 import inf1009.p63.flappyearth.engine.core.Scene;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
-import inf1009.p63.flappyearth.game.managers.BrightnessOverlayRenderer;
+import inf1009.p63.flappyearth.game.runtime.BrightnessOverlayRenderer;
 
 public class SettingsScene extends Scene {
 
@@ -22,12 +23,11 @@ public class SettingsScene extends Scene {
     private static final float SETTING_STEP = 0.1f;
     private static final float BAR_WIDTH_BASE = 500f;
     private static final float BAR_HEIGHT_BASE = 24f;
-    private static final float PANEL_BASE_WIDTH = 980f;
     private static final float PANEL_BASE_HEIGHT = 760f;
     private static final float CHECKBOX_BASE_SIZE = 56f;
 
     private final SceneManager sceneManager;
-    private final GameContextManager context;
+    private final EngineContext context;
 
     private final SpriteBatch batch;
     private final OrthographicCamera camera;
@@ -51,7 +51,7 @@ public class SettingsScene extends Scene {
     private float pendingVolume;
     private boolean pendingMuted;
 
-    public SettingsScene(SceneManager sceneManager, GameContextManager context) {
+    public SettingsScene(SceneManager sceneManager, EngineContext context) {
         this.sceneManager = sceneManager;
         this.context = context;
         this.batch = new SpriteBatch();
@@ -61,18 +61,18 @@ public class SettingsScene extends Scene {
 
     @Override
     public void onEnter() {
-        bgTexture = context.getAssetManager().get("ui/settings_background.png", Texture.class);
-        back1 = context.getAssetManager().get("buttons/A_Back1.png", Texture.class);
-        back2 = context.getAssetManager().get("buttons/A_Back2.png", Texture.class);
-        brightnessDown1 = context.getAssetManager().get("buttons/brightness_down1.png", Texture.class);
-        brightnessDown2 = context.getAssetManager().get("buttons/brightness_down2.png", Texture.class);
-        brightnessUp1 = context.getAssetManager().get("buttons/brightness_up1.png", Texture.class);
-        brightnessUp2 = context.getAssetManager().get("buttons/brightness_up2.png", Texture.class);
-        volumeDown1 = context.getAssetManager().get("buttons/volume_down1.png", Texture.class);
-        volumeDown2 = context.getAssetManager().get("buttons/volume_down2.png", Texture.class);
-        volumeUp1 = context.getAssetManager().get("buttons/volume_up1.png", Texture.class);
-        volumeUp2 = context.getAssetManager().get("buttons/volume_up2.png", Texture.class);
-        muteIcon = context.getAssetManager().get("buttons/mute.png", Texture.class);
+        bgTexture = context.getAssetManager().get("textures/backgrounds/settings.png", Texture.class);
+        back1 = context.getAssetManager().get("textures/ui/buttons/back_1.png", Texture.class);
+        back2 = context.getAssetManager().get("textures/ui/buttons/back_2.png", Texture.class);
+        brightnessDown1 = context.getAssetManager().get("textures/ui/sliders/brightness_down_1.png", Texture.class);
+        brightnessDown2 = context.getAssetManager().get("textures/ui/sliders/brightness_down_2.png", Texture.class);
+        brightnessUp1 = context.getAssetManager().get("textures/ui/sliders/brightness_up_1.png", Texture.class);
+        brightnessUp2 = context.getAssetManager().get("textures/ui/sliders/brightness_up_2.png", Texture.class);
+        volumeDown1 = context.getAssetManager().get("textures/ui/sliders/volume_down_1.png", Texture.class);
+        volumeDown2 = context.getAssetManager().get("textures/ui/sliders/volume_down_2.png", Texture.class);
+        volumeUp1 = context.getAssetManager().get("textures/ui/sliders/volume_up_1.png", Texture.class);
+        volumeUp2 = context.getAssetManager().get("textures/ui/sliders/volume_up_2.png", Texture.class);
+        muteIcon = context.getAssetManager().get("textures/ui/misc/mute.png", Texture.class);
 
         pendingBrightness = context.getBrightness();
         pendingVolume = context.getMasterVolume();
@@ -93,7 +93,6 @@ public class SettingsScene extends Scene {
         float screenH = Gdx.graphics.getHeight();
         float scale = Math.min(screenW / 1920f, screenH / 1080f);
 
-        float panelW = PANEL_BASE_WIDTH * scale;
         float panelH = PANEL_BASE_HEIGHT * scale;
         float panelY = (screenH - panelH) * 0.5f;
 
@@ -116,21 +115,21 @@ public class SettingsScene extends Scene {
         float checkboxY = controlYTwo - (130f * scale);
 
         if (isButtonClicked(leftX, controlYOne, controlSize, controlSize, screenH)) {
-            context.getSoundManager().playButtonClick();
+            context.getAudioManager().playSound(AudioKeys.UI_CLICK);
             pendingBrightness = clamp(pendingBrightness - SETTING_STEP, 0.4f, 1.6f);
         } else if (isButtonClicked(rightX, controlYOne, controlSize, controlSize, screenH)) {
-            context.getSoundManager().playButtonClick();
+            context.getAudioManager().playSound(AudioKeys.UI_CLICK);
             pendingBrightness = clamp(pendingBrightness + SETTING_STEP, 0.4f, 1.6f);
         } else if (isButtonClicked(leftX, controlYTwo, controlSize, controlSize, screenH)) {
-            context.getSoundManager().playButtonClick();
+            context.getAudioManager().playSound(AudioKeys.UI_CLICK);
             pendingVolume = clamp(pendingVolume - SETTING_STEP, 0f, 1f);
             pendingMuted = false;
         } else if (isButtonClicked(rightX, controlYTwo, controlSize, controlSize, screenH)) {
-            context.getSoundManager().playButtonClick();
+            context.getAudioManager().playSound(AudioKeys.UI_CLICK);
             pendingVolume = clamp(pendingVolume + SETTING_STEP, 0f, 1f);
             pendingMuted = false;
         } else if (isButtonClicked(checkboxX, checkboxY, checkboxSize, checkboxSize, screenH)) {
-            context.getSoundManager().playButtonClick();
+            context.getAudioManager().playSound(AudioKeys.UI_CLICK);
             pendingMuted = !pendingMuted;
         } else if (isButtonClicked(btnX, btnY, btnW, btnH, screenH)
                 || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
@@ -156,9 +155,7 @@ public class SettingsScene extends Scene {
         }
 
         float scale = Math.min(screenW / 1920f, screenH / 1080f);
-        float panelW = PANEL_BASE_WIDTH * scale;
         float panelH = PANEL_BASE_HEIGHT * scale;
-        float panelX = (screenW - panelW) * 0.5f;
         float panelY = (screenH - panelH) * 0.5f;
 
         float centerX = screenW * 0.5f;
@@ -269,12 +266,6 @@ public class SettingsScene extends Scene {
         batch.setColor(1f, 1f, 1f, 1f);
     }
 
-    private void drawPanel(float x, float y, float width, float height) {
-        batch.setColor(0.07f, 0.22f, 0.28f, 0.75f);
-        batch.draw(pixel, x, y, width, height);
-        batch.setColor(1f, 1f, 1f, 1f);
-    }
-
     private void drawMuteCheckbox(float x, float y, float size) {
         batch.setColor(0f, 0f, 0f, 0.45f);
         batch.draw(pixel, x, y, size, size);
@@ -310,14 +301,14 @@ public class SettingsScene extends Scene {
     }
 
     private void saveAndExit() {
-        context.getSoundManager().playButtonClick();
+        context.getAudioManager().playSound(AudioKeys.UI_CLICK);
 
-        context.getGameSettings().setBrightness(pendingBrightness);
+        context.getEngineSettings().setBrightness(pendingBrightness);
         context.setMasterVolume(pendingVolume);
         context.setMuted(pendingMuted);
 
-        context.getSoundManager().setMasterVolume(pendingVolume);
-        context.getSoundManager().setMuted(pendingMuted);
+        context.getAudioManager().setMasterVolume(pendingVolume);
+        context.getAudioManager().setMuted(pendingMuted);
 
         sceneManager.switchTo(GameSceneId.MENU.id());
     }

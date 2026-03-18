@@ -59,11 +59,11 @@ public abstract class Obstacle extends GameEntity {
     public void         setFlipped(boolean flipped) { this.isFlipped = flipped; }
 
     @Override
-    public inf1009.p63.flappyearth.engine.entities.RenderData getRenderData() {
+    public inf1009.p63.flappyearth.engine.model.RenderData getRenderData() {
         Rectangle b = getBounds();
         if (crashActive) {
             // No spin during crash — render with default rotation (0f)
-            return new inf1009.p63.flappyearth.engine.entities.RenderData(
+            return new inf1009.p63.flappyearth.engine.model.RenderData(
                 getAssetKey(), b.x, b.y, b.width, b.height,
                 getColorR(), getColorG(), getColorB(), isFlipped());
         }

@@ -1,7 +1,5 @@
 package inf1009.p63.flappyearth.game.state;
 
-import inf1009.p63.flappyearth.game.managers.ScoreManager;
-
 public class GameSession {
 
     private final GameState gameState = new GameState();
@@ -42,4 +40,16 @@ public void prepareForStageEntry() {
     gameState.setInvincible(0f);
     activeEffects.reset();
 }
+
+    private boolean fadeInRequested = false;
+
+    public void requestFadeIn() {
+        fadeInRequested = true;
+    }
+
+    public boolean consumeFadeInRequest() {
+        boolean b = fadeInRequested;
+        fadeInRequested = false;
+        return b;
+    }
 }

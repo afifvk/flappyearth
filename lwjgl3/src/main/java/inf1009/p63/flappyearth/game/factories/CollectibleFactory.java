@@ -1,7 +1,7 @@
 package inf1009.p63.flappyearth.game.factories;
 
-import inf1009.p63.flappyearth.engine.managers.EntityManager;
-import inf1009.p63.flappyearth.engine.managers.RandomManager;
+import inf1009.p63.flappyearth.engine.services.EntityStore;
+import inf1009.p63.flappyearth.engine.services.RandomManager;
 import inf1009.p63.flappyearth.game.entities.Collectible;
 import inf1009.p63.flappyearth.game.entities.collectibles.good.RecyclingCollectible;
 import inf1009.p63.flappyearth.game.entities.collectibles.good.SolarPanelCollectible;
@@ -17,12 +17,12 @@ public class CollectibleFactory {
 
     public CollectibleFactory() {}
 
-    public void spawnRandom(EntityManager entityManager, RandomManager random,
+    public void spawnRandom(EntityStore entityManager, RandomManager random,
                             float x, float y) {
         entityManager.queueAdd(createRandom(random, x, y));
     }
 
-    public void spawnGood(EntityManager entityManager, RandomManager random,
+    public void spawnGood(EntityStore entityManager, RandomManager random,
                           float x, float y) {
         int pick = random.range(0, 4);
         Collectible good;
@@ -36,7 +36,7 @@ public class CollectibleFactory {
         entityManager.queueAdd(good);
     }
 
-    public void spawnBad(EntityManager entityManager, RandomManager random,
+    public void spawnBad(EntityStore entityManager, RandomManager random,
                          float x, float y) {
         int pick = random.range(0, 3);
         Collectible bad;

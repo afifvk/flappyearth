@@ -1,7 +1,7 @@
 package inf1009.p63.flappyearth.game.factories;
 
-import inf1009.p63.flappyearth.engine.managers.EntityManager;
-import inf1009.p63.flappyearth.engine.managers.RandomManager;
+import inf1009.p63.flappyearth.engine.services.EntityStore;
+import inf1009.p63.flappyearth.engine.services.RandomManager;
 
 public class EntityFactory {
 
@@ -18,16 +18,16 @@ public class EntityFactory {
     public ObstacleFactory   getObstacleFactory()    { return obstacleFactory; }
     public CollectibleFactory getCollectibleFactory() { return collectibleFactory; }
 
-    public void spawnObstacleColumn(EntityManager entityManager, float x,
+    public void spawnObstacleColumn(EntityStore entityManager, float x,
                                     float gapCentreY, float gapSize, float screenH) {
         obstacleFactory.spawnColumn(entityManager, x, gapCentreY, gapSize, screenH);
     }
 
-    public void spawnCollectible(EntityManager entityManager, float x, float y) {
+    public void spawnCollectible(EntityStore entityManager, float x, float y) {
         collectibleFactory.spawnRandom(entityManager, random, x, y);
     }
 
-    public void spawnDebrisForObstacle(EntityManager entityManager, inf1009.p63.flappyearth.game.entities.Obstacle obstacle) {
+    public void spawnDebrisForObstacle(EntityStore entityManager, inf1009.p63.flappyearth.game.entities.Obstacle obstacle) {
         // create a few small debris pieces originating from obstacle bounds
         float x = obstacle.getBounds().x + obstacle.getBounds().width / 2f;
         float y = obstacle.getBounds().y + obstacle.getBounds().height / 2f;

@@ -1,13 +1,13 @@
 package inf1009.p63.flappyearth.game.entities;
 
 import com.badlogic.gdx.math.Rectangle;
-import inf1009.p63.flappyearth.engine.entities.Entity;
-import inf1009.p63.flappyearth.engine.entities.RenderData;
+import inf1009.p63.flappyearth.engine.model.EntityBase;
+import inf1009.p63.flappyearth.engine.model.RenderData;
 import inf1009.p63.flappyearth.engine.interfaces.Collidable;
 import inf1009.p63.flappyearth.engine.interfaces.Renderable;
 import inf1009.p63.flappyearth.engine.interfaces.Updatable;
 
-public abstract class GameEntity extends Entity implements Updatable, Renderable, Collidable {
+public abstract class GameEntity extends EntityBase implements Updatable, Renderable, Collidable {
 
     private static int idCounter = 0;
 

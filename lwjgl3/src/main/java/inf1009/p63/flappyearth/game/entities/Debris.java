@@ -1,17 +1,17 @@
 package inf1009.p63.flappyearth.game.entities;
 
-import inf1009.p63.flappyearth.engine.entities.RenderData;
+import inf1009.p63.flappyearth.engine.model.RenderData;
 import inf1009.p63.flappyearth.engine.interfaces.Movable;
-import inf1009.p63.flappyearth.engine.managers.EntityManager;
+import inf1009.p63.flappyearth.engine.services.EntityStore;
 
 public class Debris extends GameEntity implements Movable {
 
     private float vx;
     private float vy;
     private float life;
-    private final EntityManager entityManager;
+    private final EntityStore entityManager;
 
-    public Debris(float x, float y, float w, float h, float vx, float vy, float life, EntityManager em) {
+    public Debris(float x, float y, float w, float h, float vx, float vy, float life, EntityStore em) {
         super(x, y, w, h, null);
         this.vx = vx; this.vy = vy; this.life = life;
         this.entityManager = em;

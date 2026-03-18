@@ -1,16 +1,18 @@
 package inf1009.p63.flappyearth.game.scenes;
 
 import com.badlogic.gdx.Gdx;
+import inf1009.p63.flappyearth.game.config.AudioKeys;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import inf1009.p63.flappyearth.engine.core.GameContextManager;
+import inf1009.p63.flappyearth.engine.core.EngineContext;
 import inf1009.p63.flappyearth.engine.core.Scene;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
 import inf1009.p63.flappyearth.game.config.AssetKeys;
-import inf1009.p63.flappyearth.game.managers.BrightnessOverlayRenderer;
+import inf1009.p63.flappyearth.game.config.StagePlan;
+import inf1009.p63.flappyearth.game.runtime.BrightnessOverlayRenderer;
 import inf1009.p63.flappyearth.game.state.GameSession;
 
 public class GameOverScene extends Scene {
@@ -21,10 +23,9 @@ public class GameOverScene extends Scene {
     private static final float QUIT_Y_RATIO = 0.13f;
 
     private final SceneManager sceneManager;
-    private final GameContextManager context;
+    private final EngineContext context;
     private final GameSession gameSession;
     private final StagePlan stagePlan;
-    private int finalScore;
     private boolean victoryEnding;
 
     private final SpriteBatch batch;
@@ -38,23 +39,18 @@ public class GameOverScene extends Scene {
     private Texture quit2;
 
     public GameOverScene(SceneManager sceneManager,
-                         GameContextManager context,
+                         EngineContext context,
                          GameSession gameSession,
                          StagePlan stagePlan) {
         this.sceneManager = sceneManager;
         this.context = context;
         this.gameSession = gameSession;
         this.stagePlan = stagePlan;
-        this.finalScore = 0;
         this.victoryEnding = false;
 
         this.batch = new SpriteBatch();
         this.camera = new OrthographicCamera();
         this.brightnessOverlayRenderer = new BrightnessOverlayRenderer();
-    }
-
-    public void setScore(int score) {
-        this.finalScore = score;
     }
 
     public void setVictoryEnding(boolean victoryEnding) {
@@ -63,16 +59,16 @@ public class GameOverScene extends Scene {
 
     @Override
     public void onEnter() {
-        context.getSoundManager().stopMusic();
-        context.getSoundManager().playGameOver();
+        context.getAudioManager().stopMusic();
+        context.getAudioManager().playSound(AudioKeys.GAME_OVER);
 
         backgroundTexture = context.getAssetManager().get(
             victoryEnding ? AssetKeys.ENDGAME_BG : AssetKeys.GAMEFAILED_BG,
             Texture.class);
-        restart1 = context.getAssetManager().get("buttons/A_Restart1.png", Texture.class);
-        restart2 = context.getAssetManager().get("buttons/A_Restart2.png", Texture.class);
-        quit1 = context.getAssetManager().get("buttons/A_Quit1.png", Texture.class);
-        quit2 = context.getAssetManager().get("buttons/A_Quit2.png", Texture.class);
+        restart1 = context.getAssetManager().get("textures/ui/buttons/restart_1.png", Texture.class);
+        restart2 = context.getAssetManager().get("textures/ui/buttons/restart_2.png", Texture.class);
+        quit1 = context.getAssetManager().get("textures/ui/buttons/quit_1.png", Texture.class);
+        quit2 = context.getAssetManager().get("textures/ui/buttons/quit_2.png", Texture.class);
     }
 
     @Override
@@ -83,7 +79,7 @@ public class GameOverScene extends Scene {
         if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)
                 || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)
                 || isRestartButtonClicked(screenW, screenH)) {
-            context.getSoundManager().playButtonClick();
+            context.getAudioManager().playSound(AudioKeys.UI_CLICK);
             gameSession.resetForNewRun();
             gameSession.prepareForStageEntry();
             sceneManager.switchTo(stagePlan.getInitialStageId());
@@ -92,7 +88,7 @@ public class GameOverScene extends Scene {
 
         if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)
                 || isQuitButtonClicked(screenW, screenH)) {
-            context.getSoundManager().playButtonClick();
+            context.getAudioManager().playSound(AudioKeys.UI_CLICK);
             gameSession.resetForNewRun();
             sceneManager.switchTo(GameSceneId.MENU.id());
         }

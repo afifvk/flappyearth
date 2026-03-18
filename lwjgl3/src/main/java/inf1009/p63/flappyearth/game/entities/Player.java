@@ -3,7 +3,7 @@ package inf1009.p63.flappyearth.game.entities;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 
-import inf1009.p63.flappyearth.engine.entities.RenderData;
+import inf1009.p63.flappyearth.engine.model.RenderData;
 import inf1009.p63.flappyearth.engine.interfaces.Movable;
 import inf1009.p63.flappyearth.game.config.Tags;
 
@@ -18,8 +18,8 @@ public class Player extends GameEntity implements Movable {
     private boolean passed = false;
 
     private static final String[] BIRD_FRAMES = {
-        "bird/flappy00.png", "bird/flappy01.png", "bird/flappy02.png",
-        "bird/flappy03.png", "bird/flappy04.png", "bird/flappy05.png"
+        "textures/entities/bird/frame_00.png", "textures/entities/bird/frame_01.png", "textures/entities/bird/frame_02.png",
+        "textures/entities/bird/frame_03.png", "textures/entities/bird/frame_04.png", "textures/entities/bird/frame_05.png"
     };
     private static final float FRAME_DURATION = 0.1f;
     private int currentFrame = 0;
@@ -209,13 +209,6 @@ public class Player extends GameEntity implements Movable {
         jumpIntervalSeconds = Math.max(jumpIntervalSeconds, Math.max(0f, intervalSeconds));
     }
     
-    public void applyHeavyDebuff() {
-        applyTrashPileDebuff(2.0f, 150f); 
-    }
-
-    public void applySlipperyDebuff() {
-    }
-
     public boolean isDeathFallActive() { return deathFallActive; }
     public float getReversedFlightTimer() { return reversedFlightTimer; }
     public float getReversedFlightProgress() { return getProgressRatio(reversedFlightTimer, reversedFlightDuration); }

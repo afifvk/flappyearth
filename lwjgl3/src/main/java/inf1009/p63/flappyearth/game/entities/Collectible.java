@@ -2,6 +2,8 @@ package inf1009.p63.flappyearth.game.entities;
 
 public abstract class Collectible extends GameEntity {
 
+    public static final float STANDARD_SIZE = 60f;
+
     public enum CollectibleType {
         RECYCLING,
         SOLAR_PANEL,

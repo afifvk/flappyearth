@@ -1,7 +1,8 @@
 package inf1009.p63.flappyearth.game.controllers;
 
 import inf1009.p63.flappyearth.engine.core.SceneManager;
-import inf1009.p63.flappyearth.engine.managers.SoundManager;
+import inf1009.p63.flappyearth.game.config.AudioKeys;
+import inf1009.p63.flappyearth.engine.services.AudioManager;
 import inf1009.p63.flappyearth.game.entities.Player;
 import inf1009.p63.flappyearth.game.scenes.GameOverScene;
 import inf1009.p63.flappyearth.game.scenes.GameSceneId;
@@ -14,7 +15,7 @@ public class DeathController {
 
     private final SceneManager sceneManager;
     private final GameSession gameSession;
-    private final SoundManager soundManager;
+    private final AudioManager audioManager;
 
     private boolean gameOverDelayActive;
     private float gameOverDelayTimer;
@@ -22,10 +23,10 @@ public class DeathController {
 
     public DeathController(SceneManager sceneManager,
                            GameSession gameSession,
-                           SoundManager soundManager) {
+                           AudioManager audioManager) {
         this.sceneManager = sceneManager;
         this.gameSession = gameSession;
-        this.soundManager = soundManager;
+        this.audioManager = audioManager;
     }
 
     public void onEnter() {
@@ -36,7 +37,7 @@ public class DeathController {
 
     public void update(float delta,
                        Player player,
-                       GameCameraController cameraController,
+                       CameraController cameraController,
                        boolean safeEndingWindow) {
         GameState gameState = gameSession.getGameState();
 
@@ -44,7 +45,7 @@ public class DeathController {
             if (player == null) return;
 
             if (!deathSoundPlayed) {
-                soundManager.playDie();
+                audioManager.playSound(AudioKeys.DEATH);
                 deathSoundPlayed = true;
             }
 
@@ -80,7 +81,6 @@ public class DeathController {
         }
 
         GameOverScene gameOverScene = (GameOverScene) sceneManager.getScene(GameSceneId.GAME_OVER.id());
-        gameOverScene.setScore(gameSession.getScoreManager().getCurrentScore());
         gameOverScene.setVictoryEnding(false);
         sceneManager.switchTo(GameSceneId.GAME_OVER.id());
         return true;
@@ -88,7 +88,7 @@ public class DeathController {
 
     private void startDeathSequence(Player player,
                                     float deathFallSpeedMultiplier,
-                                    GameCameraController cameraController) {
+                                    CameraController cameraController) {
         if (player == null) return;
 
         GameState gameState = gameSession.getGameState();

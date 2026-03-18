@@ -2,7 +2,7 @@ package inf1009.p63.flappyearth.game.entities.collectibles.bad;
 
 public class FactoryCollectible extends BadCollectible {
     public FactoryCollectible(float x, float y) {
-        super(x, y, 60, 60, "collectibles/bc_factory.png", CollectibleType.FACTORY);
+        super(x, y, "textures/entities/collectibles/bad/factory.png", CollectibleType.FACTORY);
     }
 }
 

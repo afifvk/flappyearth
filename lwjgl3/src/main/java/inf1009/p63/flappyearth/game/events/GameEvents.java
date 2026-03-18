@@ -14,7 +14,5 @@ public final class GameEvents {
 
     public static final String OBSTACLE_PASSED    = "OBSTACLE_PASSED";
 
-    public static final String FACT_REQUESTED     = "FACT_REQUESTED";
-
     public static final String GAME_OVER_REQUESTED = "GAME_OVER_REQUESTED";
 }

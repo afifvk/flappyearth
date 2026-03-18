@@ -1,6 +1,6 @@
 package inf1009.p63.flappyearth.game.factories;
 
-import inf1009.p63.flappyearth.engine.managers.EntityManager;
+import inf1009.p63.flappyearth.engine.services.EntityStore;
 import inf1009.p63.flappyearth.game.entities.Obstacle;
 import inf1009.p63.flappyearth.game.entities.obstacles.Pipe;
 
@@ -11,7 +11,7 @@ public class ObstacleFactory {
     public ObstacleFactory() {
     }
 
-    public void spawnColumn(EntityManager entityManager, float x, float gapCentreY,
+    public void spawnColumn(EntityStore entityManager, float x, float gapCentreY,
                             float gapSize, float screenH) {
         float halfGap = gapSize / 2f;
         float gapLowerY = gapCentreY - halfGap;

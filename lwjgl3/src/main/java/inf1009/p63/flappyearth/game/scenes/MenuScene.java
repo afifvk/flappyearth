@@ -1,17 +1,19 @@
 package inf1009.p63.flappyearth.game.scenes;
 
 import com.badlogic.gdx.Gdx;
+import inf1009.p63.flappyearth.game.config.AudioKeys;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import inf1009.p63.flappyearth.engine.core.GameContextManager;
+import inf1009.p63.flappyearth.engine.core.EngineContext;
 import inf1009.p63.flappyearth.engine.core.Scene;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
 import inf1009.p63.flappyearth.game.config.AssetKeys;
-import inf1009.p63.flappyearth.game.managers.BrightnessOverlayRenderer;
+import inf1009.p63.flappyearth.game.config.StagePlan;
+import inf1009.p63.flappyearth.game.runtime.BrightnessOverlayRenderer;
 import inf1009.p63.flappyearth.game.state.GameSession;
 
 public class MenuScene extends Scene {
@@ -22,7 +24,7 @@ public class MenuScene extends Scene {
     private static final float BUTTON_VERTICAL_GAP_RATIO = 0.11f;
 
     private final SceneManager       sceneManager;
-    private final GameContextManager context;
+    private final EngineContext context;
     private final GameSession        gameSession;
     private final StagePlan          stagePlan;
 
@@ -38,7 +40,7 @@ public class MenuScene extends Scene {
     private boolean showingInstructions;
 
     public MenuScene(SceneManager sceneManager,
-                     GameContextManager context,
+                     EngineContext context,
                      GameSession gameSession,
                      StagePlan stagePlan) {
         this.sceneManager = sceneManager;
@@ -53,30 +55,30 @@ public class MenuScene extends Scene {
 
     @Override
     public void onEnter() {
-        bgTexture = context.getAssetManager().get("ui/menu_background.png",  Texture.class);
+        bgTexture = context.getAssetManager().get("textures/backgrounds/menu.png",  Texture.class);
         instructionsTexture = context.getAssetManager().get(AssetKeys.INSTRUCTIONS_BG, Texture.class);
-        start1    = context.getAssetManager().get("buttons/A_Start1.png",    Texture.class);
-        start2    = context.getAssetManager().get("buttons/A_Start2.png",    Texture.class);
-        settings1 = context.getAssetManager().get("buttons/A_Settings1.png", Texture.class);
-        settings2 = context.getAssetManager().get("buttons/A_Settings2.png", Texture.class);
-        quit1     = context.getAssetManager().get("buttons/A_Quit1.png",     Texture.class);
-        quit2     = context.getAssetManager().get("buttons/A_Quit2.png",     Texture.class);
+        start1    = context.getAssetManager().get("textures/ui/buttons/start_1.png",    Texture.class);
+        start2    = context.getAssetManager().get("textures/ui/buttons/start_2.png",    Texture.class);
+        settings1 = context.getAssetManager().get("textures/ui/buttons/settings_1.png", Texture.class);
+        settings2 = context.getAssetManager().get("textures/ui/buttons/settings_2.png", Texture.class);
+        quit1     = context.getAssetManager().get("textures/ui/buttons/quit_1.png",     Texture.class);
+        quit2     = context.getAssetManager().get("textures/ui/buttons/quit_2.png",     Texture.class);
         showingInstructions = false;
         
-        context.getSoundManager().startMenuMusic();
+        context.getAudioManager().playMusic(AudioKeys.MUSIC_MENU);
     }
 
     @Override
     public void update(float delta) {
         if (showingInstructions) {
             if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-                context.getSoundManager().playButtonClick();
-                context.getSoundManager().startMusic();
+                context.getAudioManager().playSound(AudioKeys.UI_CLICK);
+                context.getAudioManager().playMusic(AudioKeys.MUSIC_GAME);
                 showingInstructions = false;
                 gameSession.resetForNewRun();
                 sceneManager.switchTo(stagePlan.getInitialStageId());
             } else if (Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
-                context.getSoundManager().playButtonClick();
+                context.getAudioManager().playSound(AudioKeys.UI_CLICK);
                 showingInstructions = false;
             }
             return;
@@ -94,13 +96,13 @@ public class MenuScene extends Scene {
         float quitY     = settingsY - (screenH * BUTTON_VERTICAL_GAP_RATIO);
 
         if (isButtonClicked(btnX, startY, btnW, btnH, screenH)) {
-            context.getSoundManager().playButtonClick();
+            context.getAudioManager().playSound(AudioKeys.UI_CLICK);
             showingInstructions = true;
         } else if (isButtonClicked(btnX, settingsY, btnW, btnH, screenH)) {
-            context.getSoundManager().playButtonClick();
+            context.getAudioManager().playSound(AudioKeys.UI_CLICK);
             sceneManager.switchTo(GameSceneId.SETTINGS.id());
         } else if (isButtonClicked(btnX, quitY, btnW, btnH, screenH)) {
-            context.getSoundManager().playButtonClick();
+            context.getAudioManager().playSound(AudioKeys.UI_CLICK);
             Gdx.app.exit();
         }
     }

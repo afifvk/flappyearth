@@ -6,7 +6,7 @@ import com.badlogic.gdx.Gdx;
 public class GameMaster extends ApplicationAdapter {
 
     private SceneManager sceneManager;
-    private GameContextManager contextManager;
+    private EngineContext contextManager;
     private final GameSetup gameSetup;
 
     public GameMaster(GameSetup gameSetup) {
@@ -19,7 +19,7 @@ public class GameMaster extends ApplicationAdapter {
     @Override
     public void create() {
         sceneManager = new SceneManager();
-        contextManager = new GameContextManager();
+        contextManager = new EngineContext();
         contextManager.init();
 
         gameSetup.configure(contextManager, sceneManager);
