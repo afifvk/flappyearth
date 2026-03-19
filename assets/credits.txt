@@ -6,33 +6,30 @@ victory.mp3
 
 * Source: 
 game [choosic.com]
-menu []
-victory []
+menu [opengameart.org]
+victory [cdn.pixabay.com]
 
 * Author: 
 game [Scott Buckley]
-menu []
-victory []
+menu [glitchart]
+victory [ScratchOnix]
 
 * License: [if applicable]
 
 SFX (bird):
 die.mp3, hit.mp3, point.mp3, whoosh.mp3
 
-* Source: myinstants.com
+* Source: [myinstants.com]
 
 SFX (gameplay):
 collect_bad.mp3, collect_good.mp3, game_over.mp3, stage_transition.mp3
 
-* Source: ...
+* Source: [cdn.pixabay.com]
 
 UI SFX:
 button_click.mp3
 
-* Source: 
-
-
----
+* Source: [cdn.pixabay.com]
 
 === TEXTURES ===
 
@@ -47,38 +44,38 @@ menu.png, pause.png, settings.png, game_over.png, endgame.png
 EFFECTS:
 smoke.png, smog_cloud.png
 
-* Source: ...
+* Source: [TopPNG]
 
 PLAYER:
 frame_00.png → frame_05.png
 
-* Source: ...
+* Source: [jovannyrodz:itch.io]
 
 COLLECTIBLES (BAD):
 factory.png, garbage.png, oil_spill.png, plastic_bottle.png
 
-* Source: ...
+* Source: [Pngtree, itch.io, opengameart.org]
 
 COLLECTIBLES (GOOD):
 greenhouse.png, recycling_bin.png, sapling.png, solar_panel.png, wind_turbine.png
 
-* Source: ...
+* Source: [Pngtree, itch.io, opengameart.org , freepik.com]
 
 OBSTACLES:
 pipe.png
 
-* Source: ...
-
+* Source: [jovannyrodz:itch.io]
 UI:
-buttons (back, help, quit, restart, resume, settings, start)
+buttons (back, help, quit, restart, resume, settings, start,credits)
 hearts (heart_full.png, heart_empty.png)
 misc (instruction_page.png, mute.png)
 sliders (brightness assets)
 
 * Source: 
 buttons [itch.io]
-misc [Canva , Google]
-sliders [    ]
+hearts [dinopixel.com, pixilart.com]
+misc [Canva, Google]
+sliders [itch.io, opengameart.org]
 
 
 ---
@@ -86,5 +83,5 @@ sliders [    ]
 FONTS
 BoldPixels.ttf
 
-* Source: [   ]
-* License: [  ]
+* Source: [yukipixels.itch.io]
+* License: [BoldPixels is released under the Creative Commons Attribution Share Alike 4.0 License ]

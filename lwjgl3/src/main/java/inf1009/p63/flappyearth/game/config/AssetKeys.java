@@ -11,4 +11,5 @@ public final class AssetKeys {
     public static final String GAMEFAILED_BG        = "textures/backgrounds/game_over.png";
     public static final String SETTINGS_BG          = "textures/backgrounds/settings.png";
     public static final String PAUSE_BG             = "textures/backgrounds/pause.png";
+    public static final String CREDITS_PAGE_BG      = "textures/ui/misc/credits_page.png";
 }

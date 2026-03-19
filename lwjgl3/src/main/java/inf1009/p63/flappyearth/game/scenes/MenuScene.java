@@ -52,6 +52,7 @@ public class MenuScene extends Scene {
     private Texture instructionsTexture;
     private Texture start1, start2;
     private Texture settings1, settings2;
+    private Texture credits1, credits2;
     private Texture quit1, quit2;
     private boolean showingInstructions;
 
@@ -83,6 +84,8 @@ public class MenuScene extends Scene {
         start2    = context.getAssetManager().get("textures/ui/buttons/start_2.png",    Texture.class);
         settings1 = context.getAssetManager().get("textures/ui/buttons/settings_1.png", Texture.class);
         settings2 = context.getAssetManager().get("textures/ui/buttons/settings_2.png", Texture.class);
+        credits1  = context.getAssetManager().get("textures/ui/buttons/credits_1.png",  Texture.class);
+        credits2  = context.getAssetManager().get("textures/ui/buttons/credits_2.png",  Texture.class);
         quit1     = context.getAssetManager().get("textures/ui/buttons/quit_1.png",     Texture.class);
         quit2     = context.getAssetManager().get("textures/ui/buttons/quit_2.png",     Texture.class);
         showingInstructions = false;
@@ -118,9 +121,10 @@ public class MenuScene extends Scene {
         float btnH    = BUTTON_BASE_HEIGHT * scale;
         float btnX    = (screenW - btnW) / 2f;
 
-        float startY    = screenH * START_Y_RATIO;
+        float startY = screenH * START_Y_RATIO;
         float settingsY = startY - (screenH * BUTTON_VERTICAL_GAP_RATIO);
-        float quitY     = settingsY - (screenH * BUTTON_VERTICAL_GAP_RATIO);
+        float creditsY = settingsY - (screenH * BUTTON_VERTICAL_GAP_RATIO);
+        float quitY = creditsY - (screenH * BUTTON_VERTICAL_GAP_RATIO);
 
         if (isButtonClicked(btnX, startY, btnW, btnH, screenH)) {
             context.getAudioManager().playSound(AudioKeys.UI_CLICK);
@@ -128,6 +132,9 @@ public class MenuScene extends Scene {
         } else if (isButtonClicked(btnX, settingsY, btnW, btnH, screenH)) {
             context.getAudioManager().playSound(AudioKeys.UI_CLICK);
             sceneManager.switchTo(GameSceneId.SETTINGS.id());
+        } else if (isButtonClicked(btnX, creditsY, btnW, btnH, screenH)) {
+            context.getAudioManager().playSound(AudioKeys.UI_CLICK);
+            sceneManager.switchTo(GameSceneId.CREDITS.id());
         } else if (isButtonClicked(btnX, quitY, btnW, btnH, screenH)) {
             context.getAudioManager().playSound(AudioKeys.UI_CLICK);
             Gdx.app.exit();
@@ -181,16 +188,18 @@ public class MenuScene extends Scene {
         }
 
         float scale = screenH / 1080f;
-        float btnW  = BUTTON_BASE_WIDTH * scale;
-        float btnH  = BUTTON_BASE_HEIGHT * scale;
-        float btnX  = (screenW - btnW) / 2f;
-        float startY    = screenH * START_Y_RATIO;
+        float btnW = BUTTON_BASE_WIDTH * scale;
+        float btnH = BUTTON_BASE_HEIGHT * scale;
+        float btnX = (screenW - btnW) / 2f;
+        float startY = screenH * START_Y_RATIO;
         float settingsY = startY - (screenH * BUTTON_VERTICAL_GAP_RATIO);
-        float quitY     = settingsY - (screenH * BUTTON_VERTICAL_GAP_RATIO);
+        float creditsY = settingsY - (screenH * BUTTON_VERTICAL_GAP_RATIO);
+        float quitY = creditsY - (screenH * BUTTON_VERTICAL_GAP_RATIO);
 
-        drawButton(start1,    start2,    btnX, startY,    btnW, btnH, screenH);
+        drawButton(start1, start2, btnX, startY, btnW, btnH, screenH);
         drawButton(settings1, settings2, btnX, settingsY, btnW, btnH, screenH);
-        drawButton(quit1,     quit2,     btnX, quitY,     btnW, btnH, screenH);
+        drawButton(credits1, credits2, btnX, creditsY, btnW, btnH, screenH);
+        drawButton(quit1, quit2, btnX, quitY, btnW, btnH, screenH);
 
         batch.end();
 

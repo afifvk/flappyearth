@@ -16,6 +16,7 @@ import inf1009.p63.flappyearth.game.config.DisplaySettingsFactory;
 import inf1009.p63.flappyearth.game.config.GameplayDimensions;
 import inf1009.p63.flappyearth.game.input.KeyboardInputDevice;
 import inf1009.p63.flappyearth.game.input.TouchInputDevice;
+import inf1009.p63.flappyearth.game.scenes.CreditsScene;
 import inf1009.p63.flappyearth.game.scenes.GameOverScene;
 import inf1009.p63.flappyearth.game.scenes.GameplayScene;
 import inf1009.p63.flappyearth.game.scenes.GameSceneId;
@@ -101,6 +102,7 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load(AssetKeys.ENDGAME_BG, Texture.class);
         contextManager.getAssetManager().load("textures/backgrounds/game_over.png", Texture.class);
         contextManager.getAssetManager().load(AssetKeys.INSTRUCTIONS_BG, Texture.class);
+        contextManager.getAssetManager().load(AssetKeys.CREDITS_PAGE_BG, Texture.class);
         contextManager.getAssetManager().load("textures/backgrounds/settings.png", Texture.class);
         contextManager.getAssetManager().load("textures/backgrounds/pause.png", Texture.class);
 
@@ -109,6 +111,8 @@ public class FlappyEarthSetup implements GameSetup {
         contextManager.getAssetManager().load("textures/ui/buttons/start_2.png", Texture.class);
         contextManager.getAssetManager().load("textures/ui/buttons/settings_1.png", Texture.class);
         contextManager.getAssetManager().load("textures/ui/buttons/settings_2.png", Texture.class);
+        contextManager.getAssetManager().load("textures/ui/buttons/credits_1.png", Texture.class);
+        contextManager.getAssetManager().load("textures/ui/buttons/credits_2.png", Texture.class);
         contextManager.getAssetManager().load("textures/ui/buttons/quit_1.png", Texture.class);
         contextManager.getAssetManager().load("textures/ui/buttons/quit_2.png", Texture.class);
         
@@ -150,6 +154,7 @@ public class FlappyEarthSetup implements GameSetup {
 
         sceneManager.registerScene(GameSceneId.MENU.id(), new MenuScene(sceneManager, contextManager, gameSession, stagePlan));
         sceneManager.registerScene(GameSceneId.SETTINGS.id(), new SettingsScene(sceneManager, contextManager));
+        sceneManager.registerScene(GameSceneId.CREDITS.id(), new CreditsScene(sceneManager, contextManager));
 
         for (StageConfig stage : stagePlan.getStages()) {
             sceneManager.registerScene(stage.getSceneId(),
