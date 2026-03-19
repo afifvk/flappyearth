@@ -112,11 +112,12 @@ public class GameplayOverlayRenderer {
         }
 
         if (endingSceneController.isActive() && endingSceneController.isSpawnWarmup()) {
-            String warmupText = "Take control in "
+                String warmupText = "Take control in "
                     + (int) Math.ceil(endingSceneController.getSpawnWarmupTimer()) + "...";
-            float shadowOffset = Math.max(1.5f, screenH * 0.0018f);
-            drawCenteredOverlayText(hudBatch, introFont, introLayout,
-                    warmupText, screenW, screenH * 0.50f, shadowOffset);
+                float shadowOffset = Math.max(1.5f, screenH * 0.0018f);
+                // Move overlay higher: use 0.62f (same as intro text center)
+                drawCenteredOverlayText(hudBatch, introFont, introLayout,
+                    warmupText, screenW, screenH * 0.62f, shadowOffset);
         }
 
         if (!paused && !showingInstructionsOverlay && !endingSceneController.isActive()) {

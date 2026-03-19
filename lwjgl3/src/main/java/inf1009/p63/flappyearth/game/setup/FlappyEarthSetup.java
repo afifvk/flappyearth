@@ -49,8 +49,7 @@ public class FlappyEarthSetup implements GameSetup {
                         "Good Job!"),
                 new StageConfig(GameSceneId.STAGE_THREE.id(), "Nature's Fruition", "Collect 1 more item", 0.70f, 0.86f, 0.58f, 0.25f, 1.22f,
                         "Keep it up!"),
-                new StageConfig(GameSceneId.STAGE_FOUR.id(), "A Blooming Renaissance", "Final stage", 0.46f, 0.72f, 0.50f, 0f, 1.30f,
-                        "Final stretch!")
+                new StageConfig(GameSceneId.STAGE_FOUR.id(), "A Blooming Renaissance", "Final stage", 0.46f, 0.72f, 0.50f, 0f, 1.30f)
         ));
         GameplayDimensions dimensions = GameplayDimensions.fromDisplaySettings(displaySettings);
 
