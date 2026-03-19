@@ -11,7 +11,7 @@ victory.mp3
 SFX (bird):
 die.mp3, hit.mp3, point.mp3, whoosh.mp3
 
-* Source: ...
+* Source: myinstants.com
 
 SFX (gameplay):
 collect_bad.mp3, collect_good.mp3, game_over.mp3, stage_transition.mp3
@@ -21,7 +21,8 @@ collect_bad.mp3, collect_good.mp3, game_over.mp3, stage_transition.mp3
 UI SFX:
 button_click.mp3
 
-* Source: ...
+* Source: 
+
 
 ---
 
@@ -31,8 +32,9 @@ BACKGROUNDS:
 stage1.png, stage2.png, stage3.png, stage4.png
 menu.png, pause.png, settings.png, game_over.png, endgame.png
 
-* Source: [pack or website]
-* Author: [name]
+* Source: [Canva]
+* Author: [Afiqah , Wei Ying]
+
 
 EFFECTS:
 smoke.png, smog_cloud.png
@@ -65,12 +67,16 @@ hearts (heart_full.png, heart_empty.png)
 misc (instruction_page.png, mute.png)
 sliders (brightness assets)
 
-* Source: ...
+* Source: 
+buttons [itch.io]
+misc [Canva , Google]
+sliders [    ]
+
 
 ---
 
 FONTS
 BoldPixels.ttf
 
-* Source: ...
-* License: ...
+* Source: [   ]
+* License: [  ]
