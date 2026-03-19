@@ -110,8 +110,10 @@ public class CreditsScene extends Scene {
         float panelH = screenH * PANEL_H_RATIO;
         float scale = screenH / 1080f;
         float padding = PANEL_PADDING_BASE * scale;
+        float contentW = panelW - (2f * padding);
+        float contentH = panelH - (2f * padding);
 
-        maxScrollOffset = Math.max(0f, computeContentHeight(panelW - (2f * padding), scale) - panelH);
+        maxScrollOffset = Math.max(0f, computeContentHeight(contentW, scale) - contentH);
 
         float deltaOffset = 0f;
         if (Gdx.input.isKeyPressed(Input.Keys.DOWN) || Gdx.input.isKeyPressed(Input.Keys.S)) {
@@ -129,6 +131,13 @@ public class CreditsScene extends Scene {
 
         deltaOffset += pendingScrollAmount * WHEEL_SCROLL_STEP;
         pendingScrollAmount = 0f;
+
+        if (Gdx.input.isKeyJustPressed(Input.Keys.HOME)) {
+            scrollOffset = 0f;
+        }
+        if (Gdx.input.isKeyJustPressed(Input.Keys.END)) {
+            scrollOffset = maxScrollOffset;
+        }
 
         scrollOffset = clamp(scrollOffset + deltaOffset, 0f, maxScrollOffset);
 
@@ -160,6 +169,10 @@ public class CreditsScene extends Scene {
         float panelW = screenW * PANEL_W_RATIO;
         float panelH = screenH * PANEL_H_RATIO;
         float padding = PANEL_PADDING_BASE * scale;
+        float contentX = panelX + padding;
+        float contentY = panelY + padding;
+        float contentW = panelW - (2f * padding);
+        float contentH = panelH - (2f * padding);
 
         float btnW = BUTTON_BASE_WIDTH * scale;
         float btnH = BUTTON_BASE_HEIGHT * scale;
@@ -172,7 +185,7 @@ public class CreditsScene extends Scene {
             batch.draw(bgTexture, 0f, 0f, screenW, screenH);
         }
 
-        drawScrollableCredits(panelX + padding, panelY, panelW - (2f * padding), panelH, scale);
+        drawScrollableCredits(contentX, contentY, contentW, contentH, scale);
         drawScrollHint(panelX, panelY, panelW, panelH, scale);
         drawBackButton(btnX, btnY, btnW, btnH, screenH);
 
@@ -255,7 +268,15 @@ public class CreditsScene extends Scene {
         if (creditsFont == null || maxScrollOffset <= 0f) {
             return;
         }
-    } 
+
+        String hint = "Scroll: Mouse Wheel / W,S / PgUp,PgDn / Home,End";
+        creditsFont.setColor(1f, 1f, 1f, 0.88f);
+        layout.setText(creditsFont, hint);
+        float hintX = panelX + (panelW - layout.width) * 0.5f;
+        float hintY = panelY + (26f * scale);
+        creditsFont.draw(batch, layout, hintX, hintY);
+        creditsFont.setColor(Color.WHITE);
+    }
 
     private float computeContentHeight(float panelW, float scale) {
         if (creditsFont == null || creditsLines == null) {
