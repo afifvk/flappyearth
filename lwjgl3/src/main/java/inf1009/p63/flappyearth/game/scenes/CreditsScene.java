@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.utils.ScissorStack;
+import com.badlogic.gdx.utils.Align;
 import inf1009.p63.flappyearth.engine.core.EngineContext;
 import inf1009.p63.flappyearth.engine.core.Scene;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
@@ -231,7 +232,7 @@ public class CreditsScene extends Scene {
             }
 
             creditsFont.setColor(Color.WHITE);
-            layout.setText(creditsFont, line, Color.WHITE, panelW, com.badlogic.gdx.utils.Align.left, true);
+            layout.setText(creditsFont, line, Color.WHITE, panelW, Align.center, true);
             creditsFont.draw(batch, layout, textX, y);
             y -= layout.height + lineGap;
         }
@@ -254,15 +255,7 @@ public class CreditsScene extends Scene {
         if (creditsFont == null || maxScrollOffset <= 0f) {
             return;
         }
-
-        String hint = "Scroll: Mouse Wheel / W,S / PgUp,PgDn";
-        creditsFont.setColor(1f, 1f, 1f, 0.88f);
-        layout.setText(creditsFont, hint);
-        float hintX = panelX + (panelW - layout.width) * 0.5f;
-        float hintY = panelY + (26f * scale);
-        creditsFont.draw(batch, layout, hintX, hintY);
-        creditsFont.setColor(Color.WHITE);
-    }
+    } 
 
     private float computeContentHeight(float panelW, float scale) {
         if (creditsFont == null || creditsLines == null) {
@@ -278,7 +271,7 @@ public class CreditsScene extends Scene {
                 continue;
             }
 
-            layout.setText(creditsFont, line, Color.WHITE, panelW, com.badlogic.gdx.utils.Align.left, true);
+            layout.setText(creditsFont, line, Color.WHITE, panelW, Align.center, true);
             totalHeight += layout.height + lineGap;
         }
 
