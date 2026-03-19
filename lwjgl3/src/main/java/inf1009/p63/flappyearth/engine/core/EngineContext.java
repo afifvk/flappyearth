@@ -53,8 +53,18 @@ public class EngineContext {
     public float getMasterVolume()                    { return engineSettings.getMasterVolume(); }
     public void increaseMasterVolume(float amount)    { engineSettings.increaseVolume(amount); }
     public void decreaseMasterVolume(float amount)    { engineSettings.decreaseVolume(amount); }
-    public void setMasterVolume(float value)          { engineSettings.setMasterVolume(value); }
+    public void setMasterVolume(float value)          {
+        engineSettings.setMasterVolume(value);
+        if (audioManager != null) {
+            audioManager.setMasterVolume(engineSettings.getMasterVolume());
+        }
+    }
     public boolean isMuted()                          { return engineSettings.isMuted(); }
-    public void setMuted(boolean muted)               { engineSettings.setMuted(muted); }
+    public void setMuted(boolean muted)               {
+        engineSettings.setMuted(muted);
+        if (audioManager != null) {
+            audioManager.setMuted(muted);
+        }
+    }
     public EngineSettings getEngineSettings()         { return engineSettings; }
 }

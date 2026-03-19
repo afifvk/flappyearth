@@ -121,16 +121,21 @@ public class SettingsScene extends Scene {
             context.getAudioManager().playSound(AudioKeys.UI_CLICK);
             pendingBrightness = clamp(pendingBrightness + SETTING_STEP, 0.4f, 1.6f);
         } else if (isButtonClicked(leftX, controlYTwo, controlSize, controlSize, screenH)) {
-            context.getAudioManager().playSound(AudioKeys.UI_CLICK);
             pendingVolume = clamp(pendingVolume - SETTING_STEP, 0f, 1f);
             pendingMuted = false;
-        } else if (isButtonClicked(rightX, controlYTwo, controlSize, controlSize, screenH)) {
+            applyPendingAudioSettings();
             context.getAudioManager().playSound(AudioKeys.UI_CLICK);
+        } else if (isButtonClicked(rightX, controlYTwo, controlSize, controlSize, screenH)) {
             pendingVolume = clamp(pendingVolume + SETTING_STEP, 0f, 1f);
             pendingMuted = false;
-        } else if (isButtonClicked(checkboxX, checkboxY, checkboxSize, checkboxSize, screenH)) {
+            applyPendingAudioSettings();
             context.getAudioManager().playSound(AudioKeys.UI_CLICK);
+        } else if (isButtonClicked(checkboxX, checkboxY, checkboxSize, checkboxSize, screenH)) {
             pendingMuted = !pendingMuted;
+            applyPendingAudioSettings();
+            if (!pendingMuted) {
+                context.getAudioManager().playSound(AudioKeys.UI_CLICK);
+            }
         } else if (isButtonClicked(btnX, btnY, btnW, btnH, screenH)
                 || Gdx.input.isKeyJustPressed(Input.Keys.ESCAPE)) {
             saveAndExit();
@@ -300,15 +305,16 @@ public class SettingsScene extends Scene {
         return Math.max(min, Math.min(max, value));
     }
 
+    private void applyPendingAudioSettings() {
+        context.setMasterVolume(pendingVolume);
+        context.setMuted(pendingMuted);
+    }
+
     private void saveAndExit() {
         context.getAudioManager().playSound(AudioKeys.UI_CLICK);
 
         context.getEngineSettings().setBrightness(pendingBrightness);
-        context.setMasterVolume(pendingVolume);
-        context.setMuted(pendingMuted);
-
-        context.getAudioManager().setMasterVolume(pendingVolume);
-        context.getAudioManager().setMuted(pendingMuted);
+        applyPendingAudioSettings();
 
         sceneManager.switchTo(GameSceneId.MENU.id());
     }
