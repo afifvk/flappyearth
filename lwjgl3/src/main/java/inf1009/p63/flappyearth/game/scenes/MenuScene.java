@@ -15,8 +15,24 @@ import inf1009.p63.flappyearth.game.config.AssetKeys;
 import inf1009.p63.flappyearth.game.config.StagePlan;
 import inf1009.p63.flappyearth.game.runtime.BrightnessOverlayRenderer;
 import inf1009.p63.flappyearth.game.state.GameSession;
+import inf1009.p63.flappyearth.game.util.EcoFactManager;
+import inf1009.p63.flappyearth.game.util.FontUtils;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 
 public class MenuScene extends Scene {
+    private EcoFactManager ecoFactManager;
+    private BitmapFont ecoFactFont;
+    private GlyphLayout ecoFactLayout;
+    private String ecoFactToDisplay;
+    private float ecoFactTimer = 0f;
+    private float ecoFactAlpha = 1f;
+    private boolean ecoFactFadingOut = false;
+    private static final float ECO_FACT_CYCLE_TIME = 15f;
+    private static final float ECO_FACT_FADE_TIME = 1f;
+    private static float cubicEase(float t) {
+        return t < 0 ? 0 : t > 1 ? 1 : (float)Math.pow(t, 3);
+    }
 
     private static final float BUTTON_BASE_WIDTH = 320f;
     private static final float BUTTON_BASE_HEIGHT = 90f;
@@ -51,6 +67,12 @@ public class MenuScene extends Scene {
         this.batch  = new SpriteBatch();
         this.camera = new OrthographicCamera();
         this.brightnessOverlayRenderer = new BrightnessOverlayRenderer();
+        this.ecoFactManager = new EcoFactManager("assets/eco_facts.txt");
+        this.ecoFactFont = FontUtils.loadFontOrDefault("fonts/BoldPixels.ttf", 18);
+        this.ecoFactFont.getData().setScale(1.5f);
+        this.ecoFactFont.setUseIntegerPositions(false);
+        this.ecoFactLayout = new GlyphLayout();
+        this.ecoFactToDisplay = ecoFactManager.getRandomFact();
     }
 
     @Override
@@ -66,6 +88,11 @@ public class MenuScene extends Scene {
         showingInstructions = false;
         
         context.getAudioManager().playMusic(AudioKeys.MUSIC_MENU);
+        // Refresh eco fact on menu enter
+        this.ecoFactToDisplay = ecoFactManager.getRandomFact();
+        this.ecoFactTimer = 0f;
+        this.ecoFactAlpha = 1f;
+        this.ecoFactFadingOut = false;
     }
 
     @Override
@@ -104,6 +131,25 @@ public class MenuScene extends Scene {
         } else if (isButtonClicked(btnX, quitY, btnW, btnH, screenH)) {
             context.getAudioManager().playSound(AudioKeys.UI_CLICK);
             Gdx.app.exit();
+        }
+
+        // Eco fact cycling logic
+        ecoFactTimer += delta;
+        if (!ecoFactFadingOut && ecoFactTimer >= ECO_FACT_CYCLE_TIME) {
+            ecoFactFadingOut = true;
+            ecoFactTimer = 0f;
+        }
+        // Fade out current fact
+        if (ecoFactFadingOut) {
+            ecoFactAlpha -= delta / ECO_FACT_FADE_TIME;
+            if (ecoFactAlpha <= 0f) {
+                ecoFactAlpha = 0f;
+                ecoFactToDisplay = ecoFactManager.getRandomFact();
+                ecoFactFadingOut = false;
+            }
+        } else if (ecoFactAlpha < 1f) {
+            ecoFactAlpha += delta / ECO_FACT_FADE_TIME;
+            if (ecoFactAlpha > 1f) ecoFactAlpha = 1f;
         }
     }
 
@@ -150,6 +196,16 @@ public class MenuScene extends Scene {
 
         batch.begin();
         brightnessOverlayRenderer.render(batch, context.getBrightness());
+        batch.end();
+
+        // Draw eco fact slightly above bottom with smooth fade
+        batch.begin();
+        float ecoFactBaseY = 60f * (screenH / 1080f);
+        ecoFactLayout.setText(ecoFactFont, ecoFactToDisplay);
+        float ecoFactX = (screenW - ecoFactLayout.width) / 2f;
+        ecoFactFont.setColor(1f, 1f, 1f, cubicEase(ecoFactAlpha));
+        ecoFactFont.draw(batch, ecoFactLayout, ecoFactX, ecoFactBaseY);
+        ecoFactFont.setColor(1f, 1f, 1f, 1f); // Reset alpha
         batch.end();
     }
 

@@ -10,7 +10,6 @@ public abstract class Obstacle extends GameEntity {
     }
 
     private final ObstacleType obstacleType;
-    private final String        factTopic;
     private boolean             passed = false;
     private boolean             isFlipped = false;
 
@@ -21,10 +20,9 @@ public abstract class Obstacle extends GameEntity {
     private float   crashVelY = 0f;
 
     public Obstacle(float x, float y, float width, float height,
-                       String assetKey, ObstacleType type, String factTopic) {
+                       String assetKey, ObstacleType type) {
         super(x, y, width, height, assetKey, Tags.HAZARD);
         this.obstacleType = type;
-        this.factTopic    = factTopic;
     }
 
     @Override
@@ -52,7 +50,6 @@ public abstract class Obstacle extends GameEntity {
     public boolean isCrashActive() { return crashActive; }
 
     public ObstacleType getObstacleType() { return obstacleType; }
-    public String       getFactTopic()    { return factTopic; }
     public boolean      isPassed()        { return passed; }
     public void         setPassed(boolean passed) { this.passed = passed; }
     public boolean      isFlipped()       { return isFlipped; }
