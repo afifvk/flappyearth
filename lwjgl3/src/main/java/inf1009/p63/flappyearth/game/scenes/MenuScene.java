@@ -68,7 +68,7 @@ public class MenuScene extends Scene {
         this.batch  = new SpriteBatch();
         this.camera = new OrthographicCamera();
         this.brightnessOverlayRenderer = new BrightnessOverlayRenderer();
-        this.ecoFactManager = new EcoFactManager("assets/eco_facts.txt");
+        this.ecoFactManager = new EcoFactManager("eco_facts.txt");
         this.ecoFactFont = FontUtils.loadFontOrDefault("fonts/BoldPixels.ttf", 18);
         this.ecoFactFont.getData().setScale(1.5f);
         this.ecoFactFont.setUseIntegerPositions(false);

@@ -25,7 +25,17 @@ public class EcoFactManager {
                 if (!trimmed.isEmpty()) ecoFacts.add(trimmed);
             }
         } catch (Exception e) {
-            // Log or handle error
+            // Fallback for legacy path usage.
+            try {
+                String factsText = Gdx.files.internal("assets/eco_facts.txt").readString("UTF-8");
+                String[] lines = factsText.split("\n");
+                for (String line : lines) {
+                    String trimmed = line.trim();
+                    if (!trimmed.isEmpty()) ecoFacts.add(trimmed);
+                }
+            } catch (Exception ignored) {
+                Gdx.app.error("EcoFactManager", "Unable to load eco facts from '" + filePath + "' or 'assets/eco_facts.txt'.", e);
+            }
         }
     }
 

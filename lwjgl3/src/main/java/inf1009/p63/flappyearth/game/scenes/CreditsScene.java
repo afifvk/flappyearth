@@ -172,6 +172,7 @@ public class CreditsScene extends Scene {
         }
 
         drawScrollableCredits(panelX + padding, panelY, panelW - (2f * padding), panelH, scale);
+        drawScrollHint(panelX, panelY, panelW, panelH, scale);
         drawBackButton(btnX, btnY, btnW, btnH, screenH);
 
         batch.end();
@@ -247,6 +248,20 @@ public class CreditsScene extends Scene {
         boolean hovered = isHovered(bx, by, bw, bh, screenH);
         boolean pressed = hovered && Gdx.input.isButtonPressed(Input.Buttons.LEFT);
         batch.draw(pressed ? back2 : back1, bx, by, bw, bh);
+    }
+
+    private void drawScrollHint(float panelX, float panelY, float panelW, float panelH, float scale) {
+        if (creditsFont == null || maxScrollOffset <= 0f) {
+            return;
+        }
+
+        String hint = "Scroll: Mouse Wheel / W,S / PgUp,PgDn";
+        creditsFont.setColor(1f, 1f, 1f, 0.88f);
+        layout.setText(creditsFont, hint);
+        float hintX = panelX + (panelW - layout.width) * 0.5f;
+        float hintY = panelY + (26f * scale);
+        creditsFont.draw(batch, layout, hintX, hintY);
+        creditsFont.setColor(Color.WHITE);
     }
 
     private float computeContentHeight(float panelW, float scale) {
