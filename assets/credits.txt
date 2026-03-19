@@ -4,8 +4,16 @@ game.mp3
 menu.mp3
 victory.mp3
 
-* Source: [e.g. freesound / itch / custom]
-* Author: [name]
+* Source: 
+game [choosic.com]
+menu []
+victory []
+
+* Author: 
+game [Scott Buckley]
+menu []
+victory []
+
 * License: [if applicable]
 
 SFX (bird):
