@@ -232,7 +232,8 @@ public class CreditsScene extends Scene {
         }
 
         float lineGap = 12f * scale;
-        float y = panelY + panelH - scrollOffset;
+        // Positive scrollOffset should move content upward, revealing lower lines.
+        float y = panelY + panelH + scrollOffset;
 
         for (String line : creditsLines) {
             if (line == null) {
