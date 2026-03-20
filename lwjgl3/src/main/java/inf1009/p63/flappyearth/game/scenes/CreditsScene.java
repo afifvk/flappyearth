@@ -210,6 +210,9 @@ public class CreditsScene extends Scene {
         if (batch != null) {
             batch.dispose();
         }
+        if (creditsFont != null) {
+            creditsFont.dispose();
+        }
         brightnessOverlayRenderer.dispose();
     }
 

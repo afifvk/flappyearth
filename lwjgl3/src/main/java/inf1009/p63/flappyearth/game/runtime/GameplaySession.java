@@ -1,7 +1,6 @@
 package inf1009.p63.flappyearth.game.runtime;
 
 import inf1009.p63.flappyearth.engine.services.EntityStore;
-import inf1009.p63.flappyearth.game.config.Tags;
 import inf1009.p63.flappyearth.game.controllers.CameraController;
 import inf1009.p63.flappyearth.game.controllers.DeathController;
 import inf1009.p63.flappyearth.game.controllers.EndingController;
@@ -20,7 +19,7 @@ public class GameplaySession {
     }
 
     public UpdateResult update(float delta,
-                               EntityStore entityStore,
+                               GameplayRuntimeContext runtimeContext,
                                GameState gameState,
                                GameplayLoop gameplayLoop,
                                DeathController deathController,
@@ -33,7 +32,7 @@ public class GameplaySession {
             gameplayLoop.update(delta);
         }
 
-        Player player = (Player) entityStore.getFirstByTag(Tags.PLAYER);
+        Player player = runtimeContext.player();
         result.player = player;
         deathController.update(delta, player, cameraController, endingController.isSafeEndingWindow());
 

@@ -55,13 +55,11 @@ public class GameplayEventHandler {
         final Player player;
         final ActiveEffects effects;
         final EngineContext context;
-        final EngineContext engineContext;
 
         DebuffContext(Player player, ActiveEffects effects, EngineContext context) {
             this.player = player;
             this.effects = effects;
             this.context = context;
-            this.engineContext = context;
         }
     }
 
@@ -113,6 +111,7 @@ public class GameplayEventHandler {
     }
 
     public void subscribe(GameSession gameSession) {
+        unsubscribe();
         EventBus eventBus = context.getEventBus();
 
         goodCollectedProgressListener = data -> {
@@ -188,15 +187,19 @@ public class GameplayEventHandler {
         EventBus eventBus = context.getEventBus();
         if (goodCollectedProgressListener != null) {
             eventBus.unsubscribe(GameEvents.GOOD_COLLECTED, goodCollectedProgressListener);
+            goodCollectedProgressListener = null;
         }
         if (badCollectedListener != null) {
             eventBus.unsubscribe(GameEvents.BAD_COLLECTED, badCollectedListener);
+            badCollectedListener = null;
         }
         if (badHitListener != null) {
             eventBus.unsubscribe(GameEvents.BAD_HIT, badHitListener);
+            badHitListener = null;
         }
         if (obstaclePassedListener != null) {
             eventBus.unsubscribe(GameEvents.OBSTACLE_PASSED, obstaclePassedListener);
+            obstaclePassedListener = null;
         }
     }
 }

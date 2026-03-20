@@ -224,6 +224,7 @@ public class MenuScene extends Scene {
     @Override
     public void disposeResources() {
         if (batch != null) batch.dispose();
+        if (ecoFactFont != null) ecoFactFont.dispose();
         brightnessOverlayRenderer.dispose();
     }
 

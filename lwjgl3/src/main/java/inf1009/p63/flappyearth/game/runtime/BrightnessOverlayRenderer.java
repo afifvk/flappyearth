@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 public class BrightnessOverlayRenderer {
 
     private final Texture whitePixel;
+    private boolean disposed;
 
     public BrightnessOverlayRenderer() {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -19,7 +20,7 @@ public class BrightnessOverlayRenderer {
     }
 
     public void render(SpriteBatch batch, float brightness) {
-        if (brightness == 1.0f) {
+        if (disposed || brightness == 1.0f) {
             return;
         }
 
@@ -39,6 +40,10 @@ public class BrightnessOverlayRenderer {
     }
 
     public void dispose() {
+        if (disposed) {
+            return;
+        }
         whitePixel.dispose();
+        disposed = true;
     }
 }

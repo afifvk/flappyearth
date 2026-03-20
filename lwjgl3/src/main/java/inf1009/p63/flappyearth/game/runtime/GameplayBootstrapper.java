@@ -23,7 +23,6 @@ import inf1009.p63.flappyearth.game.entities.Player;
 import inf1009.p63.flappyearth.game.factories.EntityFactory;
 import inf1009.p63.flappyearth.game.state.ActiveEffects;
 import inf1009.p63.flappyearth.game.state.GameSession;
-import inf1009.p63.flappyearth.game.state.GameState;
 import inf1009.p63.flappyearth.game.systems.CollisionStep;
 import inf1009.p63.flappyearth.game.systems.DespawnStep;
 import inf1009.p63.flappyearth.game.systems.EffectStep;
@@ -52,6 +51,7 @@ public class GameplayBootstrapper {
         public EntityFactory entityFactory;
         public Player player;
         public GameplayLoop gameplayLoop;
+        public GameplayRuntimeContext runtimeContext;
     }
 
     public Result bootstrap(SceneManager sceneManager,
@@ -112,20 +112,21 @@ public class GameplayBootstrapper {
         result.entityFactory = new EntityFactory(context.getRandomManager());
         result.player = new Player(80f, dimensions.getWorldHeight() / 2f,
                 config.playerSpeed, config.gravity, config.jumpImpulse);
+        result.runtimeContext = new GameplayRuntimeContext(entityStore, gameSession, dimensions);
+        result.runtimeContext.setPlayer(result.player);
         entityStore.queueAdd(result.player);
 
-        GameState gameState = gameSession.getGameState();
         result.gameplayLoop = new GameplayLoop();
-        result.gameplayLoop.addStep(new InputStep(context.getInputManager(), context.getEventBus(), gameState));
-        result.gameplayLoop.addStep(new SpawnStep(entityStore,
+        result.gameplayLoop.addStep(new InputStep(context.getInputManager(), context.getEventBus(), result.runtimeContext.gameState()));
+        result.gameplayLoop.addStep(new SpawnStep(result.runtimeContext,
                 result.entityFactory.getObstacleFactory(), result.entityFactory.getCollectibleFactory(),
-                context.getRandomManager(), gameState, config, dimensions,
+                context.getRandomManager(), config,
                 result.endingController.isActive() ? 0f : 3f));
-        result.gameplayLoop.addStep(new UpdateStep(entityStore, context.getTimeManager(), gameState));
-        result.gameplayLoop.addStep(new MovementStep(entityStore, context.getMovementManager(), context.getTimeManager(), gameState, dimensions));
-        result.gameplayLoop.addStep(new CollisionStep(entityStore, context.getCollisionManager(), context.getEventBus(), gameState));
+        result.gameplayLoop.addStep(new UpdateStep(entityStore, context.getTimeManager(), result.runtimeContext.gameState()));
+        result.gameplayLoop.addStep(new MovementStep(result.runtimeContext, context.getMovementManager(), context.getTimeManager()));
+        result.gameplayLoop.addStep(new CollisionStep(result.runtimeContext, context.getCollisionManager(), context.getEventBus()));
         result.gameplayLoop.addStep(new EffectStep(activeEffects, context.getTimeManager()));
-        result.gameplayLoop.addStep(new DespawnStep(entityStore, dimensions));
+        result.gameplayLoop.addStep(new DespawnStep(result.runtimeContext));
 
         entityStore.flush();
         return result;

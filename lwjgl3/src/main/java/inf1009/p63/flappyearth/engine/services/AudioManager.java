@@ -86,9 +86,9 @@ public class AudioManager {
     // ── Cleanup ───────────────────────────────────────────────────────────────
 
     public void dispose() {
-        sounds.values().forEach(Sound::dispose);
-        musicTracks.values().forEach(Music::dispose);
+        stopAllTracks();
         sounds.clear();
+        soundVolumes.clear();
         musicTracks.clear();
         currentMusic = null;
     }

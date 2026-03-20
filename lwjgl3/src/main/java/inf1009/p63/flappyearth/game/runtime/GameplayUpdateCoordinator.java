@@ -2,9 +2,7 @@ package inf1009.p63.flappyearth.game.runtime;
 
 import inf1009.p63.flappyearth.engine.core.EngineContext;
 import inf1009.p63.flappyearth.engine.core.SceneManager;
-import inf1009.p63.flappyearth.engine.services.EntityStore;
 import inf1009.p63.flappyearth.game.config.StagePlan;
-import inf1009.p63.flappyearth.game.config.Tags;
 import inf1009.p63.flappyearth.game.controllers.CameraController;
 import inf1009.p63.flappyearth.game.controllers.DeathController;
 import inf1009.p63.flappyearth.game.controllers.EndingController;
@@ -56,7 +54,7 @@ public class GameplayUpdateCoordinator {
     }
 
     public void update(float delta,
-                       EntityStore entityStore,
+                       GameplayRuntimeContext runtimeContext,
                        EndingController endingSceneController,
                        HelpOverlayController helpOverlayController,
                        PauseOverlayController pauseOverlayController,
@@ -77,7 +75,7 @@ public class GameplayUpdateCoordinator {
         }
 
         GameState gameState = gameSession.getGameState();
-        player = (Player) entityStore.getFirstByTag(Tags.PLAYER);
+        player = runtimeContext.player();
 
         pauseController.updateInstructionsOverlay(helpOverlayController);
         if (pauseController.isShowingInstructionsOverlay()) {
@@ -102,7 +100,7 @@ public class GameplayUpdateCoordinator {
 
         GameplaySession.UpdateResult updateResult = gameplayRuntimeSession.update(
                 delta,
-                entityStore,
+                runtimeContext,
                 gameState,
                 gameLoopManager,
                 deathController,
