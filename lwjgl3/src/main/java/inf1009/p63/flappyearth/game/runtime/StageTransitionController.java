@@ -47,6 +47,7 @@ public class StageTransitionController {
             if (alpha <= 0f) {
                 phase = Phase.NONE;
             }
+            return true;
         }
 
         return false;

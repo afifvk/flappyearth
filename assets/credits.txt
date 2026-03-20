@@ -42,7 +42,7 @@ menu.png, pause.png, settings.png, game_over.png, endgame.png
 
 
 EFFECTS:
-smoke.png, smog_cloud.png
+smoke.png
 
 * Source: [TopPNG]
 

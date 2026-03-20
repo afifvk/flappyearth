@@ -14,11 +14,11 @@ public final class GameStagePlanFactory {
         return new StagePlan(Arrays.asList(
                 new StageConfig(GameSceneId.STAGE_ONE.id(), "A Broken World", "Collect 1 good item", 0.20f, 0.45f, 0.95f, 0.70f, 1f,
                         "Restore the Earth one step at a time", "Collect good collectibles", "Good luck"),
-                new StageConfig(GameSceneId.STAGE_TWO.id(), "Glimmer of Hope", "Collect 1 more item", 0.98f, 0.94f, 0.62f, 0.50f, 1.15f,
+                new StageConfig(GameSceneId.STAGE_TWO.id(), "Glimmer of Hope", "Collect 1 more item", 0.98f, 0.94f, 0.62f, 0.50f, 200f / 175f,
                         "Good Job!"),
-                new StageConfig(GameSceneId.STAGE_THREE.id(), "Nature's Fruition", "Collect 1 more item", 0.70f, 0.86f, 0.58f, 0.25f, 1.22f,
+                new StageConfig(GameSceneId.STAGE_THREE.id(), "Nature's Fruition", "Collect 1 more item", 0.70f, 0.86f, 0.58f, 0.25f, 225f / 175f,
                         "Keep it up!"),
-                new StageConfig(GameSceneId.STAGE_FOUR.id(), "A Blooming Renaissance", "Final stage", 0.46f, 0.72f, 0.50f, 0f, 1.30f)
+                new StageConfig(GameSceneId.STAGE_FOUR.id(), "A Blooming Renaissance", "Final stage", 0.46f, 0.72f, 0.50f, 0f, 250f / 175f)
         ));
     }
 }

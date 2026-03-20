@@ -24,7 +24,6 @@ public final class GameAssetRegistry {
         context.getAssetManager().load("textures/backgrounds/stage/stage3.png", Texture.class);
         context.getAssetManager().load("textures/backgrounds/stage/stage4.png", Texture.class);
         context.getAssetManager().load("textures/effects/smoke.png", Texture.class);
-        context.getAssetManager().load("textures/effects/smog_cloud.png", Texture.class);
         context.getAssetManager().load("textures/entities/bird/frame_00.png", Texture.class);
         context.getAssetManager().load("textures/entities/bird/frame_01.png", Texture.class);
         context.getAssetManager().load("textures/entities/bird/frame_02.png", Texture.class);
